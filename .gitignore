@@ -1,5 +1,9 @@
+# Environment
+.env
+
 # Prerequisites
 *.d
+node_modules
 
 # Compiled Object files
 *.slo
@@ -30,3 +34,9 @@
 *.exe
 *.out
 *.app
+
+# python
+*.pyc
+*.pyo
+__pycache__/
+venv/
