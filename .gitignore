@@ -49,3 +49,6 @@ venv
 data
 
 
+venv/
+
+visionPython/config.json
