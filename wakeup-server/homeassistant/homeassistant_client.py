@@ -1,8 +1,8 @@
 import requests
 from typing import Tuple, List
 from constants import HOMEASSISTANT_URL
-from Models.Switch import Switch
-from Models.Media_Player import Media_Player
+from homeassistant.Models.Switch import Switch
+from homeassistant.Models.Media_Player import Media_Player
 class HomeAssistantClient:
     def __init__(self, token):
         self.client = requests.session()
@@ -81,7 +81,7 @@ class HomeAssistantClient:
     
     def find_entity_by_attributes(self):
         # TODO Add Lights
-        
+        print("Hello")
         states = self.get_states()
          
         switches: List[Switch] = []
@@ -98,4 +98,13 @@ class HomeAssistantClient:
             'media_players': media_players
         }
 
+    def find_entity_by_id(self, id):
+        states = self.get_states()
+        for state in states:
+            if state['entity_id'] == id:
+                if state['entity_id'].startswith('switch.'):
+                    return Switch(state['entity_id'], self)
+                elif state['entity_id'].startswith('media_player.'):
+                    return Media_Player(state['entity_id'], self)
+        return None
 

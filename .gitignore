@@ -39,5 +39,8 @@ node_modules
 *.pyc
 *.pyo
 __pycache__/
-venv/
+
+
 .DS_Store
+data
+
