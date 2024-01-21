@@ -41,3 +41,5 @@ node_modules
 __pycache__/
 venv/
 .DS_Store
+
+./SoundTriggerBox/config.json
