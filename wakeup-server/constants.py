@@ -1,11 +1,13 @@
 from dotenv import load_dotenv
-load_dotenv()
 import os
 
-if not os.path.isfile(".env"):
-    print(".env file not found")
-    exit(1)
+load_dotenv()
 
+MONGODB_URL = os.getenv("MONGODB_URL")
+
+if not MONGODB_URL:
+    raise ValueError("No MONGODB_URL set for Flask application")
+  
 # HOMEASSISTANT CONFIG
 HOMEASSISTANT_URL = os.getenv("HOMEASSISTANT_URL")
 HOMEASSISTANT_TOKEN = os.getenv("HOMEASSISTANT_TOKEN")
