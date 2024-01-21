@@ -1,0 +1,4 @@
+Flask
+pymongo[srv]
+Flask-PyMongo
+fhir.resources

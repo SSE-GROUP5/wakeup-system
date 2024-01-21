@@ -3,6 +3,13 @@ class Base():
         self.id = id
         self.homeassistant_client = homeassistant_client
         
+    def json(self):
+        return {
+            'id': self.id,
+            'state': self.get_state(),
+            'possible_actions': self.get_possible_actions()
+        }   
+        
     def get_id(self):
         return self.id
       

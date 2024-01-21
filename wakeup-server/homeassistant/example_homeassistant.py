@@ -3,9 +3,5 @@ from homeassistant_client import HomeAssistantClient
 
 
 ha_client = HomeAssistantClient(HOMEASSISTANT_TOKEN)
-switches = ha_client.find_switches()
-media_players = ha_client.find_media_players()
-
-switche_1 = switches[0]
-switche_1.turn_on()
-
+devices = ha_client.find_entity_by_attributes()
+print(devices)

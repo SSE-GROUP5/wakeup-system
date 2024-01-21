@@ -1,4 +1,4 @@
-from Models.Base import Base
+from homeassistant.Models.Base import Base
 
 class Media_Player(Base):
     
