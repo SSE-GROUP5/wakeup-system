@@ -10,7 +10,7 @@ def create_device():
   data = request.get_json()
   
   # Extract the necessary information from the data
-  id = data.get('id')
+  matter_id = data.get('matter_id')
   device_name = data.get('name')
   device_type = data.get('type')
 
@@ -23,22 +23,29 @@ def create_device():
   # check if collection exists
   if "target_devices" not in mongo.db.list_collection_names():
       target_devices = mongo.db.create_collection("target_devices")
-      target_devices.create_index([("id", 1)], unique=True)
+      target_devices.create_index([("matter_id", 1)], unique=True)
   
   # Insert the data into the database
+  possible_actions = homeassistant_client.get_possible_actions(matter_id)
+  
+  if possible_actions is None:
+      return "No possible actions found", 400
+    
   device = {
-    'id': id,
+    'matter_id': matter_id,
     'name': device_name,
-    'type': device_type
+    'type': device_type,
+    'possible_actions': possible_actions
   }
   
   try: 
-      new_device = mongo.db.target_devices.insert_one(device)
+      mongo.db.target_devices.insert_one(device)
       
       return jsonify({
-          "id": str(new_device.inserted_id),
+          "matter_id": matter_id,
           "name": device_name,
-          "type": device_type
+          "type": device_type,
+          "possible_actions": possible_actions
       }), 201
       
   except DuplicateKeyError:
@@ -57,12 +64,17 @@ def refresh_devices():
         json_data = switch.json()
         
         device = {
-            'id': json_data['id'],
+            'matter_id': json_data['id'],
             'possible_actions': json_data['possible_actions'],
             'type': 'switch'
         }
         
         try:
+              # check if collection exists
+            if "target_devices" not in mongo.db.list_collection_names():
+                target_devices = mongo.db.create_collection("target_devices")
+                target_devices.create_index([("matter_id", 1)], unique=True)
+            
             mongo.db.target_devices.insert_one(device)
         except DuplicateKeyError:
             pass
