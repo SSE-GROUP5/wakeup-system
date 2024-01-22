@@ -1,7 +1,6 @@
 from flask import Blueprint, request
-from db import mongo
-from homeassistant_client import homeassistant_client
 from models.interactive_devices import InteractiveDevice
+from models.target_devices import TargetDevice
 
 signals_blueprint = Blueprint('signals', __name__)
 
@@ -23,22 +22,28 @@ def receive_signal():
     
   target_object = interactive_device.get_target(interactive_device_action)
   
+  if target_object is None:
+      return f"No target device set for action {interactive_device_action}", 400
+  
   target_device_id = target_object.get('id')
-  action = target_object.get('action')
+  target_action = target_object.get('action')
   
   if target_device_id is None:
       return "No target device ID set", 400
-  if action is None:
+  if target_action is None:
       return "No action set", 400
     
-  target_device_mongo = mongo.db.target_devices.find_one({'matter_id': target_device_id})
-  if target_device_mongo is None:
-      return "Target Matter device not found", 400
+  target_device = TargetDevice.find_by_id(target_device_id)
+  if target_device is None:
+      return "Target device not found", 400
     
-  device = homeassistant_client.find_entity_by_id(target_device_id)
-  device.set_state(action)
+  action_names = [action['action'] for action in target_device.possible_actions]
+  if target_action not in action_names:
+      return "Target device does not have this action", 400
+    
+  target_device.do_action(target_action)
   
-  return f"Signal received for device {target_device_id} to perform action {action}", 200
+  return f"Signal received for device {target_device_id} to perform action {target_action}", 200
 
 
 @signals_blueprint.route('/signals/set', methods=['POST'])
@@ -57,17 +62,16 @@ def set_signal():
   if interactive_device_action is None:
       return "No interactive device action provided", 400
   
-  interactive_device = mongo.db.interactive_devices.find_one({'id': interactive_device_id})
   interactive_device = InteractiveDevice.find_by_id(interactive_device_id)
 
   if interactive_device is None:
       return "Interactive device not found", 400
 
-  target_device = mongo.db.target_devices.find_one({'matter_id': target_device_id})
+  target_device = TargetDevice.find_by_id(target_device_id)
   if target_device is None:
       return "Target Matter device not found", 400
   
-  actions = target_device.get('possible_actions')
+  actions = target_device.possible_actions
   if actions is None:
       return "Target device has no actions", 400
     
