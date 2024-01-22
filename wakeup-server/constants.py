@@ -3,6 +3,15 @@ import os
 
 load_dotenv()
 
+HOSTNAME = os.getenv("HOSTNAME")
+PORT = os.getenv("PORT")
+
+if not HOSTNAME:
+    raise ValueError("No HOSTNAME set for Flask applicaton")
+if not PORT:
+    raise ValueError("No PORT set for Flask applicaton")
+
+
 MONGODB_URL = os.getenv("MONGODB_URL")
 
 if not MONGODB_URL:
