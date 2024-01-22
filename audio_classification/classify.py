@@ -99,7 +99,7 @@ def run(model: str, max_results: int, score_threshold: float,
 			for result in classification_result_list:
 				for classification in result.classifications:
 					for category in classification.categories:
-						if category.category_name == 'Finger snapping' and category.score >= 0.4:
+						if category.category_name == 'Finger snapping':
 							print(f"Finger snapping detected.")
 						if category.category_name == 'Knock':
 							print(f"Knock detected.")
