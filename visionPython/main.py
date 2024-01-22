@@ -4,40 +4,31 @@ import mediapipe as mp
 import time
 import utils, math
 import numpy as np
-import json 
+from constants import BLINKING_RATIO, CLOSED_EYES_FRAME, TIMEOUT_SEC, WAKEUP_SERVER_URL, ID
 from requests import Session
 
-def send_signal():
+def send_signal(action: str):
     data = {
-        "id": id
+        "id": ID,
+        "action": action
     }
-    response = client.post(f"{URL}/signals", json=data)
+    response = client.post(f"{WAKEUP_SERVER_URL}/signals", json=data)
     time.sleep(3)
     print(response.content)
     print(response)
-
 
 
 # variables 
 frame_counter =0
 CEF_COUNTER =0
 TOTAL_BLINKS =0
-# constants
-with open('config.json', 'r') as file:
-    config = json.load(file)
 
-CLOSED_EYES_FRAME =config['CLOSED_EYES_FRAME']
+
 FONTS =cv.FONT_HERSHEY_COMPLEX
-BLINKING_RATIO = config['BLINKING_RATIO']
-TIMEOUT = config['TIMEOUT']
 LAST_BLINKING_TIME = time.time()
-
-URL = config['URL']
-id = config['id']
 client = Session()
 client.headers.update({'Content-Type': 'application/json'})
 client.headers.update({'Accept': 'application/json'})
-client.base_url = URL
 
 # face bounder indices 
 FACE_OVAL=[ 10, 338, 297, 332, 284, 251, 389, 356, 454, 323, 361, 288, 397, 365, 379, 378, 400, 377, 152, 148, 176, 149, 150, 136, 172, 58, 132, 93, 234, 127, 162, 21, 54, 103,67, 109]
@@ -152,14 +143,15 @@ with map_face_mesh.FaceMesh(min_detection_confidence =0.5, min_tracking_confiden
             utils.colorBackgroundText(frame,  f'No Face Detected', FONTS, 2.5, (int(frame_height/2)-200, 200), 2, utils.RED, pad_x=6, pad_y=6, )
 
 
-        if(time.time() - LAST_BLINKING_TIME > TIMEOUT):
+        if(time.time() - LAST_BLINKING_TIME > TIMEOUT_SEC):
             if(TOTAL_BLINKS == 2):
                 #TODO TURN ON LIGHT
                 print("LIGHT ON")
-                # send_signal()
+                # send_signal("blink_2")
             elif (TOTAL_BLINKS == 3):
                 #TODO TURN OFF LIGHT
                 print("LIGHT OFF")
+                # send_signal("blink_3")
             TOTAL_BLINKS = 0
 
 
