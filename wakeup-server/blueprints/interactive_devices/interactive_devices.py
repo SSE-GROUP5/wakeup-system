@@ -1,13 +1,12 @@
 from flask import Blueprint, request, jsonify
 from pymongo.errors import DuplicateKeyError
-from db import mongo
+from models.interactive_devices import InteractiveDevice
 
 interactive_devices_blueprint = Blueprint('interactive_devices', __name__)
 
 @interactive_devices_blueprint.route('/interactive_devices', methods=['POST'])
 def create_interactive_device():
   data = request.get_json()
-  
   # Extract the necessary information from the data
   device_id = data.get('id')
   device_type = data.get('type')
@@ -18,19 +17,9 @@ def create_interactive_device():
   if device_type is None:
     return "No device type provided", 400
 
-  # check if collection exists
-  if "interactive_devices" not in mongo.db.list_collection_names():
-    interactive_devices = mongo.db.create_collection("interactive_devices")
-    interactive_devices.create_index([("id", 1)], unique=True)
-  
-  # Insert the data into the database
-  device = {
-    'id': device_id,
-    'type': device_type,
-    'targets': {}
-  }
   try: 
-      mongo.db.interactive_devices.insert_one(device)
+      new_device = InteractiveDevice(device_id, device_type)
+      new_device.create()
       
       return jsonify({
           "id": device_id,

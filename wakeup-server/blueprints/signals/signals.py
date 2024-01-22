@@ -1,6 +1,7 @@
 from flask import Blueprint, request
 from db import mongo
 from homeassistant_client import homeassistant_client
+from models.interactive_devices import InteractiveDevice
 
 signals_blueprint = Blueprint('signals', __name__)
 
@@ -15,17 +16,16 @@ def receive_signal():
   if interactive_device_action is None:
       return "No interactive device action provided", 400
     
-  interactive_device = mongo.db.interactive_devices.find_one({'id': interactive_device_id})
+  interactive_device = InteractiveDevice.find_by_id(interactive_device_id)
   
   if interactive_device is None:
       return "Interactive device not found", 400
     
-  target_object = interactive_device.get('targets').get(interactive_device_action)
-  if target_object is None:
-      return "No target set", 400
-    
+  target_object = interactive_device.get_target(interactive_device_action)
+  
   target_device_id = target_object.get('id')
   action = target_object.get('action')
+  
   if target_device_id is None:
       return "No target device ID set", 400
   if action is None:
@@ -58,6 +58,7 @@ def set_signal():
       return "No interactive device action provided", 400
   
   interactive_device = mongo.db.interactive_devices.find_one({'id': interactive_device_id})
+  interactive_device = InteractiveDevice.find_by_id(interactive_device_id)
 
   if interactive_device is None:
       return "Interactive device not found", 400
@@ -74,14 +75,7 @@ def set_signal():
   if target_action not in actions_ids:
       return "Target device does not have this action", 400
   
-  # add target to interactive device list of targets
-  interactive_device['targets'][interactive_device_action] = {
-      'id': target_device_id,
-      'action': target_action
-  }
-  
-  # update interactive device
-  mongo.db.interactive_devices.update_one({'id': interactive_device_id}, {"$set": interactive_device})
+  interactive_device.add_target(interactive_device_action, target_device_id, target_action)
   
   return "Signal set", 200
 
