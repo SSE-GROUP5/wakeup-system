@@ -15,13 +15,12 @@
 
 import argparse
 import time
-
 from mediapipe.tasks import python
 from mediapipe.tasks.python.audio.core import audio_record
 from mediapipe.tasks.python.components import containers
 from mediapipe.tasks.python import audio
 from utils import Plotter
-
+from wake_on_lan import wake_device
 
 def run(model: str, max_results: int, score_threshold: float,
 				overlapping_factor: float, gui_active: bool) -> None:
@@ -100,6 +99,7 @@ def run(model: str, max_results: int, score_threshold: float,
 				for classification in result.classifications:
 					for category in classification.categories:
 						if category.category_name == 'Finger snapping':
+							wake_device('pc')
 							print(f"Finger snapping detected.")
 						if category.category_name == 'Knock':
 							print(f"Knock detected.")
