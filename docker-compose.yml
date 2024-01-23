@@ -2,7 +2,18 @@ version: '3'
 services:
   mongodb:
     image: mongo
+    container_name: mongodb
     ports:
       - 27017:27017
     volumes:
       - ./data:/data/db
+
+  wakeup:
+    build: ./wakeup-server
+    container_name: wakeup
+    ports:
+      - 5001:5001
+    env_file:
+      - wakeup-server/.env.compose
+    depends_on:
+      - mongodb

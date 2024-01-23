@@ -26,7 +26,13 @@ class HomeAssistantClient:
             return json_response
         except:
             raise ValueError("Invalid response: " + str(response.content))
-       
+    
+    def health_check(self):
+        try:
+            data = self._make_request("", method='get')
+            return data['message'] == 'API running.'
+        except:
+            return False
 
     def set_state(self, entity_id, action, data={}):
         domain, _ = entity_id.split('.')
