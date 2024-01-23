@@ -1,0 +1,19 @@
+# Configuration for HomeAssistant Add-on
+# https://developers.home-assistant.io/docs/add-ons/configuration/#add-on-configuration
+
+name: Wakeup Server
+version: 0.1.1
+slug: wakeup-server
+description: Wakeup Server
+init: false
+hassio_api: true
+homeassistant_api: true
+arch:
+  - armhf
+ports:
+  5001/tcp: 5001
+environment:
+  HOSTNAME: '0.0.0.0'
+  PORT: '5001'
+  HOMEASSISTANT_URL: http://supervisor/core
+  MONGODB_URL: mongodb://mongodb:27017/myDatabase
