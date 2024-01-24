@@ -6,6 +6,7 @@ import utils, math
 import numpy as np
 from constants import BLINKING_RATIO, CLOSED_EYES_FRAME, TIMEOUT_SEC, WAKEUP_SERVER_URL, ID
 from requests import Session
+from zeromq_receiver import ZeroMQReceiver
 
 def send_signal(action: str):
     data = {
@@ -100,7 +101,7 @@ def blinkRatio(img, landmarks, right_indices, left_indices):
     ratio = (reRatio+leRatio)/2
     return ratio 
 
-
+zeromq_client = ZeroMQReceiver("tcp://222222")
 
 with map_face_mesh.FaceMesh(min_detection_confidence =0.5, min_tracking_confidence=0.5) as face_mesh:
 
@@ -108,6 +109,14 @@ with map_face_mesh.FaceMesh(min_detection_confidence =0.5, min_tracking_confiden
     start_time = time.time()
     # starting Video loop here.
     while True:
+      
+        if zeromq_client.receive() == "blink":
+            TOTAL_BLINKS += 1
+            LAST_BLINKING_TIME = time.time()
+            print("blink")
+            # send_signal("blink")
+      
+      
         frame_counter +=1 # frame counter
         ret, frame = camera.read() # getting frame from camera 
         if not ret: 
