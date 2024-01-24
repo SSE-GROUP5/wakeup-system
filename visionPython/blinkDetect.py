@@ -4,15 +4,19 @@ import mediapipe as mp
 import time
 import utils, math
 import numpy as np
-from constants import BLINKING_RATIO, CLOSED_EYES_FRAME, TIMEOUT_SEC, WAKEUP_SERVER_URL, ID
+from constants import Constants
 from requests import Session
+
+import sys
+sys.path.append('/home/jingyuan/Documents/wakeup-system')
+from ZeromqServer.zmqServer import ZeroMQServer
 
 def send_signal(action: str):
     data = {
-        "id": ID,
+        "id": config.ID,
         "action": action
     }
-    response = client.post(f"{WAKEUP_SERVER_URL}/signals", json=data)
+    response = client.post(f"{config.WAKEUP_SERVER_URL}/signals", json=data)
     time.sleep(3)
     print(response.content)
     print(response)
@@ -23,12 +27,15 @@ frame_counter =0
 CEF_COUNTER =0
 TOTAL_BLINKS =0
 
+config = Constants()
+
 
 FONTS =cv.FONT_HERSHEY_COMPLEX
 LAST_BLINKING_TIME = time.time()
 client = Session()
 client.headers.update({'Content-Type': 'application/json'})
 client.headers.update({'Accept': 'application/json'})
+mqServer = ZeroMQServer("tcp://*:5556")
 
 # face bounder indices 
 FACE_OVAL=[ 10, 338, 297, 332, 284, 251, 389, 356, 454, 323, 361, 288, 397, 365, 379, 378, 400, 377, 152, 148, 176, 149, 150, 136, 172, 58, 132, 93, 234, 127, 162, 21, 54, 103,67, 109]
@@ -113,6 +120,15 @@ with map_face_mesh.FaceMesh(min_detection_confidence =0.5, min_tracking_confiden
         if not ret: 
             break # no more frames break
         #  resizing frame
+
+        message = mqServer.receive()
+        if message != None:
+            topic, msg = message
+            if topic == "Camera":
+                config.updateConfig(msg)
+
+
+
         
         frame = cv.resize(frame, None, fx=1.5, fy=1.5, interpolation=cv.INTER_CUBIC)
         frame_height, frame_width= frame.shape[:2]
@@ -124,13 +140,13 @@ with map_face_mesh.FaceMesh(min_detection_confidence =0.5, min_tracking_confiden
             # cv.putText(frame, f'ratio {ratio}', (100, 100), FONTS, 1.0, utils.GREEN, 2)
             utils.colorBackgroundText(frame,  f'Ratio : {round(ratio,2)}', FONTS, 0.7, (30,100),2, utils.PINK, utils.YELLOW)
 
-            if ratio > BLINKING_RATIO:
+            if ratio > config.BLINKING_RATIO:
                 CEF_COUNTER +=1
                 # cv.putText(frame, 'Blink', (200, 50), FONTS, 1.3, utils.PINK, 2)
                 utils.colorBackgroundText(frame,  f'Blink', FONTS, 1.7, (int(frame_height/2), 100), 2, utils.YELLOW, pad_x=6, pad_y=6, )
 
             else:
-                if CEF_COUNTER > CLOSED_EYES_FRAME:
+                if CEF_COUNTER > config.CLOSED_EYES_FRAME:
                     TOTAL_BLINKS +=1
                     LAST_BLINKING_TIME = time.time()
                     CEF_COUNTER =0
@@ -143,7 +159,7 @@ with map_face_mesh.FaceMesh(min_detection_confidence =0.5, min_tracking_confiden
             utils.colorBackgroundText(frame,  f'No Face Detected', FONTS, 2.5, (int(frame_height/2)-200, 200), 2, utils.RED, pad_x=6, pad_y=6, )
 
 
-        if(time.time() - LAST_BLINKING_TIME > TIMEOUT_SEC):
+        if(time.time() - LAST_BLINKING_TIME > config.TIMEOUT_SEC):
             if(TOTAL_BLINKS == 2):
                 #TODO TURN ON LIGHT
                 print("LIGHT ON")
