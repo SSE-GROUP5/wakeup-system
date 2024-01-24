@@ -53,7 +53,9 @@ venv/
 
 visionPython/config.json
 wakeup-server/instance
+
 build
 dist
 *.spec
 *.egg-info
+

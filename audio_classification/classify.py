@@ -15,16 +15,27 @@
 
 import argparse
 import time
-
+import os
+import sys
 from mediapipe.tasks import python
 from mediapipe.tasks.python.audio.core import audio_record
 from mediapipe.tasks.python.components import containers
 from mediapipe.tasks.python import audio
 from utils import Plotter
 
+def get_model_path():
+	# Determine if we are running in a bundled environment and set the base path
+	if getattr(sys, 'frozen', False):
+		application_path = sys._MEIPASS
+	else:
+		application_path = os.path.dirname(os.path.abspath(__file__))
+
+	# Join the base path with the model filename
+	model_path = os.path.join(application_path, 'yamnet.tflite')
+	return model_path
 
 def run(model: str, max_results: int, score_threshold: float,
-				overlapping_factor: float, gui_active: bool) -> None:
+		overlapping_factor: float, gui_active: bool) -> None:
 	"""Continuously run inference on audio data acquired from the device.
 
 	Args:
@@ -32,28 +43,32 @@ def run(model: str, max_results: int, score_threshold: float,
 		max_results: Maximum number of classification results to display.
 		score_threshold: The score threshold of classification results.
 		overlapping_factor: Target overlapping between adjacent inferences.
-	"""
+	"""    
 
+	# Validate overlapping factor and score threshold values
 	if (overlapping_factor <= 0) or (overlapping_factor >= 1.0):
 		raise ValueError('Overlapping factor must be between 0 and 1.')
 
 	if (score_threshold < 0) or (score_threshold > 1.0):
 		raise ValueError('Score threshold must be between (inclusive) 0 and 1.')
 
+	# List to store classification results
 	classification_result_list = []
 	# Initialize a plotter instance to display the classification results.
 	plotter = Plotter()
 
+	# Callback function to save classification results
 	def save_result(result: audio.AudioClassifierResult, timestamp_ms: int):
 		result.timestamp_ms = timestamp_ms
 		classification_result_list.append(result)
 
 	# Initialize the audio classification model.
-	base_options = python.BaseOptions(model_asset_path=model)
+	model_file_path = get_model_path()  # Dynamically get the model file path
+	base_options = python.BaseOptions(model_asset_path=model_file_path)
 	options = audio.AudioClassifierOptions(
-			base_options=base_options, running_mode=audio.RunningMode.AUDIO_STREAM,
-			max_results=max_results, score_threshold=score_threshold,
-			result_callback=save_result)
+		base_options=base_options, running_mode=audio.RunningMode.AUDIO_STREAM,
+		max_results=max_results, score_threshold=score_threshold,
+		result_callback=save_result)
 	classifier = audio.AudioClassifier.create_from_options(options)
 
 	# Initialize the audio recorder and a tensor to store the audio input.
@@ -67,20 +82,20 @@ def run(model: str, max_results: int, score_threshold: float,
 	# We'll try to run inference every interval_between_inference seconds.
 	# This is usually half of the model's input length to create an overlapping
 	# between incoming audio segments to improve classification accuracy.
-	input_length_in_second = float(len(
-			audio_data.buffer)) / audio_data.audio_format.sample_rate
+	input_length_in_second = float(len(audio_data.buffer)) / audio_data.audio_format.sample_rate
 	interval_between_inference = input_length_in_second * (1 - overlapping_factor)
 	pause_time = interval_between_inference * 0.1
 	last_inference_time = time.time()
 
-	# Start audio recording in the background.
+	# Initialize variables for debouncing mechanism
+	last_detection_time = 0
+	detection_interval = 0.5  # 500 milliseconds
+
+	# Start the audio recording
 	record.start_recording()
 
-	# Loop until the user close the classification results plot.
-	
+	# Main loop for continuous audio processing
 	while True:
-		# Wait until at least interval_between_inference seconds has passed since
-		# the last inference.
 		now = time.time()
 		diff = now - last_inference_time
 		if diff < interval_between_inference:
@@ -88,61 +103,63 @@ def run(model: str, max_results: int, score_threshold: float,
 			continue
 		last_inference_time = now
 
-		# Load the input audio from the AudioRecord instance and run classify.
+		# Load audio data and run classification
 		data = record.read(buffer_size)
-		# audio_data.load_from_array(data.astype(np.float32))
 		audio_data.load_from_array(data)
 		classifier.classify_async(audio_data, round(last_inference_time * 1000))
 
-		# Classify the audio.
+		# Process classification results
 		if classification_result_list:
+			current_time = time.time()
 			for result in classification_result_list:
 				for classification in result.classifications:
 					for category in classification.categories:
-						if category.category_name == 'Finger snapping':
-							print(f"Finger snapping detected.")
-						if category.category_name == 'Knock':
-							print(f"Knock detected.")
+						# Check for specific events and apply debouncing
+						if category.category_name in ['Finger snapping', 'Knock']:
+							if (current_time - last_detection_time) > detection_interval:
+								print(f"{category.category_name} detected.")
+								last_detection_time = current_time
 			#print(classification_result_list)
 			# Display gui if --gui is presented in cli (e.g. python3 classify.py --gui)
 			if gui_active:
 				plotter.plot(classification_result_list[0])
 					
+			# Clear the results list for next iteration
 			classification_result_list.clear()
 
-
 def main():
+	# Parse command-line arguments
 	parser = argparse.ArgumentParser(
-			formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+		formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 	parser.add_argument(
-			'--model',
-			help='Name of the audio classification model.',
-			required=False,
-			default='yamnet.tflite')
+		'--model',
+		help='Name of the audio classification model.',
+		required=False,
+		default='yamnet.tflite')
 	parser.add_argument(
-			'--maxResults',
-			help='Maximum number of results to show.',
-			required=False,
-			default=5)
+		'--maxResults',
+		help='Maximum number of results to show.',
+		required=False,
+		default=5)
 	parser.add_argument(
-			'--overlappingFactor',
-			help='Target overlapping between adjacent inferences. Value must be in (0, 1)',
-			required=False,
-			default=0.5)
+		'--overlappingFactor',
+		help='Target overlapping between adjacent inferences. Value must be in (0, 1)',
+		required=False,
+		default=0.5)
 	parser.add_argument(
-			'--scoreThreshold',
-			help='The score threshold of classification results.',
-			required=False,
-			default=0.0)
+		'--scoreThreshold',
+		help='The score threshold of classification results.',
+		required=False,
+		default=0.0)
 	parser.add_argument(
-			'--gui',
-			help='Activate the GUI for displaying results.',
-			action='store_true') 
+		'--gui',
+		help='Activate the GUI for displaying results.',
+		action='store_true') 
 	args = parser.parse_args()
 
+	# Run the main function with the parsed arguments
 	run(args.model, int(args.maxResults), float(args.scoreThreshold),
-			float(args.overlappingFactor), args.gui)
-
+		float(args.overlappingFactor), args.gui)
 
 if __name__ == '__main__':
 	main()
