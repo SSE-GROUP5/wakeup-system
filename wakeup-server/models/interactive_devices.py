@@ -24,6 +24,14 @@ class InteractiveDevice(db.Model):
         print(e)
         raise e
   
+  
+  def json(self):
+    return {
+      "id": self.id,
+      "type": self.type,
+      "targets": self.get_targets()
+    }
+  
   @staticmethod
   def find_by_id(device_id):
     return db.session.query(InteractiveDevice).filter_by(id=device_id).first()

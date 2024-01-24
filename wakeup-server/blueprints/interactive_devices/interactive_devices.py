@@ -33,4 +33,14 @@ def create_interactive_device():
       print(e)
       return "Unknown error", 400
 
-
+@interactive_devices_blueprint.route('/interactive_devices', methods=['GET'])
+def get_interactive_devices():
+    all_devices = InteractiveDevice.find_all()
+    return jsonify([device.json() for device in all_devices]), 200
+    
+@interactive_devices_blueprint.route('/interactive_devices/<string:id>', methods=['GET'])
+def get_interactive_device(id):
+    device = InteractiveDevice.find_by_id(id)
+    if device is None:
+        return "Device not found", 404
+    return jsonify(device.json()), 200

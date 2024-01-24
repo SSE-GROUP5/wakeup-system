@@ -18,6 +18,15 @@ class TargetDevice(db.Model):
     self.type = type
     self.possible_actions = self.get_possible_actions()
     
+    
+  def json(self):
+    return {
+      "matter_id": self.matter_id,
+      "name": self.name,
+      "type": self.type,
+      "possible_actions": self.possible_actions
+    }
+    
   def get_possible_actions(self):
     return homeassistant_client.get_possible_actions(self.matter_id)
     
