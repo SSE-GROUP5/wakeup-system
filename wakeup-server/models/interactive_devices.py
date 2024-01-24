@@ -1,99 +1,71 @@
-from db import mongo
+from sqlalchemy import Column, String, insert
+from models.devices_target_map import interactive_target_association
+from db import db
 
-class InteractiveDevice:
+
+class InteractiveDevice(db.Model):
+  __tablename__ = 'interactive_devices'
+  
+  id = Column(String, primary_key=True)
+  type = Column(String)
+  target_devices = db.relationship("TargetDevice", secondary=interactive_target_association, back_populates="interactive_devices")
+  
   def __init__(self, device_id, device_type):
-    self.collection_name = "interactive_devices"
     self.id = device_id
     self.type = device_type
     self.targets = self.get_targets()
     
-    self.create_collection()
-  
-  
-  def create_collection(self):
-    if self.collection_name not in mongo.db.list_collection_names():
-      interactive_devices = mongo.db.create_collection(self.collection_name)
-      interactive_devices.create_index([("id", 1)], unique=True)
-  
   def create(self):
-    device = {
-      'id': self.id,
-      'type': self.type,
-      'targets': self.targets
-    }
-    try: 
-        mongo.db.interactive_devices.insert_one(device) 
-        return True
-        
+    try:
+        stmt = insert(InteractiveDevice).values(id=self.id, type=self.type)
+        db.session.execute(stmt)
+        db.session.commit()
     except Exception as e:
+        print(e)
         raise e
-
+  
   @staticmethod
   def find_by_id(device_id):
-    device = mongo.db.interactive_devices.find_one({"id": device_id})
-    if device is None:
-      return None
-    return InteractiveDevice(device['id'], device['type'])
-    
+    return db.session.query(InteractiveDevice).filter_by(id=device_id).first()
+  
   @staticmethod
   def find_all():
-    devices = mongo.db.interactive_devices.find()
-    if devices is None:
-      return None
-    return devices
-    
+    return db.session.query(InteractiveDevice).all()
+  
   @staticmethod
   def delete_by_id(device_id):
-    try:
-      mongo.db.interactive_devices.delete_one({"id": device_id})
+    device = db.session.query(InteractiveDevice).filter_by(id=device_id).first()
+    if device:
+      db.session.delete(device)
+      db.session.commit()
       return True
-    except Exception as e:
-      return False
+    return False
   
   @staticmethod
   def update_by_id(device_id, device_type):
-    try:
-      mongo.db.interactive_devices.update_one({"id": device_id}, {"$set": {"type": device_type}})
+    device = db.session.query(InteractiveDevice).filter_by(id=device_id).first()
+    if device:
+      device.type = device_type
+      db.session.commit()
       return True
-    except Exception as e:
-      return False
-  
+    return False
   
   def get_targets(self):
-    try:
-      device = mongo.db.interactive_devices.find_one({"id": self.id})
-      return device['targets']
-    except Exception as e:
-      return None
-    
-  def get_target(self, action):
-    try:
-      device = mongo.db.interactive_devices.find_one({"id": self.id})
-      return device['targets'][action]
-    except Exception as e:
-      return None
+    targets = db.session.query(interactive_target_association).filter_by(interactive_device_id=self.id).all()
+    return {target.interactive_action: {'id': target.target_device_id, 'action': target.target_action} for target in targets}
   
+  def get_target(self, action):
+    target = db.session.query(interactive_target_association).filter_by(interactive_device_id=self.id, interactive_action=action).first()
+    return {'matter_id': target.target_device_id, 'action': target.target_action}
   
   def add_target(self, action, target_device_id, target_action):
-    try:
-      interactive_device = mongo.db.interactive_devices.find_one({"id": self.id})
-      interactive_device['targets'][action] = {
-        'id': target_device_id,
-        'action': target_action
-      }
-      mongo.db.interactive_devices.update_one({"id": self.id}, {"$set": interactive_device})
-      return True
-    except Exception as e:
-      return False
-      
-      
+    new_target = interactive_target_association.insert().values(interactive_device_id=self.id, interactive_action=action, target_device_id=target_device_id, target_action=target_action)
+    db.session.execute(new_target)
+    db.session.commit()
   
   def remove_target(self, action):
-    try:
-      interactive_device = mongo.db.interactive_devices.find_one({"id": self.id})
-      del interactive_device['targets'][action]
-      mongo.db.interactive_devices.update_one({"id": self.id}, {"$set": interactive_device})
-      return True
-    except Exception as e:
-      return False
-    
+    delete_target = interactive_target_association.delete().where(interactive_target_association.c.interactive_device_id == self.id).where(interactive_target_association.c.interactive_action == action)
+    db.session.execute(delete_target)
+    db.session.commit()
+
+

@@ -16,4 +16,3 @@ environment:
   HOSTNAME: '0.0.0.0'
   PORT: '5001'
   HOMEASSISTANT_URL: http://supervisor/core
-  MONGODB_URL: mongodb://mongodb:27017/myDatabase

@@ -1,6 +1,6 @@
 from flask import Blueprint, request
-from pymongo.errors import DuplicateKeyError
 from models.target_devices import TargetDevice
+from sqlalchemy.exc import IntegrityError
 
 target_devices_blueprint = Blueprint('target_devices', __name__)
 
@@ -24,10 +24,11 @@ def create_device():
     device.create()
     return "Device created successfully", 200
       
-  except DuplicateKeyError:
+  except IntegrityError:
       return "Device already exists", 400
     
   except Exception as e:
+      print(e)
       return "Unknown error", 400
 
   

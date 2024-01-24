@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
-from pymongo.errors import DuplicateKeyError
 from models.interactive_devices import InteractiveDevice
+from sqlalchemy.exc import IntegrityError
 
 interactive_devices_blueprint = Blueprint('interactive_devices', __name__)
 
@@ -25,11 +25,12 @@ def create_interactive_device():
           "id": device_id,
           "type": device_type
       }), 201
-      
-  except DuplicateKeyError:
+  
+  except IntegrityError:
       return "Device already exists", 400
     
   except Exception as e:
+      print(e)
       return "Unknown error", 400
 
 
