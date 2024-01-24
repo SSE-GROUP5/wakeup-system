@@ -12,11 +12,6 @@ if not PORT:
     raise ValueError("No PORT set for Flask applicaton")
 
 
-MONGODB_URL = os.getenv("MONGODB_URL")
-
-if not MONGODB_URL:
-    raise ValueError("No MONGODB_URL set for Flask application")
-  
 # HOMEASSISTANT CONFIG
 HOMEASSISTANT_URL = os.getenv("HOMEASSISTANT_URL")
 HOMEASSISTANT_TOKEN = os.getenv("SUPERVISOR_TOKEN") or os.getenv("HOMEASSISTANT_TOKEN")
