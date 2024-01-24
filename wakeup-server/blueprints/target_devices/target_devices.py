@@ -1,4 +1,4 @@
-from flask import Blueprint, request
+from flask import Blueprint, request, jsonify
 from models.target_devices import TargetDevice
 from sqlalchemy.exc import IntegrityError
 
@@ -32,3 +32,14 @@ def create_device():
       return "Unknown error", 400
 
   
+@target_devices_blueprint.route('/target_devices', methods=['GET'])
+def get_devices():
+  all_devices = TargetDevice.find_all()
+  return jsonify([device.json() for device in all_devices]), 200
+
+@target_devices_blueprint.route('/target_devices/<string:id>', methods=['GET'])
+def get_device(id):
+  device = TargetDevice.find_by_id(id)
+  if device is None:
+    return "Device not found", 404
+  return jsonify(device.json()), 200
