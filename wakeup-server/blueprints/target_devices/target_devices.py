@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from models.target_devices import TargetDevice
 from sqlalchemy.exc import IntegrityError
+from requests.exceptions import ConnectionError
 
 target_devices_blueprint = Blueprint('target_devices', __name__)
 
@@ -26,7 +27,8 @@ def create_device():
       
   except IntegrityError:
       return "Device already exists", 400
-    
+  except ConnectionError:
+      return "Connection error with Home Assistant", 400
   except Exception as e:
       print(e)
       return "Unknown error", 400
