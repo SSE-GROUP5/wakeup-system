@@ -1,6 +1,6 @@
 import zmq
 import time
-
+import json
 
 class ZeroMQServer:
   def __init__(self, address):
@@ -18,16 +18,20 @@ class ZeroMQServer:
 
     if self.socket in socks and socks[self.socket] == zmq.POLLIN:
         # Receive the message
-        topic, msg = self.socket.recv_multipart()
-        print(f"Received on topic '{topic.decode('utf-8')}': {msg.decode('utf-8')}")
-
-        msg = msg.decode('utf-8')
-        topic = topic.decode('utf-8')
+        data = self.socket.recv()
+        json_data = json.loads(data)
+        topic = json_data.get('topic')
+        msg = json_data.get('data')
+        print(f"Received on topic '{topic}' message: {msg}")
+        # The needs to send a reply back to the client
+        self.socket.send(b"Message received")
         return topic, msg
 
     else:
         # No message received, server can do other tasks here
-        print("No message received. Server is free for other tasks.")
+        # keep same line
+        print("No message received. Server is free for other tasks.", end="\r")
+        
         return None
     
 
@@ -45,3 +49,6 @@ if __name__ == "__main__":
     server = ZeroMQServer("tcp://*:5556")
     time.sleep(5)
     server.receive()
+    while True:
+        server.receive()
+        time.sleep(1)

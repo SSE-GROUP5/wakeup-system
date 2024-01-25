@@ -1,7 +1,7 @@
 from sqlalchemy import Column, String, insert
 from models.devices_target_map import interactive_target_association
 from db import db
-
+from zmq_client import zmq_client
 
 class InteractiveDevice(db.Model):
   __tablename__ = 'interactive_devices'
@@ -67,6 +67,13 @@ class InteractiveDevice(db.Model):
     return {'matter_id': target.target_device_id, 'action': target.target_action}
   
   def add_target(self, action, target_device_id, target_action):
+    try:
+        zmq_client.send_data(self.type, {"action": action})
+        zmq_client.receive_reply()
+    except Exception as e:
+        print(e)
+        raise e
+      
     new_target = interactive_target_association.insert().values(interactive_device_id=self.id, interactive_action=action, target_device_id=target_device_id, target_action=target_action)
     db.session.execute(new_target)
     db.session.commit()

@@ -8,8 +8,10 @@ from constants import Constants
 from requests import Session
 
 import sys
-sys.path.append('/home/jingyuan/Documents/wakeup-system')
-from ZeromqServer.zmqServer import ZeroMQServer
+import os
+current_dir = os.path.dirname(os.path.realpath(__file__))
+sys.path.append(current_dir + "/..")
+from zeromq.zmqServer import ZeroMQServer
 
 def send_signal(action: str):
     data = {
