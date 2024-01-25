@@ -1,4 +1,6 @@
 from homeassistant_client import homeassistant_client
+from homeassistant.fake_matter_device import FAKE_MATTER_DEVICE
+from constants import HOMEASSITANT_OFFLINE_MODE
 from sqlalchemy import Column, String, JSON
 from models.devices_target_map import interactive_target_association
 from db import db
@@ -28,6 +30,10 @@ class TargetDevice(db.Model):
     }
     
   def get_possible_actions(self):
+    if HOMEASSITANT_OFFLINE_MODE:
+      print("HOMEASSITANT_OFFLINE_MODE IS ENABLED")
+      return FAKE_MATTER_DEVICE.get("possible_actions")
+    
     return homeassistant_client.get_possible_actions(self.matter_id)
     
   def create(self):
@@ -42,6 +48,11 @@ class TargetDevice(db.Model):
       raise e
     
   def do_action(self, action):
+    if HOMEASSITANT_OFFLINE_MODE:
+      print("HOMEASSITANT_OFFLINE_MODE IS ENABLED")
+      print("Action: " + action)
+      return True
+    
     try:
       device = homeassistant_client.find_entity_by_id(self.matter_id)
       device.set_state(action)
