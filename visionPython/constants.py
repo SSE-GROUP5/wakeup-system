@@ -22,11 +22,11 @@ class Constants:
         file = open(self.file_dir + "/config.json", "r")
         config = json.load(file)
 
-        self.CLOSED_EYES_FRAME = config['CLOSED_EYES_FRAME']
-        self.BLINKING_RATIO = config['BLINKING_RATIO']
-        self.TIMEOUT_SEC = config['TIMEOUT_SEC']
-        self.WAKEUP_SERVER_URL = config['WAKEUP_SERVER_URL']
-        self.ID = config['ID']
+        self.CLOSED_EYES_FRAME = config.get('CLOSED_EYES_FRAME')
+        self.BLINKING_RATIO = config.get('BLINKING_RATIO')
+        self.TIMEOUT_SEC = config.get('TIMEOUT_SEC')
+        self.WAKEUP_SERVER_URL = config.get('WAKEUP_SERVER_URL')
+        self.ID = config.get('ID')
 
         if self.CLOSED_EYES_FRAME is None:
             raise Exception("CLOSED_EYES_FRAME not found in config.json")
@@ -39,22 +39,13 @@ class Constants:
         if self.ID is None:
             raise Exception("ID not found in config.json")
 
+    def updateConfig(self, json_data):
+        config = json.loads(open(self.file_dir + "/config.json", "r").read())
 
-
-    def updateConfig(self, json_str):
-        config = json.loads(json_str)
-
-        # Update the config file
+        for key in json_data:
+            config[key] = json_data[key]
+          
         with open(self.file_dir + "/config.json", "w") as outfile:
             json.dump(config, outfile)
-
-        # Update Parameters
-
-        self.CLOSED_EYES_FRAME = config['CLOSED_EYES_FRAME']
-        self.BLINKING_RATIO = config['BLINKING_RATIO']
-        self.TIMEOUT_SEC = config['TIMEOUT_SEC']
-        self.WAKEUP_SERVER_URL = config['WAKEUP_SERVER_URL']
-        self.ID = config['ID']
-
-
+            
 

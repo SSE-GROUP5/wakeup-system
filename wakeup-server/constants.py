@@ -5,11 +5,14 @@ load_dotenv()
 
 HOSTNAME = os.getenv("HOSTNAME")
 PORT = os.getenv("PORT")
+ZERO_MQ_SERVER_URL = os.getenv("ZERO_MQ_SERVER_URL")
 
 if not HOSTNAME:
     raise ValueError("No HOSTNAME set for Flask applicaton")
 if not PORT:
     raise ValueError("No PORT set for Flask applicaton")
+if not ZERO_MQ_SERVER_URL:
+    raise ValueError("No ZERO_MQ_SERVER_URL set for Flask applicaton")
 
 
 # HOMEASSISTANT CONFIG
