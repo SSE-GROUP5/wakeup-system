@@ -3,6 +3,8 @@ from typing import Tuple, List
 from constants import HOMEASSISTANT_URL
 from homeassistant.Models.Switch import Switch
 from homeassistant.Models.Media_Player import Media_Player
+from requests.exceptions import ConnectionError
+
 class HomeAssistantClient:
     def __init__(self, token):
         self.client = requests.session()
@@ -14,18 +16,27 @@ class HomeAssistantClient:
 
     def _make_request(self, endpoint, method='post', data=None):
         url = self.client_url + endpoint
-        if method.lower() == 'post':
-            response = self.client.post(url, json=data)
-        elif method.lower() == 'get':
-            response = self.client.get(url)
-        else:
-            raise ValueError("Invalid HTTP method")
-
+        
         try:
+            response = None
+            if method.lower() == 'post':
+                response = self.client.post(url, json=data)
+            elif method.lower() == 'get':
+                response = self.client.get(url)
+            else:
+                raise ValueError("Invalid HTTP method")
+              
+            if response is None or response.status_code != 200:
+                print(response)
+                error_message = "Invalid response: " + str(response.content) if response is not None else "No response"
+                raise ValueError("Invalid response: " + error_message)  
+            
             json_response = response.json()
             return json_response
-        except:
-            raise ValueError("Invalid response: " + str(response.content))
+        except ConnectionError as e:
+            raise ConnectionError("Connection error: " + str(e))
+        except Exception as e:
+            raise ValueError("Error: " + str(e))
     
     def health_check(self):
         try:

@@ -28,7 +28,8 @@ def create_interactive_device():
   
   except IntegrityError:
       return "Device already exists", 400
-    
+  except ConnectionError:
+      return "Connection error", 400
   except Exception as e:
       print(e)
       return "Unknown error", 400
