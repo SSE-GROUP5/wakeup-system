@@ -74,8 +74,18 @@ class InteractiveDevice(db.Model):
         print(e)
         raise e
       
-    new_target = interactive_target_association.insert().values(interactive_device_id=self.id, interactive_action=action, target_device_id=target_device_id, target_action=target_action)
-    db.session.execute(new_target)
+    is_already_set = db.session.query(interactive_target_association).filter_by(
+          interactive_device_id=self.id, 
+          interactive_action=action,
+          target_device_id=target_device_id,
+    ).first()
+    
+    if is_already_set:
+        update_target = interactive_target_association.update().where(interactive_target_association.c.interactive_device_id == self.id).where(interactive_target_association.c.interactive_action == action).values(target_device_id=target_device_id, target_action=target_action)
+        db.session.execute(update_target)
+    else:
+        new_target = interactive_target_association.insert().values(interactive_device_id=self.id, interactive_action=action, target_device_id=target_device_id, target_action=target_action)
+        db.session.execute(new_target)
     db.session.commit()
   
   def remove_target(self, action):
