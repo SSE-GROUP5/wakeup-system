@@ -1,6 +1,7 @@
 from flask import Blueprint, request
 from models.interactive_devices import InteractiveDevice
 from models.target_devices import TargetDevice
+from sqlalchemy.exc import IntegrityError
 
 signals_blueprint = Blueprint('signals', __name__)
 
@@ -25,7 +26,7 @@ def receive_signal():
   if target_object is None:
       return f"No target device set for action {interactive_device_action}", 400
   
-  target_device_id = target_object.get('id')
+  target_device_id = target_object.get('matter_id')
   target_action = target_object.get('action')
   
   if target_device_id is None:
@@ -78,8 +79,8 @@ def set_signal():
   actions_ids = [action['action'] for action in actions]
   if target_action not in actions_ids:
       return "Target device does not have this action", 400
-  
-  interactive_device.add_target(interactive_device_action, target_device_id, target_action)
-  
-  return "Signal set", 200
-
+  try:
+      interactive_device.add_target(interactive_device_action, target_device_id, target_action)
+      return "Signal set", 200
+  except IntegrityError as e:
+      return "Signal already set", 400
