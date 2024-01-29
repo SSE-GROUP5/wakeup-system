@@ -1,0 +1,121 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "Home Assistant API",
+    "description": "API for interacting with Home Assistant entities"
+  },
+  "basePath": "/api/v1",
+  "schemes": ["http"],
+  "consumes": ["application/json"],
+  "produces": ["application/json"],
+  "paths": {
+    "/health_check": {
+      "get": {
+        "summary": "Health Check",
+        "description": "Checks if the API is running.",
+        "responses": {
+          "200": {
+            "description": "Success, API is running."
+          },
+          "default": {
+            "description": "An error occurred."
+          }
+        }
+      }
+    },
+    "/set_state": {
+      "post": {
+        "summary": "Set Entity State",
+        "description": "Sets the state for a given entity.",
+        "parameters": [
+          {
+            "name": "entity_id",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Additional data for setting the state",
+            "required": false,
+            "schema": {
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "State set successfully."
+          },
+          "400": {
+            "description": "Invalid input."
+          }
+        }
+      }
+    },
+    "/get_states": {
+      "get": {
+        "summary": "Get All States",
+        "description": "Retrieves the states of all entities.",
+        "responses": {
+          "200": {
+            "description": "A list of all entity states."
+          }
+        }
+      }
+    },
+    "/find_switches": {
+      "get": {
+        "summary": "Find all switches",
+        "description": "Retrieves a list of all switch entities.",
+        "responses": {
+          "200": {
+            "description": "A list of switch entities."
+          }
+        }
+      }
+    },
+    "/find_media_players": {
+      "get": {
+        "summary": "Find all media players",
+        "description": "Retrieves a list of all media player entities.",
+        "responses": {
+          "200": {
+            "description": "A list of media player entities."
+          }
+        }
+      }
+    },
+    "/find_entity_by_id": {
+      "get": {
+        "summary": "Find entity by ID",
+        "description": "Retrieves a specific entity by its ID.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "required": true,
+            "type": "string",
+            "description": "The ID of the entity to retrieve"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Entity found."
+          },
+          "404": {
+            "description": "Entity not found."
+          }
+        }
+      }
+    }
+  }
+}

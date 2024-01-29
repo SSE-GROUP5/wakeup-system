@@ -17,3 +17,4 @@ urllib3==1.26.6
 wakeonlan==3.1.0
 zmq==0.0.0
 pytest
+flask_swagger_ui

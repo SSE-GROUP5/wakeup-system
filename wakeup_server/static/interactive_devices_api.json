@@ -1,0 +1,163 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "Combined Interactive Devices API",
+    "description": "API for managing interactive devices"
+  },
+  "host": "localhost:5000",
+  "basePath": "/",
+  "schemes": [
+    "http"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/interactive_devices": {
+      "post": {
+        "summary": "Create a new interactive device",
+        "description": "Adds a new interactive device to the system.",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Interactive Device object",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/InteractiveDevice"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Device created successfully"
+          },
+          "400": {
+            "description": "Invalid input or device already exists"
+          }
+        }
+      },
+      "get": {
+        "summary": "List all interactive devices",
+        "description": "Retrieves a list of all interactive devices.",
+        "responses": {
+          "200": {
+            "description": "A list of devices",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/InteractiveDevice"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/interactive_devices/{id}": {
+      "get": {
+        "summary": "Get a single interactive device",
+        "description": "Retrieves information about a specific interactive device.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "ID of the device to retrieve"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Device found",
+            "schema": {
+              "$ref": "#/definitions/InteractiveDevice"
+            }
+          },
+          "404": {
+            "description": "Device not found"
+          }
+        }
+      },
+      "put": {
+        "summary": "Update a specific interactive device",
+        "description": "Updates the details of a specific interactive device.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Interactive device details to update",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/InteractiveDevice"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Interactive device updated"
+          },
+          "404": {
+            "description": "Interactive device not found"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a specific interactive device",
+        "description": "Deletes a specific interactive device.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Interactive device deleted"
+          },
+          "404": {
+            "description": "Interactive device not found"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "InteractiveDevice": {
+      "type": "object",
+      "required": ["id", "type"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "example": "device123"
+        },
+        "type": {
+          "type": "string",
+          "example": "sensor"
+        },
+        "targets": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "interactive_action": { "type": "string" },
+              "target_device_id": { "type": "string" },
+              "target_action": { "type": "string" }
+            }
+          }
+        }
+      }
+    }
+  }
+}

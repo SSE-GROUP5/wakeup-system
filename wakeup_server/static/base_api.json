@@ -1,0 +1,69 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "version": "1.0.0",
+        "title": "Base API",
+        "description": "API endpoints for managing Base objects"
+    },
+    "basePath": "/api/v1",
+    "schemes": [
+        "http"
+    ],
+    "consumes": [
+        "application/json"
+    ],
+    "produces": [
+        "application/json"
+    ],
+    "tags": [
+        {
+            "name": "Base API",
+            "description": "Operations related to Base objects"
+        }
+    ],
+    "paths": {
+        "/base/{id}": {
+            "get": {
+                "summary": "Get Base object by ID",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Base object found",
+                        "schema": {
+                            "$ref": "#/definitions/BaseObject"
+                        }
+                    },
+                    "404": {
+                        "description": "Base object not found"
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "BaseObject": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "state": {
+                    "type": "string"
+                },
+                "possible_actions": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        }
+    }
+}
