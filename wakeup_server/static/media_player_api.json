@@ -1,0 +1,208 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "version": "1.0.0",
+        "title": "Media Player API",
+        "description": "API endpoints for controlling a media player"
+    },
+    "basePath": "/api/v1",
+    "schemes": [
+        "http"
+    ],
+    "consumes": [
+        "application/json"
+    ],
+    "produces": [
+        "application/json"
+    ],
+    "paths": {
+        "/media_player/{id}/media_pause": {
+            "post": {
+                "summary": "Pause media playback",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Media paused successfully"
+                    }
+                }
+            }
+        },
+        "/media_player/{id}/media_play": {
+            "post": {
+                "summary": "Resume media playback",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Media playback resumed successfully"
+                    }
+                }
+            }
+        },
+        "/media_player/{id}/media_play_pause": {
+            "post": {
+                "summary": "Toggle media playback (play/pause)",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Media playback toggled successfully"
+                    }
+                }
+            }
+        },
+        "/media_player/{id}/media_previous_track": {
+            "post": {
+                "summary": "Play the previous track",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Previous track played successfully"
+                    }
+                }
+            }
+        },
+        "/media_player/{id}/media_next_track": {
+            "post": {
+                "summary": "Play the next track",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Next track played successfully"
+                    }
+                }
+            }
+        },
+        "/media_player/{id}/volume_up": {
+            "post": {
+                "summary": "Increase the volume",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Volume increased successfully"
+                    }
+                }
+            }
+        },
+        "/media_player/{id}/volume_down": {
+            "post": {
+                "summary": "Decrease the volume",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Volume decreased successfully"
+                    }
+                }
+            }
+        },
+        "/media_player/{id}/volume_mute": {
+            "post": {
+                "summary": "Toggle volume mute",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Volume mute toggled successfully"
+                    }
+                }
+            }
+        },
+        "/media_player/{id}/volume_set": {
+            "post": {
+                "summary": "Set the volume level",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "Data to set the volume level",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "volume_level": {
+                                    "type": "number",
+                                    "description": "The volume level to set (between 0 and 1)"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Volume level set successfully"
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "MediaPlayerControlResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string",
+                    "description": "A message indicating the result of the control operation"
+                }
+            }
+        }
+    }
+}

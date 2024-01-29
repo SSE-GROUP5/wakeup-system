@@ -1,0 +1,97 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "Interactive Target Association API",
+    "description": "API for managing associations between interactive and target devices"
+  },
+  "basePath": "/api",
+  "schemes": ["http"],
+  "consumes": ["application/json"],
+  "produces": ["application/json"],
+  "paths": {
+    "/associations": {
+      "get": {
+        "summary": "List all associations",
+        "description": "Retrieves a list of all associations between interactive and target devices.",
+        "responses": {
+          "200": {
+            "description": "List of associations",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Association"
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create an association",
+        "description": "Creates a new association between an interactive and a target device.",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "association",
+            "description": "Association to create",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Association"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Association created"
+          }
+        }
+      }
+    },
+    "/associations/{id}": {
+      "get": {
+        "summary": "Get an association",
+        "description": "Retrieves a specific association by ID.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "ID of the association to retrieve"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Association details",
+            "schema": {
+              "$ref": "#/definitions/Association"
+            }
+          },
+          "404": {
+            "description": "Association not found"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "Association": {
+      "type": "object",
+      "required": ["interactive_device_id", "interactive_action", "target_device_id"],
+      "properties": {
+        "interactive_device_id": {
+          "type": "string"
+        },
+        "interactive_action": {
+          "type": "string"
+        },
+        "target_device_id": {
+          "type": "string"
+        },
+        "target_action": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}
