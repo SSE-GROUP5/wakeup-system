@@ -10,8 +10,16 @@ from requests import Session
 import sys
 import os
 current_dir = os.path.dirname(os.path.realpath(__file__))
-sys.path.append(current_dir + "/..")
+
+def is_exe_file():
+	# Determine if we are running in a bundled environment and set the base path
+	return getattr(sys, 'frozen', False)
+
+custom_modules_path = "./" if is_exe_file() else current_dir + "/../"
+  
+sys.path.append(custom_modules_path)
 from zeromq.zmqServer import ZeroMQServer
+
 
 def send_signal(action: str):
     data = {
