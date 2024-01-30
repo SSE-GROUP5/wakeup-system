@@ -5,6 +5,22 @@ from sqlalchemy.exc import IntegrityError
 
 signals_blueprint = Blueprint('signals', __name__)
 
+@signals_blueprint.route('/signals', methods=['GET'])
+def get_signals():
+  devices = InteractiveDevice.find_all()
+  all_signals = []
+  try:
+    for device in devices:
+        device_signals = device.get_signals()
+        for signal in device_signals:
+            all_signals.append(signal)
+            
+    return {'signals': all_signals}, 200
+  except Exception as e:
+    print(e)
+    return "Internal server error in getting signals", 500
+
+
 @signals_blueprint.route('/signals', methods=['POST'])
 def receive_signal():
   data = request.get_json()
