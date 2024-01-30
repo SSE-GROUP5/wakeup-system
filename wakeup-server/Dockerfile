@@ -6,13 +6,16 @@ RUN apt-get update && apt-get install -y sqlite3
 WORKDIR /app
 
 # Copy the requirements file into the container
-COPY requirements.txt .
+COPY ./wakeup-server/requirements.txt .
+COPY ./zeromq /app/zeromq
+RUN pip install /app/zeromq
 
 # Install the Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the rest of the application code into the container
-COPY . .
+COPY ./wakeup-server .
+
 
 EXPOSE 5001
 

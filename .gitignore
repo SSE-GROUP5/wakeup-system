@@ -49,7 +49,7 @@ venv
 data
 
 
-venv/
+*venv*
 
 visionPython/config.json
 wakeup-server/instance

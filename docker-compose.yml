@@ -2,7 +2,9 @@ version: '3'
 services:
 
   wakeup:
-    build: ./wakeup-server
+    build: 
+      context: ./
+      dockerfile: wakeup-server/Dockerfile
     container_name: wakeup
     ports:
       - 5001:5001
