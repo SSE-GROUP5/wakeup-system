@@ -1,6 +1,6 @@
 # Environment
 .env*
-
+*venv*
 # Prerequisites
 *.d
 node_modules
