@@ -66,6 +66,10 @@ class InteractiveDevice(db.Model):
     target = db.session.query(interactive_target_association).filter_by(interactive_device_id=self.id, interactive_action=action).first()
     return {'matter_id': target.target_device_id, 'action': target.target_action}
   
+  def get_signals(self):
+    signals = db.session.query(interactive_target_association).filter_by(interactive_device_id=self.id).all()
+    return [{'interactive_id': signal.interactive_device_id, 'interactive_action': signal.interactive_action, 'target_id': signal.target_device_id, 'target_action': signal.target_action} for signal in signals]
+  
   def add_target(self, action, target_device_id, target_action):
     try:
         zmq_client.send_data(self.type, {"action": action})
