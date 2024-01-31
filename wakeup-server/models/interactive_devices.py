@@ -3,6 +3,8 @@ from models.devices_target_map import interactive_target_association
 from db import db
 from zmq_client import zmq_client
 
+devMode = False #Set to developer mode as necessary
+
 class InteractiveDevice(db.Model):
   __tablename__ = 'interactive_devices'
   
@@ -71,12 +73,16 @@ class InteractiveDevice(db.Model):
     return [{'interactive_id': signal.interactive_device_id, 'interactive_action': signal.interactive_action, 'target_id': signal.target_device_id, 'target_action': signal.target_action} for signal in signals]
   
   def add_target(self, action, target_device_id, target_action):
-    try:
+    if(devMode == False):
+      try:
         zmq_client.send_data(self.type, {"action": action})
+        print("Warning: ZMQ Server needs to be started to proceed.")
         zmq_client.receive_reply()
-    except Exception as e:
+      except Exception as e:
         print(e)
         raise e
+    else:
+      print("Warning: ZMQ Client inactive in Dev Mode")
       
     is_already_set = db.session.query(interactive_target_association).filter_by(
           interactive_device_id=self.id, 
