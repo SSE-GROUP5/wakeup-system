@@ -1,0 +1,9 @@
+{
+  "name": "wakeup-management",
+  "version": "0.1.0",
+  "dependencies": [
+    "nlohmann-json",
+    "cpr"
+  ],
+  "builtin-baseline": "2c401863dd54a640aeb26ed736c55489c079323b"
+}
