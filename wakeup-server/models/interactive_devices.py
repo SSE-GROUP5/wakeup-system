@@ -2,8 +2,7 @@ from sqlalchemy import Column, String, insert
 from models.devices_target_map import interactive_target_association
 from db import db
 from zmq_client import zmq_client
-
-devMode = False #Set to developer mode as necessary
+from constants import DEV_MODE
 
 class InteractiveDevice(db.Model):
   __tablename__ = 'interactive_devices'
@@ -73,7 +72,7 @@ class InteractiveDevice(db.Model):
     return [{'interactive_id': signal.interactive_device_id, 'interactive_action': signal.interactive_action, 'target_id': signal.target_device_id, 'target_action': signal.target_action} for signal in signals]
   
   def add_target(self, action, target_device_id, target_action):
-    if(devMode == False):
+    if(DEV_MODE == False):
       try:
         zmq_client.send_data(self.type, {"action": action})
         print("Warning: ZMQ Server needs to be started to proceed.")
