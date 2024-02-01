@@ -40,7 +40,7 @@ fi
 
 echo "Setting up local environment variables... in .env file"
 
-echo "HOSTNAME=http://$HOSTNAME" > $DIRECTORY/../wakeup-server/.env
+echo "HOSTNAME=$HOSTNAME" > $DIRECTORY/../wakeup-server/.env
 echo "PORT=$WAKEUP_SERVER_PORT" >> $DIRECTORY/../wakeup-server/.env
 echo "HOMEASSISTANT_TOKEN=$HOMEASSISTANT_TOKEN" >> $DIRECTORY/../wakeup-server/.env
 echo "HOMEASSISTANT_URL=$HOMEASSISTANT_URL" >> $DIRECTORY/../wakeup-server/.env
