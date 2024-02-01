@@ -1,7 +1,8 @@
-from flask import Blueprint, request
+from flask import Blueprint, request, jsonify
 from models.interactive_devices import InteractiveDevice
 from models.target_devices import TargetDevice
-from sqlalchemy.exc import IntegrityError
+from models.users import User
+from sqlalchemy.exc import IntegrityError, NoResultFound
 
 signals_blueprint = Blueprint('signals', __name__)
 
@@ -21,11 +22,25 @@ def get_signals():
     return "Internal server error in getting signals", 500
 
 
+@signals_blueprint.route('/signals/<string:user_id>', methods=['GET'])
+def get_signals_for_user(user_id):
+  user = User.find_by_id(user_id)
+  if user is None:
+      return "User not found", 400
+  try:
+    user_signals = user.get_signals()
+    return {'signals': user_signals}, 200
+  except Exception as e:
+    print(e)
+    return "Internal server error in getting signals", 500
+  
+
 @signals_blueprint.route('/signals', methods=['POST'])
 def receive_signal():
   data = request.get_json()
   interactive_device_id = data.get('id')
   interactive_device_action = data.get('action')
+  interactive_device_with_user_id = data.get('user_id')
   
   if interactive_device_id is None:
       return "No interactive device ID provided", 400
@@ -37,7 +52,7 @@ def receive_signal():
   if interactive_device is None:
       return "Interactive device not found", 400
     
-  targets_objects = interactive_device.get_targets_per_device(interactive_device_action)
+  targets_objects = interactive_device.get_targets_per_device(interactive_device_action, interactive_device_with_user_id)
   
   if len(targets_objects) == 0:
       return f"No targets set for {interactive_device_id} with action: {interactive_device_action}", 400
@@ -46,6 +61,7 @@ def receive_signal():
   for target_objects in targets_objects:
       target_device_id = target_objects.get('matter_id')
       target_action = target_objects.get('action')
+      user_id = target_objects.get('user_id') if target_objects.get('user_id') is not None else None
   
       target_device = TargetDevice.find_by_id(target_device_id)
       if target_device is None:
@@ -60,6 +76,7 @@ def receive_signal():
       output_message.append({
           'target_device_id': target_device_id,
           'target_action': target_action,
+          'user_id': user_id,
           'status': 'sent'
       })
   
@@ -73,6 +90,7 @@ def set_signal():
   interactive_device_action = request.json.get('interactive_device_action')
   target_device_id = request.json.get('target_device_id')
   target_action = request.json.get('target_action')
+  user_id = request.json.get('user_id')
   
   if interactive_device_id is None:
       return "No interactive device ID provided", 400
@@ -100,7 +118,12 @@ def set_signal():
   if target_action not in actions_ids:
       return "Target device does not have this action", 400
   try:
-      interactive_device.add_target(interactive_device_action, target_device_id, target_action)
+      interactive_device.add_target(interactive_device_action, target_device_id, target_action, user_id)
       return "Signal set", 200
   except IntegrityError as e:
       return "Signal already set", 400
+  except NoResultFound as e:
+      return jsonify({"error": str(e)}), 400
+  except Exception as e:
+      print(e)
+      return jsonify({"error": str(e)}), 500

@@ -6,6 +6,7 @@ interactive_target_association = Table('interactive_target_association', db.Mode
   Column('interactive_device_id', String, ForeignKey('interactive_devices.id'), primary_key=True),
   Column('interactive_action', String, primary_key=True),
   Column('target_device_id', String, ForeignKey('target_devices.matter_id'), primary_key=True),
-  Column('target_action', String)
+  Column('target_action', String),
+  Column('user_id', String, ForeignKey('users.id'), primary_key=True, nullable=True)
 )
 

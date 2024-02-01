@@ -1,3 +1,4 @@
+from models.devices_target_map import interactive_target_association
 from db import db
 import uuid
 
@@ -72,3 +73,6 @@ class User(db.Model):
       return True
     return False
   
+  def get_signals(self):
+    signals = db.session.query(interactive_target_association).filter_by(user_id=self.id).all()
+    return [{'interactive_device_id': signal.interactive_device_id, 'interactive_device_action': signal.interactive_action, 'target_id': signal.target_device_id, 'target_action': signal.target_action, 'user_id': signal.user_id} for signal in signals]

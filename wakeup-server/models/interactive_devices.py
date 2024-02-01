@@ -1,8 +1,10 @@
 from sqlalchemy import Column, String, insert
 from models.devices_target_map import interactive_target_association
+from models.users import User
 from db import db
 from zmq_client import zmq_client
 from constants import DEV_MODE
+from sqlalchemy.exc import NoResultFound
 
 class InteractiveDevice(db.Model):
   __tablename__ = 'interactive_devices'
@@ -61,17 +63,23 @@ class InteractiveDevice(db.Model):
   
   def get_targets(self):
     targets = db.session.query(interactive_target_association).filter_by(interactive_device_id=self.id).all()
-    return {target.interactive_action: {'id': target.target_device_id, 'action': target.target_action} for target in targets}
+    return {target.interactive_action: {'id': target.target_device_id, 'action': target.target_action, 'user_id': target.user_id} for target in targets}
   
-  def get_targets_per_device(self, action):
-    targets = db.session.query(interactive_target_association).filter_by(interactive_device_id=self.id, interactive_action=action).all()
-    return [{'matter_id': target.target_device_id, 'action': target.target_action} for target in targets]
+  def get_targets_per_device(self, action, user_id=None):
+    targets = db.session.query(interactive_target_association).filter_by(interactive_device_id=self.id, interactive_action=action, user_id=user_id).all()
+    return [{'matter_id': target.target_device_id, 'action': target.target_action, 'user_id': target.user_id} for target in targets]
   
   def get_signals(self):
     signals = db.session.query(interactive_target_association).filter_by(interactive_device_id=self.id).all()
-    return [{'interactive_id': signal.interactive_device_id, 'interactive_action': signal.interactive_action, 'target_id': signal.target_device_id, 'target_action': signal.target_action} for signal in signals]
+    return [{'interactive_id': signal.interactive_device_id, 'interactive_action': signal.interactive_action, 'target_id': signal.target_device_id, 'target_action': signal.target_action, 'user_id': signal.user_id} for signal in signals]
   
-  def add_target(self, action, target_device_id, target_action):
+  def add_target(self, action, target_device_id, target_action, user_id=None):
+    
+    if user_id is not None:
+      user = db.session.query(User).filter_by(id=user_id).first()
+      if user is None:
+        raise NoResultFound("User not found")
+    
     if(DEV_MODE == False):
       try:
         zmq_client.send_data(self.type, {"action": action})
@@ -87,13 +95,14 @@ class InteractiveDevice(db.Model):
           interactive_device_id=self.id, 
           interactive_action=action,
           target_device_id=target_device_id,
+          user_id=user_id,
     ).first()
     
     if is_already_set:
         update_target = interactive_target_association.update().where(interactive_target_association.c.interactive_device_id == self.id).where(interactive_target_association.c.interactive_action == action).values(target_device_id=target_device_id, target_action=target_action)
         db.session.execute(update_target)
     else:
-        new_target = interactive_target_association.insert().values(interactive_device_id=self.id, interactive_action=action, target_device_id=target_device_id, target_action=target_action)
+        new_target = interactive_target_association.insert().values(interactive_device_id=self.id, interactive_action=action, target_device_id=target_device_id, target_action=target_action, user_id=user_id)
         db.session.execute(new_target)
     db.session.commit()
   
