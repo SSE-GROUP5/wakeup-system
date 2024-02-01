@@ -22,7 +22,7 @@ def create_user():
   try:
     user = User(first_name, last_name, gosh_id)
     user.create()
-    return "User created successfully", 200
+    return user.json(), 200
       
   except IntegrityError as e:
       if "UNIQUE constraint failed: users.gosh_id" in str(e):
