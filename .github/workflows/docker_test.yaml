@@ -1,0 +1,23 @@
+name: Docker Health Check
+
+on: [workflow_dispatch]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up local env
+        run: ./scripts/setup_local_env.sh -o -d
+
+      - name: Build Docker image
+        run: docker-compose build
+
+      - name: Run Docker container
+        run: docker-compose up -d
+
+      - name: Run tests with curl
+        run: wget -qO- http://localhost:5001
