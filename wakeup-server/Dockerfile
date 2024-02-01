@@ -16,6 +16,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the rest of the application code into the container
 COPY ./wakeup-server .
 
+RUN test -f /app/wakeup.db && rm /app/wakeup.db || echo "no db file found"
 
 EXPOSE 5001
 
