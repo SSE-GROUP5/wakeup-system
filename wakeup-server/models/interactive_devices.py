@@ -63,9 +63,9 @@ class InteractiveDevice(db.Model):
     targets = db.session.query(interactive_target_association).filter_by(interactive_device_id=self.id).all()
     return {target.interactive_action: {'id': target.target_device_id, 'action': target.target_action} for target in targets}
   
-  def get_target(self, action):
-    target = db.session.query(interactive_target_association).filter_by(interactive_device_id=self.id, interactive_action=action).first()
-    return {'matter_id': target.target_device_id, 'action': target.target_action}
+  def get_targets_per_device(self, action):
+    targets = db.session.query(interactive_target_association).filter_by(interactive_device_id=self.id, interactive_action=action).all()
+    return [{'matter_id': target.target_device_id, 'action': target.target_action} for target in targets]
   
   def get_signals(self):
     signals = db.session.query(interactive_target_association).filter_by(interactive_device_id=self.id).all()

@@ -37,30 +37,34 @@ def receive_signal():
   if interactive_device is None:
       return "Interactive device not found", 400
     
-  target_object = interactive_device.get_target(interactive_device_action)
+  targets_objects = interactive_device.get_targets_per_device(interactive_device_action)
   
-  if target_object is None:
-      return f"No target device set for action {interactive_device_action}", 400
+  if len(targets_objects) == 0:
+      return f"No targets set for {interactive_device_id} with action: {interactive_device_action}", 400
   
-  target_device_id = target_object.get('matter_id')
-  target_action = target_object.get('action')
+  output_message = []
+  for target_objects in targets_objects:
+      target_device_id = target_objects.get('matter_id')
+      target_action = target_objects.get('action')
   
-  if target_device_id is None:
-      return "No target device ID set", 400
-  if target_action is None:
-      return "No action set", 400
+      target_device = TargetDevice.find_by_id(target_device_id)
+      if target_device is None:
+          return "Target device not found", 400
+      
+      possible_action_names = [action['action'] for action in target_device.possible_actions]
+      
+      if target_action not in possible_action_names:
+          return "Target device does not have this action", 400
+        
+      target_device.do_action(target_action)
+      output_message.append({
+          'target_device_id': target_device_id,
+          'target_action': target_action,
+          'status': 'sent'
+      })
+  
     
-  target_device = TargetDevice.find_by_id(target_device_id)
-  if target_device is None:
-      return "Target device not found", 400
-    
-  action_names = [action['action'] for action in target_device.possible_actions]
-  if target_action not in action_names:
-      return "Target device does not have this action", 400
-    
-  target_device.do_action(target_action)
-  
-  return f"Signal received for device {target_device_id} to perform action {target_action}", 200
+  return {'signals': output_message}, 200
 
 
 @signals_blueprint.route('/signals/set', methods=['POST'])
