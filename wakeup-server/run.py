@@ -3,6 +3,7 @@ from constants import PORT, HOSTNAME
 from blueprints.interactive_devices.interactive_devices import interactive_devices_blueprint
 from blueprints.signals.signals import signals_blueprint
 from blueprints.target_devices.target_devices import target_devices_blueprint
+from blueprints.users.users import users_blueprint
 from homeassistant_client import homeassistant_client
 from db import db
 
@@ -14,6 +15,7 @@ if __name__ == "__main__":
     app.register_blueprint(interactive_devices_blueprint)
     app.register_blueprint(signals_blueprint)
     app.register_blueprint(target_devices_blueprint)
+    app.register_blueprint(users_blueprint)
     
     @app.route('/')
     def hello_world():
