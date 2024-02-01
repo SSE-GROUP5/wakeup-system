@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from models.interactive_devices import InteractiveDevice
 from models.target_devices import TargetDevice
+from models.devices_target_map import signal_to_json
 from models.users import User
 from sqlalchemy.exc import IntegrityError, NoResultFound
 
@@ -22,7 +23,7 @@ def get_signals():
     return "Internal server error in getting signals", 500
 
 
-@signals_blueprint.route('/signals/<string:user_id>', methods=['GET'])
+@signals_blueprint.route('/signals/users/<string:user_id>', methods=['GET'])
 def get_signals_for_user(user_id):
   user = User.find_by_id(user_id)
   if user is None:
@@ -118,8 +119,11 @@ def set_signal():
   if target_action not in actions_ids:
       return "Target device does not have this action", 400
   try:
-      interactive_device.add_target(interactive_device_action, target_device_id, target_action, user_id)
-      return "Signal set", 200
+      new_signal = interactive_device.add_target(interactive_device_action, target_device_id, target_action, user_id)
+      return jsonify({
+        'message': 'Signal set',
+        'signal': new_signal
+      })
   except IntegrityError as e:
       return "Signal already set", 400
   except NoResultFound as e:
