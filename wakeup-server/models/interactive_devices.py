@@ -66,15 +66,15 @@ class InteractiveDevice(db.Model):
     targets = db.session.query(interactive_target_association).filter_by(interactive_device_id=self.id).all()
     return {target.interactive_action: {'id': target.target_device_id, 'action': target.target_action, 'user_id': target.user_id} for target in targets}
   
-  def get_targets_per_device(self, action, user_id=None):
-    targets = db.session.query(interactive_target_association).filter_by(interactive_device_id=self.id, interactive_action=action, user_id=user_id).all()
+  def get_targets_per_device(self, action, num_actions, user_id=None):
+    targets = db.session.query(interactive_target_association).filter_by(interactive_device_id=self.id, interactive_action=action, interactive_device_num_actions=num_actions, user_id=user_id).all()
     return [{'matter_id': target.target_device_id, 'action': target.target_action, 'user_id': target.user_id} for target in targets]
   
   def get_signals(self):
     signals = db.session.query(interactive_target_association).filter_by(interactive_device_id=self.id).all()
     return [signal_to_json(signal) for signal in signals]
   
-  def add_target(self, action, target_device_id, target_action, user_id=None):
+  def add_target(self, action, num_actions, target_device_id, target_action, user_id=None):
     
     if user_id is not None:
       user = db.session.query(User).filter_by(id=user_id).first()
@@ -95,18 +95,30 @@ class InteractiveDevice(db.Model):
     is_already_set = db.session.query(interactive_target_association).filter_by(
           interactive_device_id=self.id, 
           interactive_action=action,
+          interactive_device_num_actions=num_actions,
           target_device_id=target_device_id,
           user_id=user_id,
     ).first()
     
     if is_already_set:
-        update_signal = interactive_target_association.update().where(interactive_target_association.c.interactive_device_id == self.id).where(interactive_target_association.c.interactive_action == action).values(target_device_id=target_device_id, target_action=target_action)
+        update_signal = interactive_target_association.update(
+        ).where(
+          interactive_target_association.c.id == is_already_set.id
+        ).values(
+          interactive_device_id=self.id,
+          interactive_action=action,
+          interactive_device_num_actions=num_actions,
+          target_device_id=target_device_id,
+          target_action=target_action,
+          user_id=user_id
+        )
         db.session.execute(update_signal)
     else:
         new_signal = interactive_target_association.insert().values(
             id=uuid.uuid4(),
             interactive_device_id=self.id,
             interactive_action=action,
+            interactive_device_num_actions=num_actions,
             target_device_id=target_device_id,
             target_action=target_action,
             user_id=user_id
@@ -115,7 +127,13 @@ class InteractiveDevice(db.Model):
         
     db.session.commit()
     
-    new_signal = db.session.query(interactive_target_association).filter_by(interactive_device_id=self.id, interactive_action=action, target_device_id=target_device_id, user_id=user_id).first()
+    new_signal = db.session.query(interactive_target_association).filter_by(
+        interactive_device_id=self.id, 
+        interactive_action=action, 
+        target_device_id=target_device_id, 
+        interactive_device_num_actions=num_actions, 
+        user_id=user_id
+      ).first()
     return signal_to_json(new_signal)
   
   def remove_target(self, action):
