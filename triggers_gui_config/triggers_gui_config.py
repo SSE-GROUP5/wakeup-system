@@ -18,7 +18,7 @@ def tkinter_configuration(filename, necessary_env_vars, env_var_validation=None)
     necessary_env_vars.append(WAKEUP_SERVER_URL)
     
     root = tk.Tk()
-    root.title("Wakeup Server Configuration")
+    root.title("Trigger Configuration")
     root.geometry(f"400x{70 + (50 * len(necessary_env_vars))}")
 
     labels = []
