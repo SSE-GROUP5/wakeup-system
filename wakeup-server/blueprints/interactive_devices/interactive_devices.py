@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from models.interactive_devices import InteractiveDevice
 from sqlalchemy.exc import IntegrityError
+import uuid
 
 interactive_devices_blueprint = Blueprint('interactive_devices', __name__)
 
@@ -8,16 +9,14 @@ interactive_devices_blueprint = Blueprint('interactive_devices', __name__)
 def create_interactive_device():
   data = request.get_json()
   # Extract the necessary information from the data
-  device_id = data.get('id')
   device_type = data.get('type')
 
   # Perform any necessary validation on the data
-  if device_id is None:
-    return "No device id provided", 400
   if device_type is None:
     return "No device type provided", 400
 
   try: 
+      device_id = str(uuid.uuid4())
       new_device = InteractiveDevice(device_id, device_type)
       new_device.create()
       
