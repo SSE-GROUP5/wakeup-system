@@ -41,19 +41,22 @@ def receive_signal():
   data = request.get_json()
   interactive_device_id = data.get('id')
   interactive_device_action = data.get('action')
+  interactive_device_num_actions = data.get('num_actions')
   interactive_device_with_user_id = data.get('user_id')
   
   if interactive_device_id is None:
-      return "No interactive device ID provided", 400
+      return "id not provided", 400
   if interactive_device_action is None:
-      return "No interactive device action provided", 400
+      return "action not provided", 400
+  if interactive_device_num_actions is None:
+      return "num_actions not provided", 400
     
   interactive_device = InteractiveDevice.find_by_id(interactive_device_id)
   
   if interactive_device is None:
       return "Interactive device not found", 400
     
-  targets_objects = interactive_device.get_targets_per_device(interactive_device_action, interactive_device_with_user_id)
+  targets_objects = interactive_device.get_targets_per_device(interactive_device_action, interactive_device_with_user_id, interactive_device_num_actions)
   
   if len(targets_objects) == 0:
       return f"No targets set for {interactive_device_id} with action: {interactive_device_action}", 400
@@ -77,8 +80,9 @@ def receive_signal():
       output_message.append({
           'target_device_id': target_device_id,
           'target_action': target_action,
+          'num_actions': interactive_device_num_actions,
           'user_id': user_id,
-          'status': 'sent'
+          'status': 'sent',
       })
   
     
@@ -89,6 +93,7 @@ def receive_signal():
 def set_signal():
   interactive_device_id = request.json.get('interactive_device_id')
   interactive_device_action = request.json.get('interactive_device_action')
+  interactive_device_num_actions = request.json.get('interactive_device_num_actions')
   target_device_id = request.json.get('target_device_id')
   target_action = request.json.get('target_action')
   user_id = request.json.get('user_id')
@@ -101,6 +106,8 @@ def set_signal():
       return "No target action provided", 400
   if interactive_device_action is None:
       return "No interactive device action provided", 400
+  if interactive_device_num_actions is None:
+      return "No interactive device num actions provided", 400
   
   interactive_device = InteractiveDevice.find_by_id(interactive_device_id)
 
@@ -119,7 +126,7 @@ def set_signal():
   if target_action not in actions_ids:
       return "Target device does not have this action", 400
   try:
-      new_signal = interactive_device.add_target(interactive_device_action, target_device_id, target_action, user_id)
+      new_signal = interactive_device.add_target(interactive_device_action, interactive_device_num_actions, target_device_id, target_action, user_id)
       return jsonify({
         'message': 'Signal set',
         'signal': new_signal
