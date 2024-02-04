@@ -1,7 +1,7 @@
 import tkinter as tk
 from .requests_utils import test_connection, create_interactive_device
 from .env_vars_utils import get_env_vars
-
+from dotenv import load_dotenv
 WAKEUP_SERVER_URL_INDEX = -1
 
 # UTILS
@@ -59,13 +59,16 @@ def on_configure_button_click(filename, labels, entries, root, message_label, en
                 message_label.config(text="CREATING DEVICE...", fg="blue")
                 device_id = create_interactive_device(wakeup_server_url, entries[-1].get())
                 
-            message_label.config(text=f"Connection test successful. Closing the main loop.", fg="green")
+            message_label.config(text=f"Connection test successful. Please CLOSE the window.", fg="green")
+            print(f"Writting to {filename}")
             with open(filename, "w") as file:
                 file.write(f"DEVICE_ID={device_id}\n")
                 for label, entry in zip(labels, entries):
                     file.write(f"{label.cget('text').split()[1]}={entry.get()}\n")
-                    
-            root.destroy()  # Close the main loop if the connection test is successful
+            
+            load_dotenv(dotenv_path=filename)    
+            print("Configuration successful. Please CLOSE the window.")
+            
         else:
             print("Connection test failed. Please check the IP address and try again.")
             message_label.config(text="Connection test failed. Please check the IP address and try again.", fg="red")
