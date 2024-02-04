@@ -1,8 +1,8 @@
 # Example usage at the bottom of the file
 
 import tkinter as tk
-from gui_utils import add_bottom_label_with_button, get_env_vars, add_env_vars_to_gui, add_dropdown_menu
-from env_vars_utils import read_env_file
+from .gui_utils import add_bottom_label_with_button, get_env_vars, add_env_vars_to_gui, add_dropdown_menu
+from .env_vars_utils import read_env_file
 
 WAKEUP_SERVER_URL = "WAKEUP_SERVER_URL"
 
