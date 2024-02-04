@@ -17,12 +17,22 @@ import argparse
 import time
 import os
 import sys
+from dotenv import load_dotenv
 from mediapipe.tasks import python
 from mediapipe.tasks.python.audio.core import audio_record
 from mediapipe.tasks.python.components import containers
 from mediapipe.tasks.python import audio
 from utils import Plotter
 
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+env_path = os.path.join(os.path.dirname(__file__), '.env.wakeup')
+from triggers_gui_config.triggers_gui_config import tkinter_configuration
+
+load_dotenv(dotenv_path=env_path)
+
+def run_interactive_device():
+	print("Running interactive device")
+	
 def get_model_path():
 	# Determine if we are running in a bundled environment and set the base path
 	if getattr(sys, 'frozen', False):
@@ -147,19 +157,24 @@ def main():
 		required=False,
 		default=0.5)
 	parser.add_argument(
-		'--scoreThreshold',
-		help='The score threshold of classification results.',
-		required=False,
-		default=0.0)
-	parser.add_argument(
 		'--gui',
 		help='Activate the GUI for displaying results.',
 		action='store_true') 
 	args = parser.parse_args()
 
+	SCORE_THRESHOLD = os.getenv("SCORE_THRESHOLD")
+
 	# Run the main function with the parsed arguments
-	run(args.model, int(args.maxResults), float(args.scoreThreshold),
+	run(args.model, int(args.maxResults), float(SCORE_THRESHOLD),
 		float(args.overlappingFactor), args.gui)
 
 if __name__ == '__main__':
-	main()
+	current_path = os.path.dirname(__file__)
+	
+	# check if --no-gui flag is present
+	if "--no-gui" in sys.argv:
+		main()
+	else:
+		# run the gui
+		tkinter_configuration(os.path.join(current_path, ".env.wakeup"), ["SCORE_THRESHOLD"])
+		main()
