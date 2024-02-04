@@ -1,6 +1,6 @@
 import tkinter as tk
-from requests_utils import test_connection, create_interactive_device
-from env_vars_utils import get_env_vars
+from .requests_utils import test_connection, create_interactive_device
+from .env_vars_utils import get_env_vars
 
 WAKEUP_SERVER_URL_INDEX = -1
 
