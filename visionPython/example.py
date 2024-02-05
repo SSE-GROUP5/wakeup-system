@@ -1,11 +1,13 @@
 import sys
 import os
+from blinkDetect import main
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from triggers_gui_config.triggers_gui_config import tkinter_configuration
 
 def run_interactive_device():
     print("Running interactive device")
+    main()
     
 
 
