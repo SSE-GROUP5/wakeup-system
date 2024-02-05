@@ -23,3 +23,17 @@ def signal_to_json(signal):
     'target_action': signal.target_action,
     'user_id': signal.user_id if signal.user_id is not None else None
   }
+
+def delete_signal_from_map(signal_to_be_deleted):
+    signal = db.session.query(interactive_target_association).filter_by(id=signal_to_be_deleted)
+    if signal.first() is None:
+      return False
+    try:
+      signal.delete()
+      db.session.commit()
+      return True
+    except Exception as e:
+      db.session.rollback()
+      print(e)
+      return False
+    

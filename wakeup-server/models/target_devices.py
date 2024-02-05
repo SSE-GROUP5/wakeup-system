@@ -55,6 +55,8 @@ class TargetDevice(db.Model):
     
     try:
       device = homeassistant_client.find_entity_by_id(self.matter_id)
+      if device == None:
+        return False
       device.set_state(action)
       return True
     except Exception as e:

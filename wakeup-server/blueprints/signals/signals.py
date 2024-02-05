@@ -1,9 +1,10 @@
 from flask import Blueprint, request, jsonify
 from models.interactive_devices import InteractiveDevice
 from models.target_devices import TargetDevice
-from models.devices_target_map import signal_to_json
+from models.devices_target_map import delete_signal_from_map
 from models.users import User
 from sqlalchemy.exc import IntegrityError, NoResultFound
+import uuid
 
 signals_blueprint = Blueprint('signals', __name__)
 
@@ -56,7 +57,7 @@ def receive_signal():
   if interactive_device is None:
       return "Interactive device not found", 400
     
-  targets_objects = interactive_device.get_targets_per_device(interactive_device_action, interactive_device_with_user_id, interactive_device_num_actions)
+  targets_objects = interactive_device.get_targets_per_device(interactive_device_action, interactive_device_num_actions, interactive_device_with_user_id)
   
   if len(targets_objects) == 0:
       return f"No targets set for {interactive_device_id} with action: {interactive_device_action}", 400
@@ -138,3 +139,21 @@ def set_signal():
   except Exception as e:
       print(e)
       return jsonify({"error": str(e)}), 500
+  
+@signals_blueprint.route('/signals/<string:signal_id>', methods=['DELETE'])
+def delete_signal(signal_id):
+  try:
+    signal_as_uuid = uuid.UUID(signal_id)
+  except Exception as e:
+     print(e)
+     return "Signal ID not in correct format", 400
+  success = delete_signal_from_map(signal_as_uuid)
+  if(success):
+     return "Deleted successfully", 200
+  else:
+     return "Signal Not Found", 400
+
+
+
+
+
