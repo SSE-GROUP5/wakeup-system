@@ -23,7 +23,7 @@ def create_device():
   try:
     device = TargetDevice(matter_id, device_name, device_type)
     device.create()
-    return "Device created successfully", 200
+    return jsonify(device.json()), 201
       
   except IntegrityError:
       return "Device already exists", 400
