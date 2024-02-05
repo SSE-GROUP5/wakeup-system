@@ -11,11 +11,11 @@ class Constants:
         
         load_dotenv('.env.wakeup')
 
-        self.CLOSED_EYES_FRAME = os.getenv('CLOSED_EYES_FRAME')
-        self.BLINKING_RATIO = os.getenv('BLINKING_RATIO')
-        self.TIMEOUT_SEC = os.getenv('TIMEOUT_SEC')
+        self.CLOSED_EYES_FRAME = int(os.getenv('CLOSED_EYES_FRAME'))
+        self.BLINKING_RATIO = float(os.getenv('BLINKING_RATIO'))
+        self.TIMEOUT_SEC = int(os.getenv('TIMEOUT_SEC'))
         self.WAKEUP_SERVER_URL = os.getenv('WAKEUP_SERVER_URL')
-        self.ID = os.getenv('ID')
+        self.DEVICE_ID = os.getenv('DEVICE_ID')
 
         if self.CLOSED_EYES_FRAME is None:
             raise Exception("CLOSED_EYES_FRAME not found in .venv")
@@ -25,10 +25,17 @@ class Constants:
             raise Exception("TIMEOUT_SEC not found in .venv")
         if self.WAKEUP_SERVER_URL is None:
             raise Exception("WAKEUP_SERVER_URL not found in .venv")
-        if self.ID is None:
-            raise Exception("ID not found in .venv")
+        if self.DEVICE_ID is None:
+            raise Exception("DEVICE_ID not found in .venv")
 
     def updateConfig(self, json_data):
         # TODO WILL THERE STILL BE RUNTIME CONFIG CHANGE? 
         return
+
+if __name__ == "__main__":
+    const = Constants()
+
+    print(const.CLOSED_EYES_FRAME)
+    print(const.BLINKING_RATIO)
+    print(const.TIMEOUT_SEC)
 

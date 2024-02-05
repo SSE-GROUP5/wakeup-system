@@ -17,5 +17,5 @@ if __name__ == "__main__":
         run_interactive_device()
     else:
         # run the gui
-        tkinter_configuration(os.path.join(current_path, ".env.wakeup"), ["TIMEOUT", "FRAME_RATE"])
+        tkinter_configuration(os.path.join(current_path, ".env.wakeup"), ["CLOSED_EYES_FRAME", "BLINKING_RATIO", "TIMEOUT_SEC"])
         run_interactive_device()
