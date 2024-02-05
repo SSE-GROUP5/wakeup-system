@@ -61,6 +61,7 @@ dist
 
 *.pt
 *.task
+*.sqlite
 
 # Pytest
 .pytest_cache
