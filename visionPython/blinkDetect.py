@@ -21,7 +21,7 @@ sys.path.append(custom_modules_path)
 from zeromq.zmqServer import ZeroMQServer
 
 
-def send_signal(action: str):
+def send_signal(action: str, config: str):
     data = {
         "id": config.ID,
         "action": action
@@ -120,7 +120,7 @@ def main():
     # camera object 
     camera = cv.VideoCapture(0)
 
-    
+
     with map_face_mesh.FaceMesh(min_detection_confidence =0.5, min_tracking_confidence=0.5) as face_mesh:
 
         # starting time here 
@@ -136,8 +136,9 @@ def main():
             message = mqServer.receive()
             if message != None:
                 topic, msg = message
+                
                 if topic == "Camera":
-                    config.updateConfig(msg)
+                    config.updateConfig()
 
 
 

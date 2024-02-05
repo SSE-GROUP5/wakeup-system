@@ -5,17 +5,12 @@ from dotenv import load_dotenv
 
 class Constants:
     def __init__(self):
+        self.file_name = '.env.wakeup'
         file_dir = os.path.dirname(os.path.abspath(__file__))
-        if not os.path.exists(file_dir + "/.env.wakeup" ):
+        if not os.path.exists(file_dir + "/" + self.file_name ):
             raise Exception("No env file, please use GUI to generate one")
         
-        load_dotenv('.env.wakeup')
-
-        self.CLOSED_EYES_FRAME = int(os.getenv('CLOSED_EYES_FRAME'))
-        self.BLINKING_RATIO = float(os.getenv('BLINKING_RATIO'))
-        self.TIMEOUT_SEC = int(os.getenv('TIMEOUT_SEC'))
-        self.WAKEUP_SERVER_URL = os.getenv('WAKEUP_SERVER_URL')
-        self.DEVICE_ID = os.getenv('DEVICE_ID')
+        self.updateConfig()
 
         if self.CLOSED_EYES_FRAME is None:
             raise Exception("CLOSED_EYES_FRAME not found in .venv")
@@ -28,9 +23,27 @@ class Constants:
         if self.DEVICE_ID is None:
             raise Exception("DEVICE_ID not found in .venv")
 
-    def updateConfig(self, json_data):
-        # TODO WILL THERE STILL BE RUNTIME CONFIG CHANGE? 
-        return
+    def updateConfig(self):
+        load_dotenv('.env.wakeup')
+
+        self.CLOSED_EYES_FRAME = int(os.getenv('CLOSED_EYES_FRAME'))
+        self.BLINKING_RATIO = float(os.getenv('BLINKING_RATIO'))
+        self.TIMEOUT_SEC = int(os.getenv('TIMEOUT_SEC'))
+        self.WAKEUP_SERVER_URL = os.getenv('WAKEUP_SERVER_URL')
+        self.DEVICE_ID = os.getenv('DEVICE_ID')
+
+    def updateEnvFile(self, jsonStr):
+        jsonData = json.load(jsonStr)
+        with open(self.filename, "w") as file:
+            file.write(f"DEVICE_ID={self.DEVICE_ID}")
+            file.write(f"WAKEUP_SERVER_URL={self.WAKEUP_SERVER_URL}")
+            for key in jsonData:
+                file.write(f"{key}={jsonData[key]}")
+
+        # Load the new env file
+        self.updateConfig()
+
+
 
 if __name__ == "__main__":
     const = Constants()
