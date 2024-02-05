@@ -22,10 +22,10 @@ from mediapipe.tasks import python
 from mediapipe.tasks.python.audio.core import audio_record
 from mediapipe.tasks.python.components import containers
 from mediapipe.tasks.python import audio
-
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from triggers_gui_config.triggers_gui_config import tkinter_configuration
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+
 def get_model_path():
 	# Determine if we are running in a bundled environment and set the base path
 	if getattr(sys, 'frozen', False):
