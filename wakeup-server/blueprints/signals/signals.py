@@ -4,6 +4,7 @@ from models.target_devices import TargetDevice
 from models.devices_target_map import delete_signal_from_map
 from models.users import User
 from sqlalchemy.exc import IntegrityError, NoResultFound
+from scheduler.alert_scheduler import alert_scheduler
 import uuid
 
 signals_blueprint = Blueprint('signals', __name__)
@@ -35,7 +36,12 @@ def get_signals_for_user(user_id):
   except Exception as e:
     print(e)
     return "Internal server error in getting signals", 500
-  
+
+
+@signals_blueprint.route('/signals/stop_alert/<string:channel_id>', methods=['POST'])
+def stop_alert(channel_id):
+  alert_scheduler.stop_alert(channel_id)
+  return "Alert stopped", 200
 
 @signals_blueprint.route('/signals', methods=['POST'])
 def receive_signal():

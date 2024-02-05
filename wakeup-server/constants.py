@@ -7,6 +7,7 @@ HOSTNAME = os.getenv("HOSTNAME")
 PORT = os.getenv("PORT")
 ZERO_MQ_SERVER_URL = os.getenv("ZERO_MQ_SERVER_URL")
 DEV_MODE = os.getenv("DEV_MODE").lower() == "true" if os.getenv("DEV_MODE") != None else False
+TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 
 if not HOSTNAME:
     raise ValueError("No HOSTNAME set for Flask applicaton")
@@ -28,8 +29,10 @@ if HOMEASSISTANT_TOKEN == None:
     print("HOMEASSISTANT_TOKEN not set in .env file")
     exit(1)
 
-print("HOMEASSISTANT_URL: " + HOMEASSISTANT_URL)
+is_telegram_bot_token_set = "set" if TELEGRAM_BOT_TOKEN else "not set"
+print(f"TELEGRAM_BOT_TOKEN is {is_telegram_bot_token_set}")
 
+print("HOMEASSISTANT_URL: " + HOMEASSISTANT_URL)
 print(f"DEV_MODE: {DEV_MODE}")
 print(f"HOMEASSISTANT_OFFLINE_MODE is {HOMEASSISTANT_OFFLINE_MODE}")
     

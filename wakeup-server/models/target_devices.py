@@ -1,4 +1,5 @@
 from homeassistant_client import homeassistant_client
+from scheduler.alert_scheduler import alert_scheduler
 from homeassistant.fake_matter_device import FAKE_MATTER_DEVICE
 from constants import HOMEASSISTANT_OFFLINE_MODE
 from sqlalchemy import Column, String, JSON
@@ -20,7 +21,7 @@ class TargetDevice(db.Model):
     self.type = type
     self.possible_actions = self.get_possible_actions()
     
-    
+  
   def json(self):
     return {
       "matter_id": self.matter_id,
@@ -30,6 +31,10 @@ class TargetDevice(db.Model):
     }
     
   def get_possible_actions(self):
+    if self.type.lower() == "telegram":
+      return [{"action": "send_alert", "description": "Send an alert to the medical staff"}]
+    
+    
     if HOMEASSISTANT_OFFLINE_MODE:
       print("HOMEASSISTANT_OFFLINE_MODE IS ENABLED")
       return FAKE_MATTER_DEVICE.get("possible_actions")
@@ -48,6 +53,18 @@ class TargetDevice(db.Model):
       raise e
     
   def do_action(self, action):
+    
+    target_type = self.type.lower()
+    if target_type == "telegram":
+      channel_id = self.matter_id.split(".")[1]
+      message = "Alert ! Patient needs help ! \n To stop the alert, type /stop"
+      #TODO change with the actual picture path received from the interactive device
+      picture_path = "scheduler/patient_falling.jpg"
+      alert_scheduler.start_alert(channel_id, message, picture_path)
+      print("Action: " + action)
+      return True
+    
+ 
     if HOMEASSISTANT_OFFLINE_MODE:
       print("HOMEASSISTANT_OFFLINE_MODE IS ENABLED")
       print("Action: " + action)

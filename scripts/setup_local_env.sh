@@ -5,12 +5,14 @@ DIRECTORY=$(dirname $0)
 
 HOSTNAME=localhost
 WAKEUP_SERVER_PORT=5001
+WAKEUP_SERVER_URL=http://$HOSTNAME:$WAKEUP_SERVER_PORT
 HOMEASSISTANT_TOKEN=
 HOMEASSISTANT_URL=http://homeassistant.local:8123
 HOMEASSISTANT_OFFLINE_MODE=false
 ZERO_MQ_SERVER_URL=tcp://localhost:5556
 DEV_MODE=false
 ADD_ON_HA=false
+TELEGRAM_BOT_TOKEN=""
 
 while [[ "$#" -gt 0 ]]; do
     case $1 in
@@ -21,6 +23,7 @@ while [[ "$#" -gt 0 ]]; do
         -d|--dev-mode) DEV_MODE=true ;;
         -o|--homeassistant-offline-mode) HOMEASSISTANT_OFFLINE_MODE=true ;;
         -z|--zero-mq-server-url) ZERO_MQ_SERVER_URL="$2"; shift ;;
+        -b|--telegram-bot-token) TELEGRAM_BOT_TOKEN="$2"; shift ;;
         -a|--add-on-ha) ADD_ON_HA=true ;;
         *) echo "Unknown parameter passed: $1"; exit 1 ;;
     esac
@@ -38,6 +41,10 @@ if [ "$ADD_ON_HA" = true ] ; then
     HOMEASSISTANT_URL=http://supervisor/core
 fi
 
+if [ -z "$TELEGRAM_BOT_TOKEN" ] ; then
+    echo "WARNING! Telegram bot token is not set. You will not be able to use Telegram bot."
+fi
+
 echo "Setting up local environment variables... in .env file"
 
 echo "HOSTNAME=$HOSTNAME" > $DIRECTORY/../wakeup-server/.env
@@ -47,6 +54,7 @@ echo "HOMEASSISTANT_URL=$HOMEASSISTANT_URL" >> $DIRECTORY/../wakeup-server/.env
 echo "HOMEASSISTANT_OFFLINE_MODE=$HOMEASSISTANT_OFFLINE_MODE" >> $DIRECTORY/../wakeup-server/.env
 echo "ZERO_MQ_SERVER_URL=$ZERO_MQ_SERVER_URL" >> $DIRECTORY/../wakeup-server/.env
 echo "DEV_MODE=$DEV_MODE" >> $DIRECTORY/../wakeup-server/.env
+echo "TELEGRAM_BOT_TOKEN=$TELEGRAM_BOT_TOKEN" >> $DIRECTORY/../wakeup-server/.env
 
 # For Docker .env.compose
 echo "HOSTNAME=0.0.0.0" > $DIRECTORY/../wakeup-server/.env.compose
@@ -56,6 +64,13 @@ echo "HOMEASSISTANT_URL=$HOMEASSISTANT_URL" >> $DIRECTORY/../wakeup-server/.env.
 echo "HOMEASSISTANT_OFFLINE_MODE=$HOMEASSISTANT_OFFLINE_MODE" >> $DIRECTORY/../wakeup-server/.env.compose
 echo "ZERO_MQ_SERVER_URL=$ZERO_MQ_SERVER_URL" >> $DIRECTORY/../wakeup-server/.env.compose
 echo "DEV_MODE=$DEV_MODE" >> $DIRECTORY/../wakeup-server/.env.compose
+echo "TELEGRAM_BOT_TOKEN=$TELEGRAM_BOT_TOKEN" >> $DIRECTORY/../wakeup-server/.env.compose
+
+
+# For telegram bot
+echo "WAKEUP_SERVER_URL=$WAKEUP_SERVER_URL" > $DIRECTORY/../telegram_bot/.env
+echo "TELEGRAM_BOT_TOKEN=$TELEGRAM_BOT_TOKEN" >> $DIRECTORY/../telegram_bot/.env
+
 
 echo "Finished setting up local environment variables."
 echo "    PORT=$WAKEUP_SERVER_PORT"
