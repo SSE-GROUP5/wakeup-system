@@ -22,17 +22,10 @@ from mediapipe.tasks import python
 from mediapipe.tasks.python.audio.core import audio_record
 from mediapipe.tasks.python.components import containers
 from mediapipe.tasks.python import audio
-from utils import Plotter
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-env_path = os.path.join(os.path.dirname(__file__), '.env.wakeup')
 from triggers_gui_config.triggers_gui_config import tkinter_configuration
 
-load_dotenv(dotenv_path=env_path)
-
-def run_interactive_device():
-	print("Running interactive device")
-	
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 def get_model_path():
 	# Determine if we are running in a bundled environment and set the base path
 	if getattr(sys, 'frozen', False):
@@ -43,6 +36,16 @@ def get_model_path():
 	# Join the base path with the model filename
 	model_path = os.path.join(application_path, 'yamnet.tflite')
 	return model_path
+
+def get_current_path():
+  if getattr(sys, 'frozen', False):
+    return os.path.dirname(sys.executable)
+  elif __file__:
+    return os.path.dirname(__file__)
+
+current_path = get_current_path()
+env_path = os.path.join(current_path, '.env.wakeup')
+load_dotenv(dotenv_path=env_path)
 
 def run(model: str, max_results: int, score_threshold: float,
 		overlapping_factor: float, gui_active: bool) -> None:
@@ -65,7 +68,6 @@ def run(model: str, max_results: int, score_threshold: float,
 	# List to store classification results
 	classification_result_list = []
 	# Initialize a plotter instance to display the classification results.
-	plotter = Plotter()
 
 	# Callback function to save classification results
 	def save_result(result: audio.AudioClassifierResult, timestamp_ms: int):
@@ -129,10 +131,7 @@ def run(model: str, max_results: int, score_threshold: float,
 							if (current_time - last_detection_time) > detection_interval:
 								print(f"{category.category_name} detected.")
 								last_detection_time = current_time
-			#print(classification_result_list)
-			# Display gui if --gui is presented in cli (e.g. python3 classify.py --gui)
-			if gui_active:
-				plotter.plot(classification_result_list[0])
+
 					
 			# Clear the results list for next iteration
 			classification_result_list.clear()
@@ -165,16 +164,9 @@ def main():
 	SCORE_THRESHOLD = os.getenv("SCORE_THRESHOLD")
 
 	# Run the main function with the parsed arguments
-	run(args.model, int(args.maxResults), float(SCORE_THRESHOLD),
-		float(args.overlappingFactor), args.gui)
+	run(args.model, int(args.maxResults), float(SCORE_THRESHOLD), float(args.overlappingFactor), args.gui)
 
-if __name__ == '__main__':
-	current_path = os.path.dirname(__file__)
-	
-	# check if --no-gui flag is present
-	if "--no-gui" in sys.argv:
-		main()
-	else:
-		# run the gui
-		tkinter_configuration(os.path.join(current_path, ".env.wakeup"), ["SCORE_THRESHOLD"])
-		main()
+if __name__ == '__main__':	
+
+  tkinter_configuration(env_path, ["SCORE_THRESHOLD"])
+  main()
