@@ -11,17 +11,19 @@ class InteractiveDevice(db.Model):
   __tablename__ = 'interactive_devices'
   
   id = Column(String, primary_key=True)
+  name = Column(String)
   type = Column(String)
   target_devices = db.relationship("TargetDevice", secondary=interactive_target_association, back_populates="interactive_devices")
   
-  def __init__(self, device_id, device_type):
+  def __init__(self, device_id, name, device_type):
     self.id = device_id
+    self.name = name
     self.type = device_type
     self.targets = self.get_targets()
     
   def create(self):
     try:
-        stmt = insert(InteractiveDevice).values(id=self.id, type=self.type)
+        stmt = insert(InteractiveDevice).values(id=self.id, name=self.name, type=self.type)
         db.session.execute(stmt)
         db.session.commit()
     except Exception as e:
@@ -32,6 +34,7 @@ class InteractiveDevice(db.Model):
   def json(self):
     return {
       "id": self.id,
+      "name": self.name,
       "type": self.type,
       "targets": self.get_targets()
     }
@@ -54,10 +57,11 @@ class InteractiveDevice(db.Model):
     return False
   
   @staticmethod
-  def update_by_id(device_id, device_type):
+  def update_by_id(device_id, device_name, device_type):
     device = db.session.query(InteractiveDevice).filter_by(id=device_id).first()
     if device:
       device.type = device_type
+      device.name = device_name
       db.session.commit()
       return True
     return False

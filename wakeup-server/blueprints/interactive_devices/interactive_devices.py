@@ -10,20 +10,20 @@ def create_interactive_device():
   data = request.get_json()
   # Extract the necessary information from the data
   device_type = data.get('type')
+  device_name = data.get('name')
 
   # Perform any necessary validation on the data
   if device_type is None:
     return "No device type provided", 400
+  if device_name is None:
+    return "No device name provided", 400
 
   try: 
       device_id = str(uuid.uuid4())
-      new_device = InteractiveDevice(device_id, device_type)
+      new_device = InteractiveDevice(device_id, device_name, device_type)
       new_device.create()
-      
-      return jsonify({
-          "id": device_id,
-          "type": device_type
-      }), 201
+      new_device = InteractiveDevice.find_by_id(device_id)
+      return new_device.json(), 201
   
   except IntegrityError:
       return "Device already exists", 400
