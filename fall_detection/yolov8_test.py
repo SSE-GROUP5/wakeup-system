@@ -1,9 +1,12 @@
 import cv2
 from ultralytics import YOLO
 import math
+import torch
+
+device = torch.device('cpu')
 
 # Load the YOLOv8 model
-model = YOLO('yolov8m-pose.pt')
+model = YOLO('yolov8m-pose.pt').to(device)
 NOSE = 0
 LEFT_EYE = 1
 RIGHT_EYE = 2
