@@ -5,12 +5,17 @@ import math
 from torchvision import transforms
 import numpy as np
 import os
+import sys
+from datetime import datetime
+import argparse
 
 from tqdm import tqdm
 
 from utils.datasets import letterbox
 from utils.general import non_max_suppression_kpt
 from utils.plots import output_to_keypoint, plot_skeleton_kpts
+
+output_folder = "output_videos"
 
 
 def fall_detection(poses):
@@ -81,12 +86,74 @@ def prepare_image(image):
 def prepare_vid_out(video_path, vid_cap):
     vid_write_image = letterbox(vid_cap.read()[1], 960, stride=64, auto=True)[0]
     resize_height, resize_width = vid_write_image.shape[:2]
-    out_video_name = f"{video_path.split('/')[-1].split('.')[0]}_keypoint.mp4"
-    out = cv2.VideoWriter(out_video_name, cv2.VideoWriter_fourcc(*'mp4v'), 30, (resize_width, resize_height))
+    # out_video_name = f"{video_path.split('/')[-1].split('.')[0]}_keypoint.mp4"
+    current_time = datetime.now().strftime("%Y%m%d%H%M%S")
+    output_video_path = os.path.join(output_folder, f"output_video_file{current_time}.mp4")
+    
+    # Define the video writer
+    out = cv2.VideoWriter(output_video_path, cv2.VideoWriter_fourcc(*'mp4v'), 30, (resize_width, resize_height))
+
+    # out = cv2.VideoWriter(out_video_name, cv2.VideoWriter_fourcc(*'mp4v'), 30, (resize_width, resize_height))
     return out
 
+def process_frame(frame, model, device, vid_writer):
+    image, output = get_pose(frame, model, device)
+    _image = prepare_image(image)
+    is_fall, bbox = fall_detection(output)
+    if is_fall:
+        falling_alarm(_image, bbox)
+        
+    # Write the processed frame to the video writer
+    vid_writer.write(_image)
+        
+    return _image
 
-def process_video(video_path):
+def process_live_video():
+    model, device = get_pose_model()
+
+    # Open webcam
+    cap = cv2.VideoCapture(0)
+
+    if not cap.isOpened():
+        print("Error: Couldn't open webcam.")
+        return
+
+    # Get the width and height of the webcam feed
+    width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+    height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    
+    # Define the current date and time
+    current_time = datetime.now().strftime("%Y%m%d%H%M%S")
+    
+    # Define the output video path with a unique identifier
+    output_video_path = os.path.join(output_folder, f"output_video_live{current_time}.mp4")
+    
+    # Define the video writer
+    vid_writer = cv2.VideoWriter(output_video_path, cv2.VideoWriter_fourcc(*'mp4v'), 30, (width, height))
+
+    while True:
+        # Capture frame-by-frame
+        ret, frame = cap.read()
+        if not ret:
+            print("Error: Couldn't capture frame.")
+            break
+        
+        # Process frame for pose estimation and fall detection
+        processed_frame = process_frame(frame, model, device, vid_writer)
+        
+        # Display the processed frame
+        cv2.imshow('Processed Frame', processed_frame)
+
+        # Check for key press to exit
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+
+    # Release the video writer, webcam, and close OpenCV windows
+    vid_writer.release()
+    cap.release()
+    cv2.destroyAllWindows()
+
+def process_video_file(video_path):
     vid_cap = cv2.VideoCapture(video_path)
 
     if not vid_cap.isOpened():
@@ -110,12 +177,26 @@ def process_video(video_path):
             falling_alarm(_image, bbox)
         vid_out.write(_image)
 
+
+
     vid_out.release()
     vid_cap.release()
 
+if __name__ == "__main__":
+    # Create output folder if it doesn't exist
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+    
+    # Parse command-line arguments
+    parser = argparse.ArgumentParser(description='Process live video or video file for fall detection.')
+    parser.add_argument('--mode', choices=['live', 'file'], default='live', help='Mode of operation: live or file')
+    parser.add_argument('--video', default=None, help='Path to the video file (required in file mode)')
+    args = parser.parse_args()
 
-if __name__ == '__main__':
-    videos_path = 'fall_dataset/videos'
-    for video in os.listdir(videos_path):
-        video_path = os.path.join(videos_path, video)
-        process_video(video_path)
+    # Check mode and execute the corresponding function
+    if args.mode == 'live':
+        process_live_video()
+    elif args.mode == 'file':
+        if args.video is None:
+            parser.error("Video file path is required in file mode.")
+        process_video_file(args.video)
