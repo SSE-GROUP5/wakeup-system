@@ -11,7 +11,7 @@ COPY ./zeromq /app/zeromq
 RUN pip install /app/zeromq
 
 # Install the Python dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install -r requirements.txt
 
 # Copy the rest of the application code into the container
 COPY ./wakeup-server .
