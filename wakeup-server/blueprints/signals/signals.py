@@ -137,7 +137,7 @@ def set_signal():
       return jsonify({
         'message': 'Signal set',
         'signal': new_signal
-      })
+      }), 201
   except IntegrityError as e:
       return "Signal already set", 400
   except NoResultFound as e:

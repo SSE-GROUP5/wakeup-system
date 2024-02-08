@@ -18,8 +18,8 @@ def signal_to_json(signal):
   interactive_device = db.session.query(InteractiveDevice).filter_by(id=signal.interactive_device_id).first()
   return {
     'id': signal.id,
-    'interactive_id': signal.interactive_device_id,
-    'interactive_action': signal.interactive_action,
+    'interactive_device_id': signal.interactive_device_id,
+    'interactive_device_action': signal.interactive_action,
     'interactive_device_name': interactive_device.name,
     'interactive_device_num_actions': signal.interactive_device_num_actions,
     'target_id': signal.target_device_id,
