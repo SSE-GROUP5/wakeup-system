@@ -10,8 +10,8 @@ class ZeroMQServer:
     # Create a poller
     self.poller = zmq.Poller()
     self.poller.register(self.socket, zmq.POLLIN) # Register the socket for polling
-
     self.message_buffer = []
+    print(f"ZMQ Server started at {address}")
 
   def receive(self):
     socks = dict(self.poller.poll(timeout=0))  # Timeout in milliseconds
@@ -27,11 +27,7 @@ class ZeroMQServer:
         self.socket.send(b"Message received")
         return topic, msg
 
-    else:
-        # No message received, server can do other tasks here
-        # keep same line
-        print("No message received. Server is free for other tasks.", end="\r")
-        
+    else:        
         return None
     
 
