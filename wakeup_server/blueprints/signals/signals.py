@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
-from models.interactive_devices import InteractiveDevice
+from models.triggers import Trigger
 from models.target_devices import TargetDevice
-from models.devices_target_map import delete_signal_from_map
+from models.triggers_target_map import delete_signal_from_map
 from models.users import User
 from sqlalchemy.exc import IntegrityError, NoResultFound
 from scheduler.alert_scheduler import alert_scheduler
@@ -11,7 +11,7 @@ signals_blueprint = Blueprint('signals', __name__)
 
 @signals_blueprint.route('/signals', methods=['GET'])
 def get_signals():
-  devices = InteractiveDevice.find_all()
+  devices = Trigger.find_all()
   all_signals = []
   try:
     for device in devices:
@@ -46,27 +46,27 @@ def stop_alert(channel_id):
 @signals_blueprint.route('/signals', methods=['POST'])
 def receive_signal():
   data = request.get_json()
-  interactive_device_id = data.get('id')
-  interactive_device_action = data.get('action')
-  interactive_device_num_actions = data.get('num_actions')
-  interactive_device_with_user_id = data.get('user_id')
+  trigger_id = data.get('id')
+  trigger_action = data.get('action')
+  trigger_num_actions = data.get('num_actions')
+  trigger_with_user_id = data.get('user_id')
   
-  if interactive_device_id is None:
+  if trigger_id is None:
       return "id not provided", 400
-  if interactive_device_action is None:
+  if trigger_action is None:
       return "action not provided", 400
-  if interactive_device_num_actions is None:
+  if trigger_num_actions is None:
       return "num_actions not provided", 400
     
-  interactive_device = InteractiveDevice.find_by_id(interactive_device_id)
+  trigger = Trigger.find_by_id(trigger_id)
   
-  if interactive_device is None:
-      return "Interactive device not found", 400
+  if trigger is None:
+      return "trigger not found", 400
     
-  targets_objects = interactive_device.get_targets_per_device(interactive_device_action, interactive_device_num_actions, interactive_device_with_user_id)
+  targets_objects = trigger.get_targets_per_device(trigger_action, trigger_num_actions, trigger_with_user_id)
   
   if len(targets_objects) == 0:
-      return f"No targets set for {interactive_device_id} with action: {interactive_device_action}", 400
+      return f"No targets set for {trigger_id} with action: {trigger_action}", 400
   
   output_message = []
   for target_objects in targets_objects:
@@ -87,7 +87,7 @@ def receive_signal():
       output_message.append({
           'target_device_id': target_device_id,
           'target_action': target_action,
-          'num_actions': interactive_device_num_actions,
+          'num_actions': trigger_num_actions,
           'user_id': user_id,
           'status': 'sent',
       })
@@ -98,28 +98,28 @@ def receive_signal():
 
 @signals_blueprint.route('/signals/set', methods=['POST'])
 def set_signal():
-  interactive_device_id = request.json.get('interactive_device_id')
-  interactive_device_action = request.json.get('interactive_device_action')
-  interactive_device_num_actions = request.json.get('interactive_device_num_actions')
+  trigger_id = request.json.get('trigger_id')
+  trigger_action = request.json.get('trigger_action')
+  trigger_num_actions = request.json.get('trigger_num_actions')
   target_device_id = request.json.get('target_device_id')
   target_action = request.json.get('target_action')
   user_id = request.json.get('user_id')
   
-  if interactive_device_id is None:
-      return "No interactive device ID provided", 400
+  if trigger_id is None:
+      return "No trigger ID provided", 400
   if target_device_id is None:
       return "No target device ID provided", 400
   if target_action is None:
       return "No target action provided", 400
-  if interactive_device_action is None:
-      return "No interactive device action provided", 400
-  if interactive_device_num_actions is None:
-      return "No interactive device num actions provided", 400
+  if trigger_action is None:
+      return "No trigger action provided", 400
+  if trigger_num_actions is None:
+      return "No trigger num actions provided", 400
   
-  interactive_device = InteractiveDevice.find_by_id(interactive_device_id)
+  trigger = Trigger.find_by_id(trigger_id)
 
-  if interactive_device is None:
-      return "Interactive device not found", 400
+  if trigger is None:
+      return "trigger not found", 400
 
   target_device = TargetDevice.find_by_id(target_device_id)
   if target_device is None:
@@ -133,7 +133,7 @@ def set_signal():
   if target_action not in actions_ids:
       return "Target device does not have this action", 400
   try:
-      new_signal = interactive_device.add_target(interactive_device_action, interactive_device_num_actions, target_device_id, target_action, user_id)
+      new_signal = trigger.add_target(trigger_action, trigger_num_actions, target_device_id, target_action, user_id)
       return jsonify({
         'message': 'Signal set',
         'signal': new_signal

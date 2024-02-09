@@ -8,9 +8,9 @@ def test_connection(wakeup_server_url):
     except requests.exceptions.RequestException as e:
         return False
       
-def create_interactive_device(wakeup_server_url, device_type):
+def create_trigger(wakeup_server_url, device_type):
     try:
-        response = requests.post(f"{wakeup_server_url}/interactive_devices", json={"type": device_type})
+        response = requests.post(f"{wakeup_server_url}/triggers", json={"type": device_type})
         if response.status_code == 201:
             print(f"Device created successfully. ID: {response.json()['id']}")
             return response.json()["id"]

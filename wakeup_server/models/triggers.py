@@ -1,5 +1,5 @@
 from sqlalchemy import Column, String, insert
-from models.devices_target_map import signal_to_json, interactive_target_association
+from models.triggers_target_map import signal_to_json, trigger_target_association
 from models.users import User
 from db import db
 from zmq_client import zmq_client
@@ -7,13 +7,13 @@ from constants import DEV_MODE
 from sqlalchemy.exc import NoResultFound
 import uuid
 
-class InteractiveDevice(db.Model):
-  __tablename__ = 'interactive_devices'
+class Trigger(db.Model):
+  __tablename__ = 'triggers'
   
   id = Column(String, primary_key=True)
   name = Column(String)
   type = Column(String)
-  target_devices = db.relationship("TargetDevice", secondary=interactive_target_association, back_populates="interactive_devices")
+  target_devices = db.relationship("TargetDevice", secondary=trigger_target_association, back_populates="triggers")
   
   def __init__(self, device_id, name, device_type):
     self.id = device_id
@@ -23,7 +23,7 @@ class InteractiveDevice(db.Model):
     
   def create(self):
     try:
-        stmt = insert(InteractiveDevice).values(id=self.id, name=self.name, type=self.type)
+        stmt = insert(Trigger).values(id=self.id, name=self.name, type=self.type)
         db.session.execute(stmt)
         db.session.commit()
     except Exception as e:
@@ -41,15 +41,15 @@ class InteractiveDevice(db.Model):
   
   @staticmethod
   def find_by_id(device_id):
-    return db.session.query(InteractiveDevice).filter_by(id=device_id).first()
+    return db.session.query(Trigger).filter_by(id=device_id).first()
   
   @staticmethod
   def find_all():
-    return db.session.query(InteractiveDevice).all()
+    return db.session.query(Trigger).all()
   
   @staticmethod
   def delete_by_id(device_id):
-    device = db.session.query(InteractiveDevice).filter_by(id=device_id).first()
+    device = db.session.query(Trigger).filter_by(id=device_id).first()
     if device:
       db.session.delete(device)
       db.session.commit()
@@ -58,7 +58,7 @@ class InteractiveDevice(db.Model):
   
   @staticmethod
   def update_by_id(device_id, device_name, device_type):
-    device = db.session.query(InteractiveDevice).filter_by(id=device_id).first()
+    device = db.session.query(Trigger).filter_by(id=device_id).first()
     if device:
       device.type = device_type
       device.name = device_name
@@ -67,15 +67,15 @@ class InteractiveDevice(db.Model):
     return False
   
   def get_targets(self):
-    targets = db.session.query(interactive_target_association).filter_by(interactive_device_id=self.id).all()
-    return {target.interactive_action: {'id': target.target_device_id, 'action': target.target_action, 'user_id': target.user_id} for target in targets}
+    targets = db.session.query(trigger_target_association).filter_by(trigger_id=self.id).all()
+    return {target.trigger_action: {'id': target.target_device_id, 'action': target.target_action, 'user_id': target.user_id} for target in targets}
   
   def get_targets_per_device(self, action, num_actions, user_id=None):
-    targets = db.session.query(interactive_target_association).filter_by(interactive_device_id=self.id, interactive_action=action, interactive_device_num_actions=num_actions, user_id=user_id).all()
+    targets = db.session.query(trigger_target_association).filter_by(trigger_id=self.id, trigger_action=action, trigger_num_actions=num_actions, user_id=user_id).all()
     return [{'matter_id': target.target_device_id, 'action': target.target_action, 'user_id': target.user_id} for target in targets]
   
   def get_signals(self):
-    signals = db.session.query(interactive_target_association).filter_by(interactive_device_id=self.id).all()
+    signals = db.session.query(trigger_target_association).filter_by(trigger_id=self.id).all()
     return [signal_to_json(signal) for signal in signals]
   
   def add_target(self, action, num_actions, target_device_id, target_action, user_id=None):
@@ -96,33 +96,33 @@ class InteractiveDevice(db.Model):
     else:
       print("Warning: ZMQ Client inactive in Dev Mode")
       
-    is_already_set = db.session.query(interactive_target_association).filter_by(
-          interactive_device_id=self.id, 
-          interactive_action=action,
-          interactive_device_num_actions=num_actions,
+    is_already_set = db.session.query(trigger_target_association).filter_by(
+          trigger_id=self.id, 
+          trigger_action=action,
+          trigger_num_actions=num_actions,
           target_device_id=target_device_id,
           user_id=user_id,
     ).first()
     
     if is_already_set:
-        update_signal = interactive_target_association.update(
+        update_signal = trigger_target_association.update(
         ).where(
-          interactive_target_association.c.id == is_already_set.id
+          trigger_target_association.c.id == is_already_set.id
         ).values(
-          interactive_device_id=self.id,
-          interactive_action=action,
-          interactive_device_num_actions=num_actions,
+          trigger_id=self.id,
+          trigger_action=action,
+          trigger_num_actions=num_actions,
           target_device_id=target_device_id,
           target_action=target_action,
           user_id=user_id
         )
         db.session.execute(update_signal)
     else:
-        new_signal = interactive_target_association.insert().values(
+        new_signal = trigger_target_association.insert().values(
             id=uuid.uuid4(),
-            interactive_device_id=self.id,
-            interactive_action=action,
-            interactive_device_num_actions=num_actions,
+            trigger_id=self.id,
+            trigger_action=action,
+            trigger_num_actions=num_actions,
             target_device_id=target_device_id,
             target_action=target_action,
             user_id=user_id
@@ -131,17 +131,17 @@ class InteractiveDevice(db.Model):
         
     db.session.commit()
     
-    new_signal = db.session.query(interactive_target_association).filter_by(
-        interactive_device_id=self.id, 
-        interactive_action=action, 
+    new_signal = db.session.query(trigger_target_association).filter_by(
+        trigger_id=self.id, 
+        trigger_action=action, 
         target_device_id=target_device_id, 
-        interactive_device_num_actions=num_actions, 
+        trigger_num_actions=num_actions, 
         user_id=user_id
       ).first()
     return signal_to_json(new_signal)
   
   def remove_target(self, action):
-    delete_target = interactive_target_association.delete().where(interactive_target_association.c.interactive_device_id == self.id).where(interactive_target_association.c.interactive_action == action)
+    delete_target = trigger_target_association.delete().where(trigger_target_association.c.trigger_id == self.id).where(trigger_target_association.c.trigger_action == action)
     db.session.execute(delete_target)
     db.session.commit()
 

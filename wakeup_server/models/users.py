@@ -1,5 +1,5 @@
-from models.devices_target_map import interactive_target_association
-from models.devices_target_map import signal_to_json
+from models.triggers_target_map import trigger_target_association
+from models.triggers_target_map import signal_to_json
 from db import db
 import uuid
 
@@ -75,5 +75,5 @@ class User(db.Model):
     return False
   
   def get_signals(self):
-    signals = db.session.query(interactive_target_association).filter_by(user_id=self.id).all()
+    signals = db.session.query(trigger_target_association).filter_by(user_id=self.id).all()
     return [signal_to_json(signal) for signal in signals]

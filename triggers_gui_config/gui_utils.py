@@ -1,5 +1,5 @@
 import tkinter as tk
-from .requests_utils import test_connection, create_interactive_device
+from .requests_utils import test_connection, create_trigger
 from .env_vars_utils import get_env_vars
 from dotenv import load_dotenv
 WAKEUP_SERVER_URL_INDEX = -1
@@ -57,7 +57,7 @@ def on_configure_button_click(filename, labels, entries, root, message_label, en
         if test_connection(wakeup_server_url):
             if device_id is None:
                 message_label.config(text="CREATING DEVICE...", fg="blue")
-                device_id = create_interactive_device(wakeup_server_url, entries[-1].get())
+                device_id = create_trigger(wakeup_server_url, entries[-1].get())
                 
             message_label.config(text=f"Connection test successful. Please CLOSE the window.", fg="green")
             print(f"Writting to {filename}")
