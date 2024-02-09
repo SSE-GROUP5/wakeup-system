@@ -4,12 +4,12 @@ services:
   wakeup:
     build: 
       context: ./
-      dockerfile: wakeup-server/Dockerfile
-    container_name: wakeup-server
+      dockerfile: wakeup_server/Dockerfile
+    container_name: wakeup_server
     ports:
       - 5001:5001
     env_file:
-      - wakeup-server/.env.compose
+      - wakeup_server/.env.compose
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5001"]
       interval: 30s

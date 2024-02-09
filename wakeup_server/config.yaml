@@ -3,7 +3,7 @@
 
 name: Wakeup Server
 version: 0.1.1
-slug: wakeup-server
+slug: wakeup_server
 description: Wakeup Server
 init: false
 hassio_api: true

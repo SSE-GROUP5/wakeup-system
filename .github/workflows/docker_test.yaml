@@ -31,10 +31,10 @@ jobs:
         run: python -m pip install --upgrade pip
 
       - name: Install dependencies
-        run: pip3 install -r wakeup-server/requirements.txt && cd zeromq && pip install . && cd ..
+        run: pip3 install -r wakeup_server/requirements.txt && cd zeromq && pip install . && cd ..
       
       - name: Run pytest
-        run:  cd wakeup-server && pytest
+        run:  cd wakeup_server && pytest
 
       - name: Build Docker image
         run: docker-compose build
@@ -43,4 +43,4 @@ jobs:
         run: docker-compose up -d
 
       - name: Run tests inside container
-        run: docker exec wakeup-server pytest
+        run: docker exec wakeup_server pytest
