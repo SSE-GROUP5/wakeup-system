@@ -10,3 +10,4 @@ moviepy
 transformers
 scipy
 ipywidgets
+psutil

@@ -10,6 +10,8 @@ from queue import Queue
 from time import sleep
 from sys import platform
 import re
+import psutil
+import time
 
 # Function to check for repetitive sounds
 def check_repetitive_sounds(text):
@@ -23,7 +25,7 @@ def check_repetitive_sounds(text):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--model", default="medium", help="Model to use",
+    parser.add_argument("--model", default="base", help="Model to use",
                         choices=["tiny", "base", "small", "medium", "large"])
     parser.add_argument("--non_english", action='store_true',
                         help="Don't use the English model.")
@@ -76,8 +78,13 @@ def main():
         recorder.adjust_for_ambient_noise(source)
 
     def record_callback(_, audio: sr.AudioData) -> None:
+        start_time = time.time()  # Start time for inference
+        cpu_before = psutil.cpu_percent(interval=None)
+        memory_before = psutil.virtual_memory().percent
+
         data = audio.get_raw_data()
-        data_queue.put(data)
+        data_queue.put((data, start_time, cpu_before, memory_before))
+
 
     recorder.listen_in_background(source, record_callback, phrase_time_limit=args.record_timeout)
 
@@ -92,13 +99,21 @@ def main():
                     phrase_complete = True
                 phrase_time = now
                 
-                audio_data = b''.join(data_queue.queue)
-                data_queue.queue.clear()
+                audio_data, start_time, cpu_before, memory_before = data_queue.get()  # Adjusted to unpack performance metrics
                 
                 audio_np = np.frombuffer(audio_data, dtype=np.int16).astype(np.float32) / 32768.0
 
                 result = audio_model.transcribe(audio_np, fp16=torch.cuda.is_available())
                 text = result['text'].strip()
+
+                # Performance metrics
+                inference_time = time.time() - start_time
+                cpu_after = psutil.cpu_percent(interval=None)
+                memory_after = psutil.virtual_memory().percent
+
+                print(f"Inference Time: {inference_time:.2f} seconds")
+                print(f"CPU Usage Increase: {cpu_after - cpu_before:.2f}%")
+                print(f"Memory Usage Increase: {memory_after - memory_before:.2f}%")
 
                 # Check for repetitive sounds after each transcription
                 check_repetitive_sounds(text)
@@ -116,6 +131,7 @@ def main():
                 sleep(0.25)
         except KeyboardInterrupt:
             break
+
 
     print("\n\nTranscription:")
     for line in transcription:
