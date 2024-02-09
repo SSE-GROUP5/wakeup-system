@@ -6,7 +6,7 @@ Youtube Channel: https://www.youtube.com/c/aiphile
 '''
 import cv2 as cv 
 import numpy as np
-
+import math
 # colors 
 # values =(blue, green, red) opencv accepts BGR values not RGB
 BLACK = (0,0,0)
@@ -22,6 +22,8 @@ PURPLE = (128,0,128)
 ORANGE = (0,165,255)
 PINK = (147,20,255)
 points_list =[(200, 300), (150, 150), (400, 200)]
+
+
 def drawColor(img, colors):
     x, y = 0,10
     w, h = 20, 30
@@ -131,10 +133,6 @@ def fillPolyTrans(img, points, color, opacity):
     cv.polylines(img, [list_to_np_array], True, color,1, cv.LINE_AA)
     return img
 
-# def pollyLines(img, points, color):
-#     list_to_np_array = np.array(points, dtype=np.int32)
-#     cv.polylines(img, [list_to_np_array], True, color,1, cv.LINE_AA)
-#     return img
 
 def rectTrans(img, pt1, pt2, color, thickness, opacity):
     """
@@ -154,24 +152,40 @@ def rectTrans(img, pt1, pt2, color, thickness, opacity):
 
     return img
 
-def main():
-    cap = cv.VideoCapture('Girl.mp4')
-    counter =0
-    while True:
-        success, img = cap.read()
-        # img = np.zeros((1000,1000, 3), dtype=np.uint8)
-        img=rectTrans(img, pt1=(30, 320), pt2=(160, 260), color=(0,255,255),thickness=-1, opacity=0.6)
-        img =fillPolyTrans(img=img, points=points_list, color=(0,255,0), opacity=.5)
-        drawColor(img, [BLACK,WHITE ,BLUE,RED,CYAN,YELLOW,MAGENTA,GRAY ,GREEN,PURPLE,ORANGE,PINK])
-        textBlurBackground(img, 'Blured Background Text', cv.FONT_HERSHEY_COMPLEX, 0.8, (60, 140),2, YELLOW, (71,71), 13, 13)
-        img=textWithBackground(img, 'Colored Background Texts', cv.FONT_HERSHEY_SIMPLEX, 0.8, (60,80), textThickness=2, bgColor=GREEN, textColor=BLACK, bgOpacity=0.7, pad_x=6, pad_y=6)
-        imgGray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
-        # cv.imwrite('color_image.png', img)
-        counter +=1
-        cv.imshow('img', img)
-        cv.imwrite(f'image/image_{counter}.png', img)
-        if cv.waitKey(1) ==ord('q'):
-            break
 
-if __name__ == "__main__":
-    main()
+def euclaideanDistance(point, point1):
+    x, y = point
+    x1, y1 = point1
+    distance = math.sqrt((x1 - x)**2 + (y1 - y)**2)
+    return distance
+
+
+def blinkRatio(img, landmarks, right_indices, left_indices):
+    rh_right = landmarks[right_indices[0]]
+    rh_left = landmarks[right_indices[8]]
+    rv_top = landmarks[right_indices[12]]
+    rv_bottom = landmarks[right_indices[4]]
+    lh_right = landmarks[left_indices[0]]
+    lh_left = landmarks[left_indices[8]]
+    lv_top = landmarks[left_indices[12]]
+    lv_bottom = landmarks[left_indices[4]]
+
+    rhDistance = euclaideanDistance(rh_right, rh_left)
+    rvDistance = euclaideanDistance(rv_top, rv_bottom)
+
+    lvDistance = euclaideanDistance(lv_top, lv_bottom)
+    lhDistance = euclaideanDistance(lh_right, lh_left)
+
+    reRatio = rhDistance/rvDistance
+    leRatio = lhDistance/lvDistance
+
+    ratio = (reRatio+leRatio)/2
+    return ratio 
+
+
+def landmarksDetection(img, results, draw=False):
+    img_height, img_width= img.shape[:2]
+    mesh_coord = [(int(point.x * img_width), int(point.y * img_height)) for point in results.multi_face_landmarks[0].landmark]
+    if draw :
+        [cv.circle(img, p, 2, (0,255,0), -1) for p in mesh_coord]
+    return mesh_coord

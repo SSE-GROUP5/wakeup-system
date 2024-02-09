@@ -16,14 +16,19 @@ def create_app(url="sqlite:///wakeup.sqlite"):
     app.register_blueprint(signals_blueprint)
     app.register_blueprint(target_devices_blueprint)
     app.register_blueprint(users_blueprint)
-    @app.route('/')
-    def hello_world():
+    @app.route('/health')
+    def health_check():
         is_HA_running = homeassistant_client.health_check()
         # return json response
         return { 
           'message': 'Hello, World!', 
           'HA_status': 'ALIVE' if is_HA_running else 'DEAD'
         }
+        
+    @app.route('/')
+    def index():
+        return "OK"
+    
         
     
     db.init_app(app)

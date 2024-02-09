@@ -18,4 +18,4 @@ class ZMQClient:
 
 if __name__ == "__main__":
   client = ZMQClient("tcp://localhost:5556")
-  client.send_data("Camera", {"task": "3_taps"})
+  client.send_data("andy_vision", {"MIN_BLINKING_TIME": 3})
