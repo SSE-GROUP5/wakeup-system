@@ -9,7 +9,6 @@ from dotenv import load_dotenv
 import os
 import sys
 import requests
-import beepy
 
 
 current_dir = os.path.dirname(os.path.realpath(__file__))
@@ -20,6 +19,7 @@ def is_exe_file():
 custom_modules_path = "./" if is_exe_file() else current_dir + "/../"  
 sys.path.append(custom_modules_path)
 from zeromq.zmqServer import ZeroMQServer
+import beepy
 
 
 if not os.path.exists('.env.morse_vision'):
