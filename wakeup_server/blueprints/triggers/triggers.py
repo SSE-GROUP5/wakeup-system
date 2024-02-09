@@ -1,12 +1,12 @@
 from flask import Blueprint, request, jsonify
-from models.interactive_devices import InteractiveDevice
+from models.triggers import Trigger
 from sqlalchemy.exc import IntegrityError
 import uuid
 
-interactive_devices_blueprint = Blueprint('interactive_devices', __name__)
+triggers_blueprint = Blueprint('triggers', __name__)
 
-@interactive_devices_blueprint.route('/interactive_devices', methods=['POST'])
-def create_interactive_device():
+@triggers_blueprint.route('/triggers', methods=['POST'])
+def create_trigger():
   data = request.get_json()
   # Extract the necessary information from the data
   device_type = data.get('type')
@@ -20,9 +20,9 @@ def create_interactive_device():
 
   try: 
       device_id = str(uuid.uuid4())
-      new_device = InteractiveDevice(device_id, device_name, device_type)
+      new_device = Trigger(device_id, device_name, device_type)
       new_device.create()
-      new_device = InteractiveDevice.find_by_id(device_id)
+      new_device = Trigger.find_by_id(device_id)
       return new_device.json(), 201
   
   except IntegrityError:
@@ -33,14 +33,14 @@ def create_interactive_device():
       print(e)
       return "Unknown error", 400
 
-@interactive_devices_blueprint.route('/interactive_devices', methods=['GET'])
-def get_interactive_devices():
-    all_devices = InteractiveDevice.find_all()
+@triggers_blueprint.route('/triggers', methods=['GET'])
+def get_triggers():
+    all_devices = Trigger.find_all()
     return jsonify([device.json() for device in all_devices]), 200
     
-@interactive_devices_blueprint.route('/interactive_devices/<string:id>', methods=['GET'])
-def get_interactive_device(id):
-    device = InteractiveDevice.find_by_id(id)
+@triggers_blueprint.route('/triggers/<string:id>', methods=['GET'])
+def get_trigger(id):
+    device = Trigger.find_by_id(id)
     if device is None:
         return "Device not found", 404
     return jsonify(device.json()), 200

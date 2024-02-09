@@ -3,7 +3,7 @@ from scheduler.alert_scheduler import alert_scheduler
 from homeassistant.fake_matter_device import FAKE_MATTER_DEVICE
 from constants import HOMEASSISTANT_OFFLINE_MODE
 from sqlalchemy import Column, String, JSON
-from models.devices_target_map import interactive_target_association
+from models.triggers_target_map import trigger_target_association
 from db import db
 
 class TargetDevice(db.Model):
@@ -13,7 +13,7 @@ class TargetDevice(db.Model):
   name = Column(String)
   type = Column(String)
   possible_actions = Column(JSON, nullable=True)
-  interactive_devices = db.relationship("InteractiveDevice", secondary=interactive_target_association, back_populates="target_devices")
+  triggers = db.relationship("Trigger", secondary=trigger_target_association, back_populates="target_devices")
   
   def __init__(self, matter_id, name, type):
     self.matter_id = matter_id
@@ -58,7 +58,7 @@ class TargetDevice(db.Model):
     if target_type == "telegram":
       channel_id = self.matter_id.split(".")[1]
       message = "Alert ! Patient needs help ! \n To stop the alert, type /stop"
-      #TODO change with the actual picture path received from the interactive device
+      #TODO change with the actual picture path received from the trigger
       picture_path = "scheduler/patient_falling.jpg"
       alert_scheduler.start_alert(channel_id, message, picture_path)
       print("Action: " + action)
