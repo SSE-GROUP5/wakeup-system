@@ -52,7 +52,7 @@ data
 *venv*
 
 visionPython/config.json
-wakeup-server/instance
+wakeup_server/instance
 
 build
 dist
