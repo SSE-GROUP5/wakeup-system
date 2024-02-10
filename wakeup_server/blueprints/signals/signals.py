@@ -47,26 +47,27 @@ def stop_alert(channel_id):
 def receive_signal():
   data = request.get_json()
   trigger_id = data.get('id')
+  trigger_name = data.get('name')
   trigger_action = data.get('action')
   trigger_num_actions = data.get('num_actions')
   trigger_with_user_id = data.get('user_id')
   
-  if trigger_id is None:
-      return "id not provided", 400
+  if trigger_id is None and trigger_name is None:
+      return "No trigger id or name provided", 400
   if trigger_action is None:
       return "action not provided", 400
   if trigger_num_actions is None:
       return "num_actions not provided", 400
     
-  trigger = Trigger.find_by_id(trigger_id)
-  
+  trigger = Trigger.find_by_id(trigger_id) if trigger_id is not None else Trigger.find_by_name(trigger_name)
   if trigger is None:
       return "trigger not found", 400
-    
+
+  trigger_num_actions = trigger_num_actions.lower() if isinstance(trigger_num_actions, str) else trigger_num_actions
   targets_objects = trigger.get_targets_per_device(trigger_action, trigger_num_actions, trigger_with_user_id)
   
   if len(targets_objects) == 0:
-      return f"No targets set for {trigger_id} with action: {trigger_action}", 400
+      return f"No targets set for {trigger.name} with action: {trigger_action} and value: {trigger_num_actions}", 400
   
   output_message = []
   for target_objects in targets_objects:
@@ -99,14 +100,15 @@ def receive_signal():
 @signals_blueprint.route('/signals/set', methods=['POST'])
 def set_signal():
   trigger_id = request.json.get('trigger_id')
+  trigger_name = request.json.get('trigger_name')
   trigger_action = request.json.get('trigger_action')
   trigger_num_actions = request.json.get('trigger_num_actions')
   target_device_id = request.json.get('target_device_id')
   target_action = request.json.get('target_action')
   user_id = request.json.get('user_id')
   
-  if trigger_id is None:
-      return "No trigger ID provided", 400
+  if trigger_id is None and trigger_name is None:
+      return "No trigger ID or name provided", 400
   if target_device_id is None:
       return "No target device ID provided", 400
   if target_action is None:
@@ -116,7 +118,7 @@ def set_signal():
   if trigger_num_actions is None:
       return "No trigger num actions provided", 400
   
-  trigger = Trigger.find_by_id(trigger_id)
+  trigger = Trigger.find_by_id(trigger_id) if trigger_id is not None else Trigger.find_by_name(trigger_name)
 
   if trigger is None:
       return "trigger not found", 400

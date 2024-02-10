@@ -44,6 +44,10 @@ class Trigger(db.Model):
     return db.session.query(Trigger).filter_by(id=device_id).first()
   
   @staticmethod
+  def find_by_name(device_name):
+    return db.session.query(Trigger).filter_by(name=device_name).first()
+  
+  @staticmethod
   def find_all():
     return db.session.query(Trigger).all()
   
