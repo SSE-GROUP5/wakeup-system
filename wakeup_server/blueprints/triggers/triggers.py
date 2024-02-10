@@ -40,6 +40,21 @@ def create_trigger():
       print(e)
       return "Unknown error", 400
 
+@triggers_blueprint.route('/triggers/confirm', methods=['POST'])
+def confirm_trigger():
+    data = request.get_json()
+    device_id = data.get('id')
+    if device_id is None:
+        return "No name provided", 400
+    device = Trigger.find_by_id(device_id)
+    if device is None:
+        return "Device not found", 404
+    device.confirm()
+    return "Device confirmed", 200
+
+
+
+
 @triggers_blueprint.route('/triggers', methods=['GET'])
 def get_triggers():
     all_devices = Trigger.find_all()

@@ -91,12 +91,19 @@ def update_env_vars(config, msg):
   
 def save_picture(frame, file_name):
     cv.imwrite(file_name, frame)
-    
+
+def confirm_to_server():
+    try:
+        request = client.post(config["WAKEUP_SERVER_URL"]+"/triggers/confirm", json={'id': config["ID"]})
+        print(request.status_code)
+    except Exception as e:
+        print(e)
 
 with MAP_FACE_MESH.FaceMesh(min_detection_confidence =0.5, min_tracking_confidence=0.5) as face_mesh:
 
     last_health_check = time.time()
     is_connected = check_connection()
+    confirm_to_server()
     while True:
        
         message = mqServer.receive()

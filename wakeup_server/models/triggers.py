@@ -13,6 +13,7 @@ class Trigger(db.Model):
   id = Column(String, primary_key=True)
   name = Column(String)
   type = Column(String)
+  confirmed = Column(db.Boolean, default=False)
   target_devices = db.relationship("TargetDevice", secondary=trigger_target_association, back_populates="triggers")
   
   def __init__(self, device_id, name, device_type):
@@ -30,12 +31,16 @@ class Trigger(db.Model):
         print(e)
         raise e
   
+  def confirm(self):
+    self.confirmed = True
+    db.session.commit()
   
   def json(self):
     return {
       "id": self.id,
       "name": self.name,
       "type": self.type,
+      "confirmed": self.confirmed,
       "targets": self.get_targets()
     }
   
