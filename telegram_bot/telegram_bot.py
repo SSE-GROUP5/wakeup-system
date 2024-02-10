@@ -11,11 +11,15 @@ import os
 class TelegramBot:
   def __init__(self, token, wakeup_server_url):
     self.token = token
+    self.wakeup_server_url = wakeup_server_url
+    
+  async def get_channel_id(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await context.bot.send_message(chat_id=update.effective_message.chat_id, text="telegram."+str(update.effective_message.chat_id))
 
   async def remove_job(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Remove alert job."""
     channel_id = update.effective_message.chat_id
-    requests.post(f"{wakeup_server_url}/signals/stop_alert/{channel_id}")
+    requests.post(f"{self.wakeup_server_url}/signals/stop_alert/{channel_id}")
     await context.bot.send_message(chat_id=update.effective_message.chat_id, text="Alert stopped")
 
   def start(self):
@@ -25,6 +29,7 @@ class TelegramBot:
 
     # on different commands - answer in Telegram
     application.add_handler(CommandHandler("stop", self.remove_job))
+    application.add_handler(CommandHandler("id", self.get_channel_id))
 
     # Run the bot until the user presses Ctrl-C
     application.run_polling(allowed_updates=Update.ALL_TYPES)
