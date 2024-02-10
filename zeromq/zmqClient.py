@@ -6,10 +6,15 @@ class ZMQClient:
     self.context = zmq.Context()
     self.socket = self.context.socket(zmq.REQ)
     self.socket.connect(address)
+    self.socket.RCVTIMEO = 1000
 
   def send_data(self, topic, data):
     json_data = { "topic": topic, "data": data }
-    self.socket.send(json.dumps(json_data).encode())
+    try:
+      self.socket.send(json.dumps(json_data).encode(), zmq.NOBLOCK)
+    except Exception as e:
+      print(e)
+      print("Warning: ZMQ Server needs to be started to proceed.")
 
   def receive_reply(self):
     message = self.socket.recv_string()
