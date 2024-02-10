@@ -1,0 +1,12 @@
+pyaudio
+SpeechRecognition
+--extra-index-url https://download.pytorch.org/whl/cu116
+torch
+numpy
+git+https://github.com/openai/whisper.git
+openvino>=2023.1.0
+python-ffmpeg<=1.0.16
+moviepy
+transformers
+scipy
+ipywidgets
