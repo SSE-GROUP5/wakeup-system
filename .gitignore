@@ -65,3 +65,7 @@ dist
 
 # Pytest
 .pytest_cache
+
+# whisper openvino
+whisper_base_decoder
+whisper_base_encoder
