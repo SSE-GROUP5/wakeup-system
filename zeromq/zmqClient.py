@@ -18,4 +18,14 @@ class ZMQClient:
 
 if __name__ == "__main__":
   client = ZMQClient("tcp://localhost:5556")
-  client.send_data("andy_vision", {"MIN_BLINKING_TIME": 3})
+  client.send_data("andy_vision", 
+  { 
+    "WAKEUP_SERVER_URL": "http://localhost:5001",
+    "CHANNEL":0,
+    "CLOSED_EYES_FRAME":3.0,
+    "BLINKING_RATIO":4.5,
+    "MIN_BLINKING_TIME":0.1,
+    "MAX_SHORT_BLINKING_TIME":0.6,
+    "TIMEOUT_MORSE_READER":1.5,
+  })
+  print("Received: ", client.receive_reply())
