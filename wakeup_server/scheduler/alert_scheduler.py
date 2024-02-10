@@ -1,12 +1,18 @@
 from apscheduler.schedulers.background import BackgroundScheduler
 from scheduler.alert_jobs import send_alert
+import requests
+from constants import TELEGRAM_BOT_TOKEN as token
 
 class AlertScheduler:
   def __init__(self):
     self.scheduler = BackgroundScheduler()
   
   def start_alert(self, channel_id, message, picture_path: str=None):
-    self.add_job(lambda: send_alert(channel_id, message, picture_path), 'interval', 5, channel_id)
+    picture = open(picture_path, "rb") if picture_path else None
+    if picture:
+      requests.post(f"https://api.telegram.org/bot{token}/sendPhoto", data={"chat_id": channel_id}, files={"photo": picture})
+
+    self.add_job(lambda: send_alert(channel_id, message), 'interval', 5, channel_id)
     
   def stop_alert(self, channel_id):
     self.remove_job(channel_id)
