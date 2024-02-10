@@ -170,7 +170,7 @@ with MAP_FACE_MESH.FaceMesh(min_detection_confidence =0.5, min_tracking_confiden
                     has_bell_rung = False
                     can_start_morse = False
                     if decoded_letter and is_connected:
-                        client.post(config["WAKEUP_SERVER_URL"]+"/signals", data = {'id': config["ID"], 'action': 'morse', 'value': decoded_letter}) 
+                        client.post(config["WAKEUP_SERVER_URL"]+"/signals", json={'name': config["ID"], 'action': 'morse', 'num_actions': decoded_letter}) 
                   
             if len(letter) > 0:
               frame = vision_utils.rectTrans(frame, (mesh_coords[LEFT_EYE[8]][0]-150, mesh_coords[LEFT_EYE[8]][1]-150), (mesh_coords[LEFT_EYE[8]][0]-100, mesh_coords[LEFT_EYE[8]][1]-100), vision_utils.GREEN, -1, 0.5)

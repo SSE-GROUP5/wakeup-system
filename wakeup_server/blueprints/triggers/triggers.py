@@ -14,10 +14,17 @@ def create_trigger():
 
   # Perform any necessary validation on the data
   if device_type is None:
-    return "No device type provided", 400
+    return "No type provided", 400
   if device_name is None:
-    return "No device name provided", 400
+    return "No name provided", 400
+  if " " in device_name:
+    return {"message": "Device name cannot contain spaces"}, 400
 
+  device_name = device_name.strip()
+  name_already_exists = Trigger.find_by_name(device_name)
+  if name_already_exists is not None:
+    return {"message": "Device name already used"}, 409
+  
   try: 
       device_id = str(uuid.uuid4())
       new_device = Trigger(device_id, device_name, device_type)
