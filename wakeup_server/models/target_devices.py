@@ -1,7 +1,7 @@
 from homeassistant_client import homeassistant_client
 from scheduler.alert_scheduler import alert_scheduler
 from homeassistant.fake_matter_device import FAKE_MATTER_DEVICE
-from constants import HOMEASSISTANT_OFFLINE_MODE
+from constants import HOMEASSISTANT_OFFLINE_MODE, DATA_FOLDER_PATH
 from sqlalchemy import Column, String, JSON
 from models.triggers_target_map import trigger_target_association
 from db import db
@@ -52,14 +52,12 @@ class TargetDevice(db.Model):
       db.session.rollback()
       raise e
     
-  def do_action(self, action):
+  def do_action(self, action, picture_path=None):
     
     target_type = self.type.lower()
     if target_type == "telegram":
       channel_id = self.matter_id.split(".")[1]
       message = "Alert ! Patient needs help ! \n To stop the alert, type /stop"
-      #TODO change with the actual picture path received from the trigger
-      picture_path = "scheduler/patient_falling.jpg"
       alert_scheduler.start_alert(channel_id, message, picture_path)
       print("Action: " + action)
       return True

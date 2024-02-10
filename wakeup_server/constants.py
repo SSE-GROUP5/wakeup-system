@@ -3,6 +3,8 @@ import os
 
 load_dotenv()
 
+current_dir = os.path.dirname(os.path.realpath(__file__))
+
 HOSTNAME = os.getenv("HOSTNAME")
 PORT = os.getenv("PORT")
 ZERO_MQ_SERVER_URL = os.getenv("ZERO_MQ_SERVER_URL")
@@ -35,4 +37,6 @@ print(f"TELEGRAM_BOT_TOKEN is {is_telegram_bot_token_set}")
 print("HOMEASSISTANT_URL: " + HOMEASSISTANT_URL)
 print(f"DEV_MODE: {DEV_MODE}")
 print(f"HOMEASSISTANT_OFFLINE_MODE is {HOMEASSISTANT_OFFLINE_MODE}")
-    
+
+DATA_FOLDER_PATH = os.path.join(current_dir, "data")
+os.makedirs(DATA_FOLDER_PATH, exist_ok=True)
