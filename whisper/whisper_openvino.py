@@ -9,12 +9,11 @@ import time
 import os
 import ipywidgets as widgets
 
-ffmpeg_path = r"C:\Program Files\ffmpeg-master-latest-win64-gpl\bin"
-os.environ['PATH'] += os.pathsep + ffmpeg_path
+# For windows users only
+#ffmpeg_path = r"C:\Program Files\ffmpeg-master-latest-win64-gpl\bin"
+#os.environ['PATH'] += os.pathsep + ffmpeg_path
 WHISPER_ENCODER_OV = Path(f"whisper_base_encoder.xml")
 WHISPER_DECODER_OV = Path(f"whisper_base_decoder.xml")
-
-start_time = time.time()
 
 model_id = "base"
 model = whisper.load_model("base")
@@ -164,6 +163,7 @@ patch_whisper_for_ov_inference(model)
 model.encoder = OpenVINOAudioEncoder(core, WHISPER_ENCODER_OV, device=device.value)
 model.decoder = OpenVINOTextDecoder(core, WHISPER_DECODER_OV, device=device.value)
 print("Transcription started")
-result = model.transcribe("audio.mp3")
+start_time = time.time()
+result = model.transcribe("audio.mov")
 print(result["text"])
 print("OpenVINO Execution Time: {:.2f} seconds".format(time.time() - start_time))
