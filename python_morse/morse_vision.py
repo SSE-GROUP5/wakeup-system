@@ -29,24 +29,24 @@ if not os.path.exists('.env.morse_vision'):
 load_dotenv('.env.morse_vision')
 
 # variables for wakeup server that must be set in .env.morse_vision
-__WAKEUP_SERVER_URL= os.getenv('WAKEUP_SERVER_URL')
+WAKEUP_SERVER_URL= os.getenv('WAKEUP_SERVER_URL') or "http://192.168.1.1:5001"
 __ID= os.getenv('ID') 
 __ZMQ_SERVER= os.getenv('ZMQ_SERVER')
 
-if __WAKEUP_SERVER_URL is None or __ID is None or __ZMQ_SERVER is None:
-    print('Please set WAKEUP_SERVER_URL and ID and ZMQ_SERVER in .env.morse_vision file')
+if __ID is None or __ZMQ_SERVER is None:
+    print('Please set ID and ZMQ_SERVER in .env.morse_vision file')
     exit(1)
 
 client = requests.session()
 config = {
-    "WAKEUP_SERVER_URL": __WAKEUP_SERVER_URL,
+    "WAKEUP_SERVER_URL": WAKEUP_SERVER_URL,
     "ID": __ID,
-    "CHANNEL": int(os.getenv('CHANNEL')) or 0,
-    "CLOSED_EYES_FRAME":  float(os.getenv('CLOSED_EYES_FRAME')) or 3,
-    "BLINKING_RATIO": float(os.getenv('BLINKING_RATIO')) or 4.5,
-    "MIN_BLINKING_TIME": float(os.getenv('MIN_BLINKING_TIME')) or 0.1,
-    "MAX_SHORT_BLINKING_TIME": float(os.getenv('MAX_SHORT_BLINKING_TIME')) or 0.6,
-    "TIMEOUT_MORSE_READER": float(os.getenv('TIMEOUT_MORSE_READER')) or 1.5,
+    "CHANNEL": int(os.getenv('CHANNEL') or 0),
+    "CLOSED_EYES_FRAME":  float(os.getenv('CLOSED_EYES_FRAME') or 3),
+    "BLINKING_RATIO": float(os.getenv('BLINKING_RATIO') or 4.5) ,
+    "MIN_BLINKING_TIME": float(os.getenv('MIN_BLINKING_TIME') or 0.1),
+    "MAX_SHORT_BLINKING_TIME": float(os.getenv('MAX_SHORT_BLINKING_TIME') or 0.6) ,
+    "TIMEOUT_MORSE_READER": float(os.getenv('TIMEOUT_MORSE_READER') or 1.5),
     "ZMQ_SERVER": __ZMQ_SERVER
 }
 
@@ -67,14 +67,16 @@ has_bell_rung = False
 can_start_morse = False
 start_blinking_time = time.time()
 letter = ''
-
+decoded_letter = None
 
 def check_connection():
     try:
-        client.get(config["WAKEUP_SERVER_URL"])
-        return True
+        response = client.get(config["WAKEUP_SERVER_URL"], timeout=1)
+        if response.status_code == 200:
+            return b'OK' in response.content
     except requests.ConnectionError:
         return False
+    return False
 
 
 def update_env_vars(config, msg):
@@ -129,11 +131,20 @@ with MAP_FACE_MESH.FaceMesh(min_detection_confidence =0.5, min_tracking_confiden
                 if not has_bell_rung and not has_started_close_eyes and cef_counter > 30:
                   has_bell_rung = True
                   beepy.beep(sound=5)
+                
+                # Auto Cancel Morse Code Reader
+                if len(letter) > 0 and time.time() - last_blinking_time > config["TIMEOUT_MORSE_READER"] * 1.4:
+                  has_bell_rung = False
+                  letter = ''
+                  can_start_morse = False
+                  decoded_letter = None
+                  beepy.beep(sound=3)
 
 
                 if not can_start_morse and has_bell_rung:
                   can_start_morse = True
                   has_started_close_eyes = False
+                  decoded_letter = None
                 
                 if can_start_morse and not has_started_close_eyes:
                   has_started_close_eyes = True
@@ -175,6 +186,9 @@ with MAP_FACE_MESH.FaceMesh(min_detection_confidence =0.5, min_tracking_confiden
             if len(letter) > 0:
               frame = vision_utils.rectTrans(frame, (mesh_coords[LEFT_EYE[8]][0]-150, mesh_coords[LEFT_EYE[8]][1]-150), (mesh_coords[LEFT_EYE[8]][0]-100, mesh_coords[LEFT_EYE[8]][1]-100), vision_utils.GREEN, -1, 0.5)
                 ## End Morse Code Reader
+            else:
+              if decoded_letter is not None:
+                frame = vision_utils.colorBackgroundText(frame,  decoded_letter, FONTS, 2.5, (int(frame_height/2)-200, 200), 2, vision_utils.GREEN, pad_x=6, pad_y=6, )
                     
 
                 
