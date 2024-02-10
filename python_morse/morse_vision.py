@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 import os
 import sys
 import requests
-
+import base64
 
 current_dir = os.path.dirname(os.path.realpath(__file__))
 def is_exe_file():
@@ -88,6 +88,10 @@ def update_env_vars(config, msg):
         for key in config.keys():
             f.write(f'{key}={config[key]}\n')
     return config
+  
+def save_picture(frame, file_name):
+    cv.imwrite(file_name, frame)
+    
 
 with MAP_FACE_MESH.FaceMesh(min_detection_confidence =0.5, min_tracking_confidence=0.5) as face_mesh:
 
@@ -181,8 +185,18 @@ with MAP_FACE_MESH.FaceMesh(min_detection_confidence =0.5, min_tracking_confiden
                     has_bell_rung = False
                     can_start_morse = False
                     if decoded_letter and is_connected:
-                        client.post(config["WAKEUP_SERVER_URL"]+"/signals", json={'name': config["ID"], 'action': 'morse', 'num_actions': decoded_letter}) 
-                  
+                        filename = f'{__ID}.png'
+                        save_picture(frame, filename)
+                        try:
+                            picture_string = None
+                            with open(filename, 'rb') as img:
+                                picture_string = base64.b64encode(img.read()).decode('utf-8')
+                                
+                            request = client.post(config["WAKEUP_SERVER_URL"]+"/signals", json={'name': config["ID"], 'action': 'morse', 'num_actions': decoded_letter, 'picture': picture_string})
+                            print(request.status_code)
+                            
+                        except Exception as e:
+                            print(e)
             if len(letter) > 0:
               frame = vision_utils.rectTrans(frame, (mesh_coords[LEFT_EYE[8]][0]-150, mesh_coords[LEFT_EYE[8]][1]-150), (mesh_coords[LEFT_EYE[8]][0]-100, mesh_coords[LEFT_EYE[8]][1]-100), vision_utils.GREEN, -1, 0.5)
                 ## End Morse Code Reader

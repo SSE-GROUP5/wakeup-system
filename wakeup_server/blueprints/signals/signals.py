@@ -6,6 +6,8 @@ from models.users import User
 from sqlalchemy.exc import IntegrityError, NoResultFound
 from scheduler.alert_scheduler import alert_scheduler
 import uuid
+from constants import DATA_FOLDER_PATH
+import base64
 
 signals_blueprint = Blueprint('signals', __name__)
 
@@ -51,6 +53,7 @@ def receive_signal():
   trigger_action = data.get('action')
   trigger_num_actions = data.get('num_actions')
   trigger_with_user_id = data.get('user_id')
+  trigger_picture = data.get('picture')
   
   if trigger_id is None and trigger_name is None:
       return "No trigger id or name provided", 400
@@ -69,6 +72,20 @@ def receive_signal():
   if len(targets_objects) == 0:
       return f"No targets set for {trigger.name} with action: {trigger_action} and value: {trigger_num_actions}", 400
   
+  # if there is a picture in the request, save it
+  picutre_path = None
+  try:
+    if trigger_picture:
+        picture = base64.b64decode(trigger_picture)
+        picutre_path = f'{DATA_FOLDER_PATH}/{trigger_name}.png'
+        with open(picutre_path, 'wb') as img:
+            img.write(picture)
+            
+  except Exception as e:
+    print(e)
+    
+      
+  
   output_message = []
   for target_objects in targets_objects:
       target_device_id = target_objects.get('matter_id')
@@ -84,7 +101,7 @@ def receive_signal():
       if target_action not in possible_action_names:
           return "Target device does not have this action", 400
         
-      target_device.do_action(target_action)
+      target_device.do_action(target_action, picutre_path)
       output_message.append({
           'target_device_id': target_device_id,
           'target_action': target_action,
