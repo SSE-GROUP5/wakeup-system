@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from models.triggers import Trigger
 from sqlalchemy.exc import IntegrityError
+from zmq_client import zmq_client
 import uuid
 
 triggers_blueprint = Blueprint('triggers', __name__)
@@ -23,7 +24,7 @@ def create_trigger():
   device_name = device_name.strip()
   name_already_exists = Trigger.find_by_name(device_name)
   if name_already_exists is not None:
-    return {"message": "Device name already used"}, 409
+    return {"message": f"Device name already used by {name_already_exists.id}"}, 402 
   
   try: 
       device_id = str(uuid.uuid4())
@@ -50,4 +51,29 @@ def get_trigger(id):
     device = Trigger.find_by_id(id)
     if device is None:
         return "Device not found", 404
+    return jsonify(device.json()), 200
+
+
+@triggers_blueprint.route('/triggers/<string:id>', methods=['PUT'])
+def update_trigger(id):
+    device = Trigger.find_by_id(id)
+    if device is None:
+        device = Trigger.find_by_name(id)
+        
+    if device is None:
+        return "Device not found", 404
+    
+    data = request.get_json()
+    try:
+      print("Warning: ZMQ Server needs to be started to proceed.")
+      zmq_body = {}
+      for key, value in data.items():
+        zmq_body[key.upper()] = value
+      
+      zmq_client.send_data(device.id, zmq_body)
+      zmq_client.receive_reply()
+    except Exception as e:
+      print(e)
+      return f"Failed to send ZMQ message to trigger: {device.id}", 400
+    
     return jsonify(device.json()), 200
