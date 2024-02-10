@@ -1,26 +1,28 @@
 import pytest
 
-def test_create_device(client):
-    response = client.post("/triggers", json={"name": "test_1", "type": "SOUND"})
+def test_create_trigger(client):
+    response = client.post("/triggers", json={"name": "test_create_device", "type": "SOUND"})
     obj = response.get_json()
-    id = obj['id']
+    target_id = obj['id']
     name = obj['name']
     _type = obj['type']
-    assert response.status_code == 201 and len(id) == 36 and name == "test_1" and _type == "SOUND"
+    assert response.status_code == 201 and len(target_id) == 36 and name == name and _type == "SOUND"
 
-    return obj
 
 
 def test_get_device_by_id(client):
-    obj = test_create_device(client)
+    res = response = client.post("/triggers", json={"name": "test_get_device_by_id", "type": "SOUND"})
+    obj = res.get_json()
     response = client.get("/triggers/"+obj['id'])
     device = response.get_json()
     assert response.status_code == 200 and obj['id'] == device['id'] and obj['name'] == device['name'] and obj['type'] == device['type']
 
 
 def test_get_device(client):
-    obj1 = test_create_device(client)
-    obj2 = test_create_device(client)
+    res1 = response = client.post("/triggers", json={"name": "test_get_device_1", "type": "SOUND"})
+    res2 = response = client.post("/triggers", json={"name": "test_get_device_2", "type": "SOUND"})
+    obj1 = res1.get_json()
+    obj2 = res2.get_json()
 
     response = client.get("/triggers")
     device_list = response.get_json()

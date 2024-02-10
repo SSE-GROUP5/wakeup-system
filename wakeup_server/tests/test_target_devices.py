@@ -8,12 +8,11 @@ def test_create_device(client):
     name = obj['name']
     _type = obj['type']
     assert response.status_code == 201 and len(matter_id) == 18 and matter_id == "fake-matter-device" and name == "Fake Matter Device" and _type == "switch"
-
-    return obj
+  
 
 
 def test_get_device_by_id(client):
-    obj = test_create_device(client)
+    obj = client.post("/target_devices", json={"matter_id": "fake-matter-device", "name": "Fake Matter Device", "type": "switch"}).get_json()
     response = client.get("/target_devices/"+obj['matter_id'])
     device = response.get_json()
     assert response.status_code == 200 and obj['matter_id'] == device['matter_id'] and obj['name'] == device['name'] and obj['type'] == device['type']
