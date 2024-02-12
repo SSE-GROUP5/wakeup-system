@@ -4,6 +4,8 @@ from constants import HOMEASSISTANT_URL
 from homeassistant.Models.Switch import Switch
 from homeassistant.Models.Media_Player import Media_Player
 from requests.exceptions import ConnectionError
+import datetime
+import json
 
 class HomeAssistantClient:
     def __init__(self, token):
@@ -124,4 +126,101 @@ class HomeAssistantClient:
                 elif state['entity_id'].startswith('media_player.'):
                     return Media_Player(state['entity_id'], self)
         return None
+
+    def getLogsPerEntity(self, entity_id):
+        today_date = datetime.date.today()
+        yesterday_date = today_date - datetime.timedelta(days=1)
+        today_date_complete = str(today_date) + "T12:00:00.000000"  #should be T00:00:00.000000 if midnight is the retrieval time
+        yesterday_date_complete = str(yesterday_date) + "T12:00:00.000000" #should be T00:00:00.000000 
+        request_string = "history/period/" + yesterday_date_complete + "?filter_entity_id=" + str(entity_id) + "&end_time=" + today_date_complete
+        data = self._make_request(request_string, method='get')
+        day_usage_data = data[0]
+
+        number_of_toggles = 0
+        for entry in day_usage_data:
+            if(entry['state'] != "unavailable"):
+                number_of_toggles += 1
+        print("Number of toggles:", number_of_toggles)
+
+        total_on_time = []
+        start_time = None
+        end_time = None
+        first_iteration = True
+        for entry in day_usage_data:
+            if(entry['state'] == "on"):
+                start_time = entry['last_changed']
+                if first_iteration:
+                    on_time = datetime.datetime.fromisoformat(start_time) - datetime.datetime.fromisoformat(yesterday_date_complete + "+00:00")
+                    total_on_time.append(on_time)
+            if(entry['state'] != "on" and start_time != None):
+                end_time = entry['last_changed']
+                on_time = datetime.datetime.fromisoformat(end_time) - datetime.datetime.fromisoformat(start_time)
+                total_on_time.append(on_time)
+                start_time = None
+                end_time = None
+            first_iteration = False
+        if(start_time != None):
+            on_time = datetime.datetime.fromisoformat(today_date_complete + "+00:00") - datetime.datetime.fromisoformat(start_time)
+            total_on_time.append(on_time)
+        total_on_time_result = total_on_time[0]
+        for i in range(1, len(total_on_time)):
+            total_on_time_result += total_on_time[i]
+        print("Total on time:" , total_on_time_result)
+        
+        total_off_time = []
+        start_time = None
+        end_time = None
+        first_iteration = True
+        for entry in day_usage_data:
+            if(entry['state'] == "off"):
+                start_time = entry['last_changed']
+                if first_iteration:
+                    off_time = datetime.datetime.fromisoformat(start_time) - datetime.datetime.fromisoformat(yesterday_date_complete + "+00:00")
+                    total_off_time.append(off_time)
+            if(entry['state'] != "off" and start_time != None):
+                end_time = entry['last_changed']
+                off_time = datetime.datetime.fromisoformat(end_time) - datetime.datetime.fromisoformat(start_time)
+                total_off_time.append(off_time)
+                start_time = None
+                end_time = None
+            first_iteration = False
+        if(start_time != None):
+            off_time = datetime.datetime.fromisoformat(today_date_complete + "+00:00") - datetime.datetime.fromisoformat(start_time)
+            total_off_time.append(off_time)
+        total_off_time_result = total_off_time[0]
+        for i in range(1, len(total_off_time)):
+            total_off_time_result += total_off_time[i]
+        print("Total off time:" , total_off_time_result)
+
+        total_unavailable_time = []
+        start_time = None
+        end_time = None
+        first_iteration = True
+        for entry in day_usage_data:
+            if(entry['state'] == "unavailable"):
+                start_time = entry['last_changed']
+                if first_iteration:
+                    unavailable_time = datetime.datetime.fromisoformat(start_time) - datetime.datetime.fromisoformat(yesterday_date_complete + "+00:00")
+                    total_unavailable_time.append(unavailable_time)
+            if(entry['state'] != "unavailable" and start_time != None):
+                end_time = entry['last_changed']
+                unavailable_time = datetime.datetime.fromisoformat(end_time) - datetime.datetime.fromisoformat(start_time)
+                total_unavailable_time.append(unavailable_time)
+                start_time = None
+                end_time = None
+            first_iteration = False
+        if(start_time != None):
+            unavailable_time = datetime.datetime.fromisoformat(today_date_complete + "+00:00") - datetime.datetime.fromisoformat(start_time)
+            total_unavailable_time.append(unavailable_time)
+        total_unavailable_time_result = total_unavailable_time[0]
+        for i in range(1, len(total_unavailable_time)):
+            total_unavailable_time_result += total_unavailable_time[i]
+        print("Total unavailable time:" , total_unavailable_time_result)
+
+        return today_date_complete, number_of_toggles, total_on_time_result, total_off_time_result, total_unavailable_time_result
+
+
+
+
+
 
