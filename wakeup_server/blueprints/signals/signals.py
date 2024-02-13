@@ -3,6 +3,7 @@ from models.triggers import Trigger
 from models.target_devices import TargetDevice
 from models.triggers_target_map import delete_signal_from_map
 from models.users import User
+from models.logs import SignalLogs as signal_logs
 from sqlalchemy.exc import IntegrityError, NoResultFound
 from scheduler.alert_scheduler import alert_scheduler
 import uuid
@@ -102,6 +103,8 @@ def receive_signal():
           return "Target device does not have this action", 400
         
       target_device.do_action(target_action, picutre_path)
+      signal = trigger.get_signal(trigger_action, trigger_num_actions, target_device_id, user_id)
+      signal_logs.info(signal_id=signal['id'])
       output_message.append({
           'target_device_id': target_device_id,
           'target_action': target_action,

@@ -87,6 +87,10 @@ class Trigger(db.Model):
     signals = db.session.query(trigger_target_association).filter_by(trigger_id=self.id).all()
     return [signal_to_json(signal) for signal in signals]
   
+  def get_signal(self, action, num_actions, target_device_id, user_id=None):
+    signal = db.session.query(trigger_target_association).filter_by(trigger_id=self.id, trigger_action=action, trigger_num_actions=num_actions, target_device_id=target_device_id, user_id=user_id).first()
+    return signal_to_json(signal)
+  
   def add_target(self, action, num_actions, target_device_id, target_action, user_id=None):
     
     if user_id is not None:
@@ -101,7 +105,6 @@ class Trigger(db.Model):
         zmq_client.receive_reply()
       except Exception as e:
         print(e)
-        raise e
     else:
       print("Warning: ZMQ Client inactive in Dev Mode")
       
