@@ -23,8 +23,6 @@ from mediapipe.tasks.python.audio.core import audio_record
 from mediapipe.tasks.python.components import containers
 from mediapipe.tasks.python import audio
 
-from triggers_gui_config.triggers_gui_config import tkinter_configuration
-
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 def get_model_path():
 	# Determine if we are running in a bundled environment and set the base path
@@ -101,7 +99,7 @@ def run(model: str, max_results: int, score_threshold: float,
 
 	# Initialize variables for debouncing mechanism
 	last_detection_time = 0
-	detection_interval = 0.5  # 500 milliseconds
+	detection_interval = 1  # 1 second
 
 	# Start the audio recording
 	record.start_recording()
@@ -122,15 +120,20 @@ def run(model: str, max_results: int, score_threshold: float,
 
 		# Process classification results
 		if classification_result_list:
+			# print(f'Classification results: {classification_result_list}')
 			current_time = time.time()
 			for result in classification_result_list:
 				for classification in result.classifications:
 					for category in classification.categories:
 						# Check for specific events and apply debouncing
-						if category.category_name in ['Finger snapping', 'Knock']:
+						if category.category_name == 'Finger snapping':
 							if (current_time - last_detection_time) > detection_interval:
-								print(f"{category.category_name} detected.")
+								print("Finger snapping detected.")
 								last_detection_time = current_time
+						# elif category.category_name == 'Clapping':
+						# 	if (current_time - last_detection_time) > detection_interval:
+						# 		print("Clapping detected.")
+						# 		last_detection_time = current_time
 
 					
 			# Clear the results list for next iteration
@@ -161,12 +164,11 @@ def main():
 		action='store_true') 
 	args = parser.parse_args()
 
-	SCORE_THRESHOLD = os.getenv("SCORE_THRESHOLD")
+	SCORE_THRESHOLD = 0  # Score threshold for classification results
 
 	# Run the main function with the parsed arguments
 	run(args.model, int(args.maxResults), float(SCORE_THRESHOLD), float(args.overlappingFactor), args.gui)
 
 if __name__ == '__main__':	
 
-  tkinter_configuration(env_path, ["SCORE_THRESHOLD"])
   main()
