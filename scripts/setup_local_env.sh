@@ -13,6 +13,7 @@ ZERO_MQ_SERVER_URL=tcp://localhost:5556
 DEV_MODE=false
 ADD_ON_HA=false
 TELEGRAM_BOT_TOKEN=""
+FHIR_DB_URL='https://hapi.fhir.org/baseR4/Patient/'
 
 while [[ "$#" -gt 0 ]]; do
     case $1 in
@@ -20,6 +21,7 @@ while [[ "$#" -gt 0 ]]; do
         -p|--wakeup_server-port) WAKEUP_SERVER_PORT="$2"; shift ;;
         -t|--homeassistant-token) HOMEASSISTANT_TOKEN="$2"; shift ;;
         -u|--homeassistant-url) HOMEASSISTANT_URL="$2"; shift ;;
+        -f|--fhir-url) FHIR_DB_URL="$2"; shift ;;
         -d|--dev-mode) DEV_MODE=true ;;
         -o|--homeassistant-offline-mode) HOMEASSISTANT_OFFLINE_MODE=true ;;
         -z|--zero-mq-server-url) ZERO_MQ_SERVER_URL="$2"; shift ;;
@@ -55,6 +57,7 @@ echo "HOMEASSISTANT_OFFLINE_MODE=$HOMEASSISTANT_OFFLINE_MODE" >> $DIRECTORY/../w
 echo "ZERO_MQ_SERVER_URL=$ZERO_MQ_SERVER_URL" >> $DIRECTORY/../wakeup_server/.env
 echo "DEV_MODE=$DEV_MODE" >> $DIRECTORY/../wakeup_server/.env
 echo "TELEGRAM_BOT_TOKEN=$TELEGRAM_BOT_TOKEN" >> $DIRECTORY/../wakeup_server/.env
+echo "FHIR_DB_URL=$FHIR_DB_URL" >> $DIRECTORY/../wakeup_server/.env
 
 # For Docker .env.compose
 echo "HOSTNAME=0.0.0.0" > $DIRECTORY/../wakeup_server/.env.compose
@@ -65,6 +68,7 @@ echo "HOMEASSISTANT_OFFLINE_MODE=$HOMEASSISTANT_OFFLINE_MODE" >> $DIRECTORY/../w
 echo "ZERO_MQ_SERVER_URL=$ZERO_MQ_SERVER_URL" >> $DIRECTORY/../wakeup_server/.env.compose
 echo "DEV_MODE=$DEV_MODE" >> $DIRECTORY/../wakeup_server/.env.compose
 echo "TELEGRAM_BOT_TOKEN=$TELEGRAM_BOT_TOKEN" >> $DIRECTORY/../wakeup_server/.env.compose
+echo "FHIR_DB_URL=$FHIR_DB_URL" >> $DIRECTORY/../wakeup_server/.env.compose
 
 
 # For telegram bot
