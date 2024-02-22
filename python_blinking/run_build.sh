@@ -7,4 +7,4 @@ pyinstaller \
   --add-data "$DIRECTORY/../zeromq:zeromq" \
   --add-data "$DIRECTORY/../venv/lib/python3.9/site-packages/zmq:zmq" \
   --add-data "$DIRECTORY/../venv/lib/python3.9/site-packages/mediapipe:mediapipe" \
-  --onefile "$DIRECTORY/blinkDetect.py"          
+  --onefile "$DIRECTORY/blink_detect.py"          
