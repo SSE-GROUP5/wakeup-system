@@ -2,11 +2,12 @@
 import cv2 as cv
 import mediapipe as mp
 import time
-import utils, math
+import utils
+from utils import landmarksDetection, blinkRatio
 import numpy as np
 from constants import Constants
-from requests import Session
-
+from requests import Session, ConnectionError
+from constants import LEFT_EYE, RIGHT_EYE
 import sys
 import os
 current_dir = os.path.dirname(os.path.realpath(__file__))
@@ -19,78 +20,46 @@ custom_modules_path = "./" if is_exe_file() else current_dir + "/../"
   
 sys.path.append(custom_modules_path)
 from zeromq.zmqServer import ZeroMQServer
+import beepy
 
-
-def send_signal(action: str):
+def send_signal(num_action: str):
     data = {
-        "id": config.ID,
-        "action": action
+        "id": config.env_vars["ID"],
+        "action": 'blink',
+        "num_actions": num_action
     }
-    response = client.post(f"{config.WAKEUP_SERVER_URL}/signals", json=data)
+    url = f"{config.env_vars['WAKEUP_SERVER_URL']}/signals"
+    response = client.post(f"{url}/signals", json=data)
     time.sleep(3)
     print(response.content)
     print(response)
 
+def confirm_to_server():
+    try:
+        request = client.post(config.env_vars["WAKEUP_SERVER_URL"]+"/triggers/confirm", json={'id': config.env_vars["ID"]})
+        print(request.status_code)
+        if request.status_code == 200:
+            print("Server confirmed")
+        elif request.status_code == 404:
+            print("Device not registered with server, please register the device first")
+    except Exception as e:
+        print(e)
 
-
-# landmark detection function 
-def landmarksDetection(img, results, draw=False):
-    img_height, img_width= img.shape[:2]
-    # list[(x,y), (x,y)....]
-    mesh_coord = [(int(point.x * img_width), int(point.y * img_height)) for point in results.multi_face_landmarks[0].landmark]
-    if draw :
-        [cv.circle(img, p, 2, (0,255,0), -1) for p in mesh_coord]
-
-    # returning the list of tuples for each landmarks 
-    return mesh_coord
-
-# Euclaidean distance 
-def euclaideanDistance(point, point1):
-    x, y = point
-    x1, y1 = point1
-    distance = math.sqrt((x1 - x)**2 + (y1 - y)**2)
-    return distance
-
-# Blinking Ratio
-def blinkRatio(img, landmarks, right_indices, left_indices):
-    # Right eyes 
-    # horizontal line 
-    rh_right = landmarks[right_indices[0]]
-    rh_left = landmarks[right_indices[8]]
-    # vertical line 
-    rv_top = landmarks[right_indices[12]]
-    rv_bottom = landmarks[right_indices[4]]
-    # draw lines on right eyes 
-    # cv.line(img, rh_right, rh_left, utils.GREEN, 2)
-    # cv.line(img, rv_top, rv_bottom, utils.WHITE, 2)
-
-    # LEFT_EYE 
-    # horizontal line 
-    lh_right = landmarks[left_indices[0]]
-    lh_left = landmarks[left_indices[8]]
-
-    # vertical line 
-    lv_top = landmarks[left_indices[12]]
-    lv_bottom = landmarks[left_indices[4]]
-
-    rhDistance = euclaideanDistance(rh_right, rh_left)
-    rvDistance = euclaideanDistance(rv_top, rv_bottom)
-
-    lvDistance = euclaideanDistance(lv_top, lv_bottom)
-    lhDistance = euclaideanDistance(lh_right, lh_left)
-
-    reRatio = rhDistance/rvDistance
-    leRatio = lhDistance/lvDistance
-
-    ratio = (reRatio+leRatio)/2
-    return ratio 
-
+def check_connection():
+    try:
+        response = client.get(config.env_vars["WAKEUP_SERVER_URL"], timeout=1)
+        if response.status_code == 200:
+            return b'OK' in response.content
+    except ConnectionError:
+        return False
+    return False
+  
 # variables 
 frame_counter =0
 CEF_COUNTER =0
 TOTAL_BLINKS =0
 
-config = Constants(envFilename = ".env.wakeup")
+config = Constants(envFilename = ".env.vision")
 
 
 FONTS =cv.FONT_HERSHEY_COMPLEX
@@ -100,31 +69,22 @@ client.headers.update({'Content-Type': 'application/json'})
 client.headers.update({'Accept': 'application/json'})
 mqServer = ZeroMQServer("tcp://*:5556")
 
-# face bounder indices 
-FACE_OVAL=[ 10, 338, 297, 332, 284, 251, 389, 356, 454, 323, 361, 288, 397, 365, 379, 378, 400, 377, 152, 148, 176, 149, 150, 136, 172, 58, 132, 93, 234, 127, 162, 21, 54, 103,67, 109]
-
-# lips indices for Landmarks
-LIPS=[ 61, 146, 91, 181, 84, 17, 314, 405, 321, 375,291, 308, 324, 318, 402, 317, 14, 87, 178, 88, 95,185, 40, 39, 37,0 ,267 ,269 ,270 ,409, 415, 310, 311, 312, 13, 82, 81, 42, 183, 78 ]
-LOWER_LIPS =[61, 146, 91, 181, 84, 17, 314, 405, 321, 375, 291, 308, 324, 318, 402, 317, 14, 87, 178, 88, 95]
-UPPER_LIPS=[ 185, 40, 39, 37,0 ,267 ,269 ,270 ,409, 415, 310, 311, 312, 13, 82, 81, 42, 183, 78] 
-# Left eyes indices 
-LEFT_EYE =[ 362, 382, 381, 380, 374, 373, 390, 249, 263, 466, 388, 387, 386, 385,384, 398 ]
-LEFT_EYEBROW =[ 336, 296, 334, 293, 300, 276, 283, 282, 295, 285 ]
-
-# right eyes indices
-RIGHT_EYE=[ 33, 7, 163, 144, 145, 153, 154, 155, 133, 173, 157, 158, 159, 160, 161 , 246 ]  
-RIGHT_EYEBROW=[ 70, 63, 105, 66, 107, 55, 65, 52, 53, 46 ]
 
 map_face_mesh = mp.solutions.face_mesh
 # camera object 
 camera = cv.VideoCapture(0)
-
+has_bell_rung = False
+has_repoen_eyes = False
 
 with map_face_mesh.FaceMesh(min_detection_confidence =0.5, min_tracking_confidence=0.5) as face_mesh:
 
     # starting time here 
     start_time = time.time()
     # starting Video loop here.
+    
+    last_health_check = time.time()
+    is_connected = check_connection()
+    confirm_to_server()
     while True:
         frame_counter +=1 # frame counter
         ret, frame = camera.read() # getting frame from camera 
@@ -135,12 +95,17 @@ with map_face_mesh.FaceMesh(min_detection_confidence =0.5, min_tracking_confiden
         message = mqServer.receive()
         if message != None:
             topic, msg = message
+            if topic == config.env_vars["ID"]:
+                config.updateEnvFile(msg)
 
-            if topic == "Camera":
-                config.updateConfig(msg)
-
-
-
+        # Check if the server is still connected
+        if time.time() - last_health_check > 5:
+            last_health_check = time.time()
+            is_connected = check_connection()
+        
+        color_server = utils.GREEN if is_connected else utils.RED
+        frame = utils.colorBackgroundText(frame,  f'WAKEUP SERVER: {is_connected}', FONTS, 1.7, (0, 50), 2, color_server, pad_x=6, pad_y=6, )
+            
         
         frame = cv.resize(frame, None, fx=1.5, fy=1.5, interpolation=cv.INTER_CUBIC)
         frame_height, frame_width= frame.shape[:2]
@@ -152,16 +117,26 @@ with map_face_mesh.FaceMesh(min_detection_confidence =0.5, min_tracking_confiden
             # cv.putText(frame, f'ratio {ratio}', (100, 100), FONTS, 1.0, utils.GREEN, 2)
             utils.colorBackgroundText(frame,  f'Ratio : {round(ratio,2)}', FONTS, 0.7, (30,100),2, utils.PINK, utils.YELLOW)
 
-            if ratio > config.BLINKING_RATIO:
+            if ratio > float(config.env_vars["BLINKING_RATIO"]):
                 CEF_COUNTER +=1
                 # cv.putText(frame, 'Blink', (200, 50), FONTS, 1.3, utils.PINK, 2)
                 utils.colorBackgroundText(frame,  f'Blink', FONTS, 1.7, (int(frame_height/2), 100), 2, utils.YELLOW, pad_x=6, pad_y=6, )
 
+                if (not has_bell_rung) and CEF_COUNTER > int(config.env_vars["CLOSED_EYES_FRAME"]):
+                      has_bell_rung = True
+                      beepy.beep(sound=5)
+          
+
             else:
-                if CEF_COUNTER > config.CLOSED_EYES_FRAME:
+                if CEF_COUNTER > int(config.env_vars["CLOSED_EYES_FRAME"]):
                     TOTAL_BLINKS +=1
                     LAST_BLINKING_TIME = time.time()
-                    CEF_COUNTER =0
+                    has_bell_rung = False
+                    has_repoen_eyes = False
+                
+                CEF_COUNTER = 0
+                
+                    
             # cv.putText(frame, f'Total Blinks: {TOTAL_BLINKS}', (100, 150), FONTS, 0.6, utils.GREEN, 2)
             utils.colorBackgroundText(frame,  f'Total Blinks: {TOTAL_BLINKS}', FONTS, 0.7, (30,150),2)
             
@@ -170,16 +145,9 @@ with map_face_mesh.FaceMesh(min_detection_confidence =0.5, min_tracking_confiden
         else:
             utils.colorBackgroundText(frame,  f'No Face Detected', FONTS, 2.5, (int(frame_height/2)-200, 200), 2, utils.RED, pad_x=6, pad_y=6, )
 
-
-        if(time.time() - LAST_BLINKING_TIME > config.TIMEOUT_SEC):
-            if(TOTAL_BLINKS == 2):
-                #TODO TURN ON LIGHT
-                print("LIGHT ON")
-                # send_signal("blink_2")
-            elif (TOTAL_BLINKS == 3):
-                #TODO TURN OFF LIGHT
-                print("LIGHT OFF")
-                # send_signal("blink_3")
+        if(TOTAL_BLINKS > 0 and time.time() - LAST_BLINKING_TIME > int(config.env_vars["TIMEOUT_SEC"])):
+            print('Sending signal')
+            send_signal(TOTAL_BLINKS)
             TOTAL_BLINKS = 0
 
 
