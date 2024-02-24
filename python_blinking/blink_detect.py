@@ -59,7 +59,7 @@ frame_counter =0
 CEF_COUNTER =0
 TOTAL_BLINKS =0
 
-config = Constants(envFilename = ".env.vision")
+config = Constants(envFilename = "env_trigger.txt")
 
 
 FONTS =cv.FONT_HERSHEY_COMPLEX
