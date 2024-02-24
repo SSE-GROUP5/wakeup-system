@@ -52,4 +52,4 @@ if __name__ == "__main__":
             return False
         return True
     
-    tkinter_configuration(".env.wakeup", ["TIMEOUT", "FRAME_RATE"], env_var_validation)
+    tkinter_configuration("env_trigger.txt", ["TIMEOUT", "FRAME_RATE"], env_var_validation)

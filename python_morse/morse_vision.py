@@ -22,19 +22,19 @@ from zeromq.zmqServer import ZeroMQServer
 import beepy
 
 
-if not os.path.exists('.env.morse_vision'):
-    print('Please create .env.morse_vision file \n In the file, please set WAKEUP_SERVER_URL and ID')
+if not os.path.exists('env_trigger.txt'):
+    print('Please create env_trigger.txt file \n In the file, please set WAKEUP_SERVER_URL and ID')
     exit(1)
 
-load_dotenv('.env.morse_vision')
+load_dotenv('env_trigger.txt')
 
-# variables for wakeup server that must be set in .env.morse_vision
+# variables for wakeup server that must be set in env_trigger.txt
 WAKEUP_SERVER_URL= os.getenv('WAKEUP_SERVER_URL') or "http://192.168.1.1:5001"
 __ID= os.getenv('ID') 
 __ZMQ_SERVER= os.getenv('ZMQ_SERVER')
 
-if __ID is None or __ZMQ_SERVER is None:
-    print('Please set ID and ZMQ_SERVER in .env.morse_vision file')
+if __ID is None or __ZMQ_SERVER is None or WAKEUP_SERVER_URL is None:
+    print('Please set ID, WAKEUP_SERVER_URL and ZMQ_SERVER in env_trigger.txt file')
     exit(1)
 
 client = requests.session()
@@ -84,7 +84,7 @@ def update_env_vars(config, msg):
         if key in msg:
             config[key] = msg[key]
             print(f'Updated {key} to {msg[key]}')
-    with open('.env.morse_vision', 'w') as f:
+    with open('env_trigger.txt', 'w') as f:
         for key in config.keys():
             f.write(f'{key}={config[key]}\n')
     return config

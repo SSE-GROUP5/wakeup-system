@@ -24,19 +24,19 @@ from zeromq.zmqServer import ZeroMQServer
 import beepy
 
 
-if not os.path.exists('.env.upper_fall_detection'):
-    print('Please create .env.upper_fall_detection file \n In the file, please set WAKEUP_SERVER_URL and ID')
+if not os.path.exists('env_trigger.txt'):
+    print('Please create env_trigger.txt file \n In the file, please set WAKEUP_SERVER_URL and ID')
     exit(1)
 
-load_dotenv('.env.upper_fall_detection')
+load_dotenv('env_trigger.txt')
 
-# variables for wakeup server that must be set in .env.upper_fall_detection
+# variables for wakeup server that must be set in env_trigger.txt
 __WAKEUP_SERVER_URL= os.getenv('WAKEUP_SERVER_URL')
 __ID= os.getenv('ID') 
 __ZMQ_SERVER= os.getenv('ZMQ_SERVER')
 
 if __ID is None or __ZMQ_SERVER is None or __WAKEUP_SERVER_URL is None:
-    print('Please set WAKEUP_SERVER_URL, ID and ZMQ_SERVER in .env.upper_fall_detection file')
+    print('Please set WAKEUP_SERVER_URL, ID and ZMQ_SERVER in env_trigger.txt file')
     exit(1)
 
 config = {

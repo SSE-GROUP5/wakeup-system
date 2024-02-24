@@ -17,16 +17,16 @@ class Constants:
         
         file_dir = os.path.dirname(os.path.abspath(__file__))
         if not os.path.exists(file_dir + "/" + self.file_name ):
-            raise Exception("No .env.vision file, please generate one")
+            raise Exception("No env_trigger.txt file, please generate one")
         
         self.updateConfig()
 
         if self.env_vars["WAKEUP_SERVER_URL"] is None:
             raise Exception("WAKEUP_SERVER_URL not found in .env")
         if self.env_vars["ID"] is None:
-            raise Exception("ID not found in .env.vision")
+            raise Exception("ID not found in env_trigger.txt")
         if self.env_vars["ZMQ_SERVER"] is None:
-            raise Exception("ZMQ_SERVER not found in .env.vision")
+            raise Exception("ZMQ_SERVER not found in env_trigger.txt")
 
     def updateConfig(self):
         load_dotenv(self.file_name)

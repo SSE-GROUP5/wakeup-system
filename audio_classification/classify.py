@@ -44,7 +44,7 @@ def get_current_path():
     return os.path.dirname(__file__)
 
 current_path = get_current_path()
-env_path = os.path.join(current_path, '.env.wakeup')
+env_path = os.path.join(current_path, 'env_trigger.txt')
 load_dotenv(dotenv_path=env_path)
 
 def run(model: str, max_results: int, score_threshold: float,

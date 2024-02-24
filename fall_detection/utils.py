@@ -18,7 +18,7 @@ def update_env_vars(config, msg):
         if key in msg:
             config[key] = msg[key]
             print(f'Updated {key} to {msg[key]}')
-    with open('.env.upper_fall_detection', 'w') as f:
+    with open('env_trigger.txt', 'w') as f:
         for key in config.keys():
             f.write(f'{key}={config[key]}\n')
     return config
