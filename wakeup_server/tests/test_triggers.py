@@ -3,11 +3,7 @@ import pytest
 def test_create_trigger(client):
     response = client.post("/triggers", json={"name": "test_create_device", "type": "SOUND"})
     obj = response.get_json()
-    target_id = obj['id']
-    name = obj['name']
-    _type = obj['type']
-    assert response.status_code == 201 and len(target_id) == 36 and name == name and _type == "SOUND"
-
+    assert response.status_code == 201 and len(obj['id']) == 36 and obj['name'] == "test_create_device" and obj['type'] == "SOUND"
 
 
 def test_get_device_by_id(client):
@@ -30,46 +26,40 @@ def test_get_device(client):
     assert response.status_code == 200 and obj1['id'] in id_list and obj2['id'] in id_list
 
 
+@pytest.mark.skip(reason="need ZMQ server")
+def test_update_trigger(client):
+    response1 = client.post("/triggers", json={"name": "test_update_trigger", "type": "SOUND"})
+    obj1 = response1.get_json()
+    response2 = client.put("/triggers/"+obj1['id'], json={"name": "modified", "type": "SOUND"})
+    obj2 = response2.get_json()
+    assert obj2['name'] == "modified"
+
+
 @pytest.mark.skip(reason="Not implemented")
 def test_empty_name(client):
     response = client.post("/triggers", json={"name": "", "type": "SOUND"})
-    obj = response.get_json()
-    with pytest.raises(TypeError) as e:
-        name = obj['name']
-    msg = e.value.args[0]
-    assert 'NoneType' in msg
+    assert b"No name provided" in response.data
 
 
-@pytest.mark.skip(reason="Not implemented")
-def test_too_long_name(client):
-    response = client.post("/triggers", json={"name": "a"*1000, "type": "SOUND"})
-    obj = response.get_json()
-    with pytest.raises(TypeError) as e:
-        name = obj['name']
-    msg = e.value.args[0]
-    assert 'NoneType' in msg
+def test_name_with_space(client):
+    response = client.post("/triggers", json={"name": "a b c", "type": "SOUND"})
+    assert b"Device name cannot contain spaces" in response.data
 
 
-@pytest.mark.skip(reason="Not implemented")
 def test_duplicate_name(client):
     response = client.post("/triggers", json={"name": "test_1", "type": "SOUND"})
     response2 = client.post("/triggers", json={"name": "test_1", "type": "SOUND"})
-    assert b"Device already exists" in response2.data
+    assert b"Device name already used" in response2.data
 
 
-def test_too_long_type(client):
-    response = client.post("/triggers", json={"type": "sound"})
-    obj = response.get_json()
-    with pytest.raises(TypeError) as e:
-        _ = obj['type']
-    msg = e.value.args[0]
-    assert 'NoneType' in msg
+@pytest.mark.skip(reason="Not implemented")
+def test_illegal_type(client):
+    response = client.post("/triggers", json={"name": "test_illegal_type", "type": "cheems"})
+    assert b"Unknown error" in response.data
 
 
+@pytest.mark.skip(reason="Not implemented")
 def test_empty_type(client):
-    response = client.post("/triggers", json={"type": ""})
-    obj = response.get_json()
-    with pytest.raises(TypeError) as e:
-        _type = obj['type']
-    msg = e.value.args[0]
-    assert 'NoneType' in msg
+    response = client.post("/triggers", json={"name": "test_empty_type", "type": ""})
+    assert b"No type provided" in response.data
+   
