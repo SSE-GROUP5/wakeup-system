@@ -24,7 +24,6 @@ def test_set_signal(client):
         "target_action": "turn_off",
         "user_id": user_id
     })
-    print(response.data)
     body = response.get_json()
     assert response.status_code == 201
     assert "Signal set" == body["message"]
