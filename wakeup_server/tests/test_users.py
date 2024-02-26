@@ -13,6 +13,7 @@ def test_create_user(client):
 
 def test_get_user_by_id(client):
     obj = client.post("/users", json = {"first_name": "test", "last_name": "user", "gosh_id": "001"}).get_json()
+    obj = client.post("/users", json = {"first_name": "test", "last_name": "user", "gosh_id": "001"}).get_json()
     response = client.get("/users/"+obj['id'])
     user = response.get_json()
     assert response.status_code == 200 and obj['first_name'] == user['first_name'] and obj['last_name'] == user['last_name'] and obj['gosh_id'] == user['gosh_id']
