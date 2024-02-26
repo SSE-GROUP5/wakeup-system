@@ -6,6 +6,7 @@ from blueprints.target_devices.target_devices import target_devices_blueprint
 from blueprints.users.users import users_blueprint
 from homeassistant_client import homeassistant_client
 from db import db
+from log_scheduler import LogScheduler
 
 def create_app(url="sqlite:///wakeup.sqlite"):
     app = Flask(__name__)
@@ -34,6 +35,11 @@ def create_app(url="sqlite:///wakeup.sqlite"):
     db.init_app(app)
     with app.app_context():
         db.create_all()
+        
+    logging_scheduler = LogScheduler(app)
+    logging_scheduler.start_logging()
+    logging_scheduler.start()
+    
     return app
 
 

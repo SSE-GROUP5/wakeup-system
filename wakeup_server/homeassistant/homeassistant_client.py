@@ -127,15 +127,17 @@ class HomeAssistantClient:
                     return Media_Player(state['entity_id'], self)
         return None
 
-    def getLogsPerEntity(self, entity_id):
+    def get_logs_per_entity(self, entity_id):
         today_date = datetime.date.today()
         yesterday_date = today_date - datetime.timedelta(days=1)
-        today_date_complete = str(today_date) + "T12:00:00.000000"  #should be T00:00:00.000000 if midnight is the retrieval time
-        yesterday_date_complete = str(yesterday_date) + "T12:00:00.000000" #should be T00:00:00.000000 
+        today_date_complete = str(today_date) + "T00:00:00.000000"  #should be T00:00:00.000000 if midnight is the retrieval time
+        yesterday_date_complete = str(yesterday_date) + "T00:00:00.000000" #should be T00:00:00.000000 
         request_string = "history/period/" + yesterday_date_complete + "?filter_entity_id=" + str(entity_id) + "&end_time=" + today_date_complete
         data = self._make_request(request_string, method='get')
-        day_usage_data = data[0]
-
+        if(len(data) > 0):
+            day_usage_data = data[0]
+        else:
+            return yesterday_date, 0, '00:00:00.0', '00:00:00.0', '24:00:00.0'
         number_of_toggles = 0
         for entry in day_usage_data:
             if(entry['state'] != "unavailable"):
@@ -162,9 +164,12 @@ class HomeAssistantClient:
         if(start_time != None):
             on_time = datetime.datetime.fromisoformat(today_date_complete + "+00:00") - datetime.datetime.fromisoformat(start_time)
             total_on_time.append(on_time)
-        total_on_time_result = total_on_time[0]
-        for i in range(1, len(total_on_time)):
-            total_on_time_result += total_on_time[i]
+        if(len(total_on_time) > 0):
+            total_on_time_result = total_on_time[0]
+            for i in range(1, len(total_on_time)):
+                total_on_time_result += total_on_time[i]
+        else:
+            total_on_time_result = '0:00:00.000000'
         print("Total on time:" , total_on_time_result)
         
         total_off_time = []
@@ -187,9 +192,12 @@ class HomeAssistantClient:
         if(start_time != None):
             off_time = datetime.datetime.fromisoformat(today_date_complete + "+00:00") - datetime.datetime.fromisoformat(start_time)
             total_off_time.append(off_time)
-        total_off_time_result = total_off_time[0]
-        for i in range(1, len(total_off_time)):
-            total_off_time_result += total_off_time[i]
+        if(len(total_off_time) > 0):
+            total_off_time_result = total_off_time[0]
+            for i in range(1, len(total_off_time)):
+                total_off_time_result += total_off_time[i]
+        else:
+            total_off_time_result = '0:00:00.000000'
         print("Total off time:" , total_off_time_result)
 
         total_unavailable_time = []
@@ -212,12 +220,15 @@ class HomeAssistantClient:
         if(start_time != None):
             unavailable_time = datetime.datetime.fromisoformat(today_date_complete + "+00:00") - datetime.datetime.fromisoformat(start_time)
             total_unavailable_time.append(unavailable_time)
-        total_unavailable_time_result = total_unavailable_time[0]
-        for i in range(1, len(total_unavailable_time)):
-            total_unavailable_time_result += total_unavailable_time[i]
+        if(len(total_unavailable_time) > 0):
+            total_unavailable_time_result = total_unavailable_time[0]
+            for i in range(1, len(total_unavailable_time)):
+                total_unavailable_time_result += total_unavailable_time[i]
+        else:
+            total_unavailable_time_result = '0:00:00.000000'
         print("Total unavailable time:" , total_unavailable_time_result)
 
-        return today_date_complete, number_of_toggles, total_on_time_result, total_off_time_result, total_unavailable_time_result
+        return yesterday_date, number_of_toggles, str(total_on_time_result), str(total_off_time_result), str(total_unavailable_time_result)
 
 
 

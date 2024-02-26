@@ -5,6 +5,7 @@ from constants import HOMEASSISTANT_OFFLINE_MODE, DATA_FOLDER_PATH
 from sqlalchemy import Column, String, JSON
 from models.triggers_target_map import trigger_target_association
 from db import db
+from models.target_device_logs import TargetDeviceLogs
 
 class TargetDevice(db.Model):
   __tablename__ = 'target_devices'
@@ -76,6 +77,10 @@ class TargetDevice(db.Model):
       return True
     except Exception as e:
       raise e
+    
+  def log_device_data(self):
+    yesterday_date, number_of_toggles, total_on_time, total_off_time, total_unavailable_time = homeassistant_client.get_logs_per_entity(self.matter_id)
+    TargetDeviceLogs.info(self.matter_id, yesterday_date, number_of_toggles, total_on_time, total_off_time, total_unavailable_time)
     
   @staticmethod
   def find_by_id(matter_id):
