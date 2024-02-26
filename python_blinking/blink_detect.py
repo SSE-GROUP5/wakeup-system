@@ -59,7 +59,17 @@ frame_counter =0
 CEF_COUNTER =0
 TOTAL_BLINKS =0
 
-config = Constants(envFilename = "env_trigger.txt")
+python_executable_dir = os.path.dirname(sys.executable)
+config_path = os.path.join(python_executable_dir, '../wakeup_triggers/blink_detect/') if is_exe_file() else current_dir
+config_path = os.path.normpath(config_path)
+config_path = os.path.join(config_path, 'env_trigger.txt')
+  
+if not os.path.exists(config_path):
+    print(f'Please create env_trigger.txt file in {config_path} with the following content:')
+    print("In the file, please set WAKEUP_SERVER_URL, ID, ZMQ_SERVER")
+    exit(1)
+    
+config = Constants(envFilename = config_path)
 
 
 FONTS =cv.FONT_HERSHEY_COMPLEX

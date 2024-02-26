@@ -23,12 +23,17 @@ sys.path.append(custom_modules_path)
 from zeromq.zmqServer import ZeroMQServer
 import beepy
 
+python_executable_dir = os.path.dirname(sys.executable)
+config_path = os.path.join(python_executable_dir, '../wakeup_triggers/upper_body_fall_detection/') if is_exe_file() else current_dir
+config_path = os.path.normpath(config_path)
+config_path = os.path.join(config_path, 'env_trigger.txt')
 
-if not os.path.exists('env_trigger.txt'):
-    print('Please create env_trigger.txt file \n In the file, please set WAKEUP_SERVER_URL and ID')
+if not os.path.exists(config_path):
+    print(f'Please create env_trigger.txt file in {config_path} with the following content:')
+    print("In the file, please set WAKEUP_SERVER_URL, ID, ZMQ_SERVER")
     exit(1)
 
-load_dotenv('env_trigger.txt')
+load_dotenv(config_path)
 
 # variables for wakeup server that must be set in env_trigger.txt
 __WAKEUP_SERVER_URL= os.getenv('WAKEUP_SERVER_URL')

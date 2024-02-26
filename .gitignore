@@ -71,4 +71,4 @@ whisper_base_decoder
 whisper_base_encoder
 audio.mov
 *.png
-
+env_trigger.txt

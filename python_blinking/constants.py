@@ -1,7 +1,6 @@
-import json
 import os
 from dotenv import load_dotenv
-import math
+
 
 class Constants:
     def __init__(self, envFilename):
@@ -15,8 +14,7 @@ class Constants:
             "ZMQ_SERVER": None
         }
         
-        file_dir = os.path.dirname(os.path.abspath(__file__))
-        if not os.path.exists(file_dir + "/" + self.file_name ):
+        if not os.path.exists(envFilename):
             raise Exception("No env_trigger.txt file, please generate one")
         
         self.updateConfig()

@@ -61,7 +61,9 @@ while cap.isOpened():
         number_of_persons_to_detect = config["NUMBER_OF_PERSONS_TO_DETECT"] if config["NUMBER_OF_PERSONS_TO_DETECT"] < len(keypoints) else len(keypoints)         
         number_of_persons_to_detect = 1 if number_of_persons_to_detect < 1 else number_of_persons_to_detect
         for keypoint in keypoints[:number_of_persons_to_detect]:                               
-            points = keypoint.xy[0].astype(int)                      
+            points = keypoint.xy[0].astype(int)    
+            if len(points) < 7:
+                continue                
             left_should = points[LEFT_SHOULDER]
             right_shoulder = points[RIGHT_SHOULDER]
             left_ear = points[LEFT_EAR]
@@ -87,7 +89,7 @@ while cap.isOpened():
                 send_signal(client, config, frame)
                 
         # Display the annotated frame
-        cv2.imshow("YOLOv8 Inference", annotated_frame)
+        cv2.imshow("Upper body fall Detection Trigger", annotated_frame)
 
         # Break the loop if 'q' is pressed
         if cv2.waitKey(1) & 0xFF == ord("q"):
