@@ -1,21 +1,28 @@
 from flask import Blueprint, request, jsonify
 from models.users import User
 from sqlalchemy.exc import IntegrityError
-from wakeup_server.fhir_retrive.patient_to_fetch import nameFetch
+from wakeup_server.fhir_retrive.patient_to_fetch import name_fetch
 
 users_blueprint = Blueprint('users', __name__)
 
 @users_blueprint.route('/users', methods=['POST'])
 def create_user():
   data = request.get_json()
-  
+
+
+  first_name = data.get('first_name')
+  last_name = data.get('last_name')
   gosh_id = data.get('gosh_id')
 
+  if first_name is None:
+    return "No user first_name provided", 400
+  if last_name is None:
+    return "No user last_name provided", 400
   if gosh_id is None:
     return "No GOSH ID provided", 400
   
   try:
-    first_name, last_name= nameFetch(gosh_id)
+    first_name, last_name= name_fetch(gosh_id)
 
     user = User(first_name, last_name, gosh_id)
     user.create()

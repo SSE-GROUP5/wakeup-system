@@ -9,7 +9,7 @@ from constants import FHIR_DB_URL
 class DataFetchError(Exception):
     pass
 
-def nameFetch(gosh_id : str):
+def name_fetch(gosh_id : str):
     if not FHIR_DB_URL:
         raise ValueError('No FHIR URL, please set up in .env file')
     
@@ -22,10 +22,10 @@ def nameFetch(gosh_id : str):
         print(patient['name'][0]['family'])
         print(patient['name'][0]['given'])
 
-        familyName = patient['name'][0]['family']
-        givenName = ' '.join([gName + " " for gName in patient['name'][0]['given']])
+        family_name = patient['name'][0]['family']
+        given_name = ' '.join([gName + " " for gName in patient['name'][0]['given']])
 
-        return givenName.strip(), familyName.strip()
+        return given_name.strip(), family_name.strip()
     elif response.status_code == 400:
         raise DataFetchError(f"Bad Request: The request was unacceptable, often due to missing a required parameter.")
     elif response.status_code == 401:
@@ -42,8 +42,8 @@ def nameFetch(gosh_id : str):
 
 
 if __name__ == "__main__":
-    givenName,  familyName= nameFetch('456')
-    print(givenName + " " + familyName)
+    given_name,  family_name= name_fetch('456')
+    print(given_name + " " + family_name)
 
 
 
