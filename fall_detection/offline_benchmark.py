@@ -3,9 +3,11 @@ from benchmark_body import Benchmark_body
 from tqdm import tqdm
 from ultralytics import YOLO
 import matplotlib.pyplot as plt
+import time
 
 
 def offline_benchmark(dataset_path: str, model_name: str, if_openvino: bool):
+    start_time = time.time()
     # Load a model
     model = YOLO(f"{model_name}.pt")  # pretrained YOLOv8n model
     benchmark_data_dict = Benchmark_body()
@@ -17,6 +19,8 @@ def offline_benchmark(dataset_path: str, model_name: str, if_openvino: bool):
         # Load the exported OpenVINO model
         model = YOLO(f'{model_name}_openvino_model/')
         
+    boot_time = time.time() - start_time
+    print(f"Boot time: {boot_time}")
     for root, dirs, files in os.walk(dataset_path):
         for file in tqdm(files):
             file_path = os.path.join(root, file)
@@ -47,7 +51,7 @@ def plot_average_time_with_std(labels, average_time, std_deviation, file_name='a
 if __name__ == '__main__':
 
     dataset_path = '/home/diantu/Documents/wakeup-system/fall_detection/other_examples/val2017'
-    model_name = 'yolov8n-pose'
+    model_name = 'yolov8m-pose'
     yolo_avg_time, yolo_std_time = offline_benchmark(dataset_path, model_name, False)
     ov_avg_time, ov_std_time = offline_benchmark(dataset_path, model_name, True)
 
