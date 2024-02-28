@@ -24,7 +24,7 @@ from zeromq.zmqServer import ZeroMQServer
 import beepy
 
 python_executable_dir = os.path.dirname(sys.executable)
-config_path = os.path.join(python_executable_dir, '../wakeup_triggers/upper_body_fall_detection/') if is_exe_file() else current_dir
+config_path = os.path.join(python_executable_dir, '../upper_body_fall_detection/') if is_exe_file() else current_dir
 config_path = os.path.normpath(config_path)
 config_path = os.path.join(config_path, 'env_trigger.txt')
 

@@ -60,7 +60,7 @@ CEF_COUNTER =0
 TOTAL_BLINKS =0
 
 python_executable_dir = os.path.dirname(sys.executable)
-config_path = os.path.join(python_executable_dir, '../wakeup_triggers/blink_detect/') if is_exe_file() else current_dir
+config_path = os.path.join(python_executable_dir, '../blink_detect/') if is_exe_file() else current_dir
 config_path = os.path.normpath(config_path)
 config_path = os.path.join(config_path, 'env_trigger.txt')
   
