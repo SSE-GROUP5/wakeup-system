@@ -1,4 +1,5 @@
 from flask import Flask
+from flask_cors import CORS
 from constants import PORT, HOSTNAME
 from blueprints.triggers.triggers import triggers_blueprint
 from blueprints.signals.signals import signals_blueprint
@@ -10,6 +11,7 @@ from log_scheduler import LogScheduler
 
 def create_app(url="sqlite:///wakeup.sqlite"):
     app = Flask(__name__)
+    CORS(app)
     app.config['DEBUG'] = True
     app.config['SQLALCHEMY_DATABASE_URI'] = url
     

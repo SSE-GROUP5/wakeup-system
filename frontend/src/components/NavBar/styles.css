@@ -1,0 +1,12 @@
+/* styles.css */
+
+.navbar {
+
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 10px;
+  margin-bottom: 20px;
+}
+
+

@@ -1,0 +1,52 @@
+/* styles.css */
+
+/* Modal container */
+.modalContainer {
+  color: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Modal content */
+.modalContent {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Modal title */
+.modalTitle {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+/* Modal body */
+.modalBody {
+  margin-bottom: 20px;
+}
+
+/* Modal actions */
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Modal action button */
+.modalButton {
+  margin-left: 10px;
+}
+
+.inputLabel {
+  margin-bottom: 30px;
+}
+
+.nativeSelect {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-bottom: 20px;
+}
