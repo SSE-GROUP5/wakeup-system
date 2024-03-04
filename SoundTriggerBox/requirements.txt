@@ -1,9 +1,0 @@
-vosk
-pyaudio
-numpy
-noisereduce
-torch 
-torchvision 
-torchaudio
-
-
