@@ -1,0 +1,4 @@
+tqdm==4.66.2
+opencv-python==4.9.0.80
+matplotlib==3.8.3
+ultralytics==8.1.19
