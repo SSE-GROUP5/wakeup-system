@@ -33,13 +33,13 @@ def check_repetitive_sounds(text):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--model", default="base", help="Model to use",
+    parser.add_argument("--model", default="small", help="Model to use",
                         choices=["tiny", "base", "small", "medium", "large"])
     parser.add_argument("--non_english", action='store_true',
                         help="Don't use the English model.")
     parser.add_argument("--energy_threshold", default=1000,
                         help="Energy level for mic to detect.", type=int)
-    parser.add_argument("--record_timeout", default=2,
+    parser.add_argument("--record_timeout", default=3,
                         help="How real time the recording is in seconds.", type=float)
     parser.add_argument("--phrase_timeout", default=2,
                         help="How much empty space between recordings before we "
@@ -79,8 +79,7 @@ def main():
     # For windows users only
     ffmpeg_path = r"C:\Program Files\ffmpeg-master-latest-win64-gpl\bin"
     os.environ['PATH'] += os.pathsep + ffmpeg_path
-    WHISPER_ENCODER_OV = Path(f"whisper_base_encoder.xml")
-    WHISPER_DECODER_OV = Path(f"whisper_base_decoder.xml")
+
 
     model_id = args.model
     if args.model != "large" and not args.non_english:
@@ -88,6 +87,10 @@ def main():
     model = whisper.load_model(model_id)
     model.to("cpu")
     model.eval()
+
+    WHISPER_ENCODER_OV = Path(f"whisper_{model_id}_encoder.xml")
+    WHISPER_DECODER_OV = Path(f"whisper_{model_id}_decoder.xml")
+
 
     mel = torch.zeros((1, 80 if 'v3' not in "base" else 128, 3000))
     audio_features = model.encoder(mel)
@@ -219,10 +222,12 @@ def main():
 
     core = ov.Core()
 
+    device = 'CPU'
+
     patch_whisper_for_ov_inference(model)
 
-    model.encoder = OpenVINOAudioEncoder(core, WHISPER_ENCODER_OV, device='CPU')
-    model.decoder = OpenVINOTextDecoder(core, WHISPER_DECODER_OV, device='CPU')
+    model.encoder = OpenVINOAudioEncoder(core, WHISPER_ENCODER_OV, device=device)
+    model.decoder = OpenVINOTextDecoder(core, WHISPER_DECODER_OV, device=device)
 
 
     transcription = ['']

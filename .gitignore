@@ -67,8 +67,8 @@ dist
 .pytest_cache
 
 # whisper openvino
-whisper_base_decoder
-whisper_base_encoder
+whisper_*_decoder.*
+whisper_*_encoder.*
 audio.mov
 *.png
 env_trigger.txt

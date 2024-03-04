@@ -4,23 +4,25 @@ import torch
 import openvino as ov
 from typing import Optional, Tuple
 from functools import partial
-from utils import patch_whisper_for_ov_inference, OpenVINOAudioEncoder, OpenVINOTextDecoder
+from utils import patch_whisper_for_ov_inference, OpenVINOAudioEncoder, OpenVINOTextDecoder, get_audio
 import time
 import os
 import ipywidgets as widgets
+import psutil
 
 # For windows users only
-#ffmpeg_path = r"C:\Program Files\ffmpeg-master-latest-win64-gpl\bin"
-#os.environ['PATH'] += os.pathsep + ffmpeg_path
-WHISPER_ENCODER_OV = Path(f"whisper_base_encoder.xml")
-WHISPER_DECODER_OV = Path(f"whisper_base_decoder.xml")
+ffmpeg_path = r"C:\Program Files\ffmpeg-master-latest-win64-gpl\bin"
+os.environ['PATH'] += os.pathsep + ffmpeg_path
 
 model_id = "base"
-model = whisper.load_model("base")
+model = whisper.load_model(model_id)
 model.to("cpu")
 model.eval()
 
-mel = torch.zeros((1, 80 if 'v3' not in "base" else 128, 3000))
+WHISPER_ENCODER_OV = Path(f"whisper_{model_id}_encoder.xml")
+WHISPER_DECODER_OV = Path(f"whisper_{model_id}_decoder.xml")
+
+mel = torch.zeros((1, 80 if 'v3' not in model_id else 128, 3000))
 audio_features = model.encoder(mel)
 if not WHISPER_ENCODER_OV.exists():
     encoder_model = ov.convert_model(model.encoder, example_input=mel)
@@ -151,19 +153,23 @@ if not WHISPER_DECODER_OV.exists():
 
 core = ov.Core()
 
-device = widgets.Dropdown(
-    options=core.available_devices + ["AUTO"],
-    value='AUTO',
-    description='Device:',
-    disabled=False,
-)
+device = 'CPU'
 
 patch_whisper_for_ov_inference(model)
 
-model.encoder = OpenVINOAudioEncoder(core, WHISPER_ENCODER_OV, device=device.value)
-model.decoder = OpenVINOTextDecoder(core, WHISPER_DECODER_OV, device=device.value)
+model.encoder = OpenVINOAudioEncoder(core, WHISPER_ENCODER_OV, device=device)
+model.decoder = OpenVINOTextDecoder(core, WHISPER_DECODER_OV, device=device)
+
 print("Transcription started")
-start_time = time.time()
+start_time = time.time()  # Start time for inference
+cpu_before = psutil.cpu_percent(interval=None)
+print(f"CPU Before: {cpu_before}")
 result = model.transcribe("audio.mov")
 print(result["text"])
-print("OpenVINO Execution Time: {:.2f} seconds".format(time.time() - start_time))
+# End measuring the inference time and compute the resources used
+inference_time = time.time() - start_time
+cpu_after = psutil.cpu_percent(interval=1)
+# Printing the performance metrics
+print(f"CPU After: {cpu_after}")
+print(f"Inference Time: {inference_time:.2f} seconds")
+print(f"CPU Usage Increase: {cpu_after - cpu_before:.2f}%")
