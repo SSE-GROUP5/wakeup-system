@@ -1,0 +1,5 @@
+ultralytics==8.1.23
+opencv-python==4.9.0.80
+tqdm==4.66.2
+openvino==2023.3.0
+matplotlib==3.7.5
