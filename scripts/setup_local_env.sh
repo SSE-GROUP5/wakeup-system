@@ -73,15 +73,15 @@ echo "TELEGRAM_BOT_TOKEN=$TELEGRAM_BOT_TOKEN" >> $DIRECTORY/../telegram_bot/.env
 
 
 # For morse vision
-echo "ID=andy_vision" >> $DIRECTORY/../python_morse/env_trigger.txt
-echo "ZMQ_SERVER=tcp://*:5556" >> $DIRECTORY/../python_morse/env_trigger.txt
-echo "WAKEUP_SERVER_URL=$WAKEUP_SERVER_URL" > $DIRECTORY/../python_morse/env_trigger.txt
-echo "CHANNEL=0"  >> $DIRECTORY/../python_morse/env_trigger.txt
-echo "CLOSED_EYES_FRAME=3" >> $DIRECTORY/../python_morse/env_trigger.txt
-echo "BLINKING_RATIO=4.5" >> $DIRECTORY/../python_morse/env_trigger.txt
-echo "MIN_BLINKING_TIME=0.1" >> $DIRECTORY/../python_morse/env_trigger.txt
-echo "MAX_SHORT_BLINKING_TIME=0.6" >> $DIRECTORY/../python_morse/env_trigger.txt
-echo "TIMEOUT_MORSE_READER=1.5" >> $DIRECTORY/../python_morse/env_trigger.txt
+echo "ID=andy_vision" >> $DIRECTORY/../morse_vision/env_trigger.txt
+echo "ZMQ_SERVER=tcp://*:5556" >> $DIRECTORY/../morse_vision/env_trigger.txt
+echo "WAKEUP_SERVER_URL=$WAKEUP_SERVER_URL" > $DIRECTORY/../morse_vision/env_trigger.txt
+echo "CHANNEL=0"  >> $DIRECTORY/../morse_vision/env_trigger.txt
+echo "CLOSED_EYES_FRAME=3" >> $DIRECTORY/../morse_vision/env_trigger.txt
+echo "BLINKING_RATIO=4.5" >> $DIRECTORY/../morse_vision/env_trigger.txt
+echo "MIN_BLINKING_TIME=0.1" >> $DIRECTORY/../morse_vision/env_trigger.txt
+echo "MAX_SHORT_BLINKING_TIME=0.6" >> $DIRECTORY/../morse_vision/env_trigger.txt
+echo "TIMEOUT_MORSE_READER=1.5" >> $DIRECTORY/../morse_vision/env_trigger.txt
 
 echo "Finished setting up local environment variables."
 echo "    PORT=$WAKEUP_SERVER_PORT"
