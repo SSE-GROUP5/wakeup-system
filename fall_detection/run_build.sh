@@ -32,4 +32,4 @@ pyinstaller \
     $ADD_DATA \
   --hidden-import=simpleaudio \
   --hidden-import=zmq \
-  --onefile "$DIRECTORY/yolov8_fall_upper_detection.py"
+  --onefile "$DIRECTORY/fall_upper_detection.py"
