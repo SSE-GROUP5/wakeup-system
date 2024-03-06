@@ -1,11 +1,12 @@
 from homeassistant_client import homeassistant_client
 from scheduler.alert_scheduler import alert_scheduler
 from homeassistant.fake_matter_device import FAKE_MATTER_DEVICE
-from constants import HOMEASSISTANT_OFFLINE_MODE, DATA_FOLDER_PATH
+from constants import HOMEASSISTANT_OFFLINE_MODE
 from sqlalchemy import Column, String, JSON
 from models.triggers_target_map import trigger_target_association
 from db import db
 from models.target_device_logs import TargetDeviceLogs
+from sqlalchemy.exc import IntegrityError
 
 class TargetDevice(db.Model):
   __tablename__ = 'target_devices'
@@ -48,6 +49,12 @@ class TargetDevice(db.Model):
       db.session.add(device)
       db.session.commit()
       return True
+    
+    except IntegrityError as e:
+      db.session.rollback()
+      print("Already exists")
+      print(e)
+      raise e
     except Exception as e:
       print(e)
       db.session.rollback()
@@ -87,7 +94,31 @@ class TargetDevice(db.Model):
     return TargetDevice.query.get(matter_id)
   
   @staticmethod
+  def update_new_triggers_from_ha():
+    all_ha_triggers = homeassistant_client.get_switch_media_player_targets_from_ha()
+    current_triggers = db.session.query(TargetDevice.matter_id).all()
+    current_triggers_ids = [t.matter_id for t in current_triggers]
+    
+    for trigger in all_ha_triggers:
+      if trigger["entity_id"] not in current_triggers_ids:
+        _type = trigger["entity_id"].split(".")[0]
+        name = trigger["entity_id"]
+        try:
+          new_trigger = TargetDevice(matter_id=trigger["entity_id"], name=name, type=_type)
+          new_trigger.create()
+          print("New trigger added: " + trigger["entity_id"])
+        except Exception as e:
+          print(e)
+          continue
+
+
+
+  @staticmethod
   def find_all():
+    (TargetDevice.update_new_triggers_from_ha() 
+     if not HOMEASSISTANT_OFFLINE_MODE 
+     else print("HOMEASSISTANT_OFFLINE_MODE IS ENABLED"))
+    
     return TargetDevice.query.all()
   
   @staticmethod
@@ -116,4 +147,3 @@ class TargetDevice(db.Model):
         db.session.rollback()
         return False
     return False
-    
