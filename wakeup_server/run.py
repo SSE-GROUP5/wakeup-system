@@ -1,7 +1,5 @@
 from flask import Flask
-
-from flask import Flask
-from constants import PORT, HOSTNAME
+from constants import PORT, HOSTNAME, DEV_MODE, HOMEASSISTANT_OFFLINE_MODE
 from blueprints.triggers.triggers import triggers_blueprint
 from blueprints.signals.signals import signals_blueprint
 from blueprints.target_devices.target_devices import target_devices_blueprint
@@ -40,7 +38,8 @@ def create_app(url="sqlite:///wakeup.sqlite"):
         # return json response
         return { 
           'message': 'Hello, World!', 
-          'HA_status': 'ALIVE' if is_HA_running else 'DEAD'
+          'HA_status': 'ALIVE' if is_HA_running else 'HA_OFFLINE_MODE' if HOMEASSISTANT_OFFLINE_MODE else 'DEAD', 
+          'DEV_MODE': DEV_MODE
         }
         
     @app.route('/')

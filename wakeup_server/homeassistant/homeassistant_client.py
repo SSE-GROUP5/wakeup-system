@@ -5,7 +5,6 @@ from homeassistant.Models.Switch import Switch
 from homeassistant.Models.Media_Player import Media_Player
 from requests.exceptions import ConnectionError
 import datetime
-import json
 
 class HomeAssistantClient:
     def __init__(self, token):
@@ -232,6 +231,22 @@ class HomeAssistantClient:
 
 
 
+    def get_switch_media_player_targets_from_ha(self):
+        """
+        Get all switches and media players from Home Assistant 
+        It is possible that they are not in the wake up server database
+        """
+        states = self.get_states()
+        triggers = []
+        starts_with_options = ['switch', 'media_player']
+        for state in states:
+            _type = state['entity_id'].split('.')[0]
+            if _type in starts_with_options:
+                triggers.append(state)
+        
+        return triggers
+            
+    
 
 
 
