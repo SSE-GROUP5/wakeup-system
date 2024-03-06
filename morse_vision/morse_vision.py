@@ -1,10 +1,9 @@
-from vision_constants import LEFT_EYE, RIGHT_EYE
+from constants import LEFT_EYE, RIGHT_EYE
 import cv2 as cv
 import mediapipe as mp
 import time
-import vision_utils as vision_utils
+import utils as utils
 import numpy as np
-from morse_functions import decode_morse_letter
 from dotenv import load_dotenv
 import os
 import sys
@@ -22,11 +21,18 @@ from zeromq.zmqServer import ZeroMQServer
 import beepy
 
 
-if not os.path.exists('env_trigger.txt'):
-    print('Please create env_trigger.txt file \n In the file, please set WAKEUP_SERVER_URL and ID')
-    exit(1)
 
-load_dotenv('env_trigger.txt')
+python_executable_dir = os.path.dirname(sys.executable)
+config_path = os.path.join(python_executable_dir, '../morse_vision/') if is_exe_file() else current_dir
+config_path = os.path.normpath(config_path)
+config_path = os.path.join(config_path, 'env_trigger.txt')
+
+if not os.path.exists(config_path):
+    print(f'Please create env_trigger.txt file in {config_path} with the following content:')
+    print("In the file, please set WAKEUP_SERVER_URL, ID, ZMQ_SERVER")
+    exit(1)
+    
+load_dotenv(config_path)
 
 # variables for wakeup server that must be set in env_trigger.txt
 WAKEUP_SERVER_URL= os.getenv('WAKEUP_SERVER_URL') or "http://192.168.1.1:5001"
@@ -127,17 +133,17 @@ with MAP_FACE_MESH.FaceMesh(min_detection_confidence =0.5, min_tracking_confiden
             last_health_check = time.time()
             is_connected = check_connection()
         
-        color_server = vision_utils.GREEN if is_connected else vision_utils.RED
-        frame = vision_utils.colorBackgroundText(frame,  f'WAKEUP SERVER: {is_connected}', FONTS, 1.7, (0, 50), 2, color_server, pad_x=6, pad_y=6, )
+        color_server = utils.GREEN if is_connected else utils.RED
+        frame = utils.colorBackgroundText(frame,  f'WAKEUP SERVER: {is_connected}', FONTS, 1.7, (0, 50), 2, color_server, pad_x=6, pad_y=6, )
             
         if results.multi_face_landmarks:
-            mesh_coords = vision_utils.landmarksDetection(frame, results, False)
-            ratio = vision_utils.blinkRatio(frame, mesh_coords, RIGHT_EYE, LEFT_EYE)
+            mesh_coords = utils.landmarksDetection(frame, results, False)
+            ratio = utils.blinkRatio(frame, mesh_coords, RIGHT_EYE, LEFT_EYE)
             
             if ratio > config["BLINKING_RATIO"]:
                 # Eyes Closed
                 cef_counter +=1
-                vision_utils.colorBackgroundText(frame,  f'Blink', FONTS, 1.7, (int(frame_height/2), 100), 2, vision_utils.YELLOW, pad_x=6, pad_y=6, )
+                utils.colorBackgroundText(frame,  f'Blink', FONTS, 1.7, (int(frame_height/2), 100), 2, utils.YELLOW, pad_x=6, pad_y=6, )
       
                 if not has_bell_rung and not has_started_close_eyes and cef_counter > 30:
                   has_bell_rung = True
@@ -186,7 +192,7 @@ with MAP_FACE_MESH.FaceMesh(min_detection_confidence =0.5, min_tracking_confiden
                     # remove first letter because it is the start signal
                     letter = letter[1:]
                     print(f'Morse Code: {letter}')
-                    decoded_letter = decode_morse_letter(letter)
+                    decoded_letter = utils.decode_morse_letter(letter)
                     print(f'Decoded Letter: {decoded_letter}')
                     letter = ''
                     has_bell_rung = False
@@ -205,18 +211,18 @@ with MAP_FACE_MESH.FaceMesh(min_detection_confidence =0.5, min_tracking_confiden
                         except Exception as e:
                             print(e)
             if len(letter) > 0:
-              frame = vision_utils.rectTrans(frame, (mesh_coords[LEFT_EYE[8]][0]-150, mesh_coords[LEFT_EYE[8]][1]-150), (mesh_coords[LEFT_EYE[8]][0]-100, mesh_coords[LEFT_EYE[8]][1]-100), vision_utils.GREEN, -1, 0.5)
+              frame = utils.rectTrans(frame, (mesh_coords[LEFT_EYE[8]][0]-150, mesh_coords[LEFT_EYE[8]][1]-150), (mesh_coords[LEFT_EYE[8]][0]-100, mesh_coords[LEFT_EYE[8]][1]-100), utils.GREEN, -1, 0.5)
                 ## End Morse Code Reader
             else:
               if decoded_letter is not None:
-                frame = vision_utils.colorBackgroundText(frame,  decoded_letter, FONTS, 2.5, (int(frame_height/2)-200, 200), 2, vision_utils.GREEN, pad_x=6, pad_y=6, )
+                frame = utils.colorBackgroundText(frame,  decoded_letter, FONTS, 2.5, (int(frame_height/2)-200, 200), 2, utils.GREEN, pad_x=6, pad_y=6, )
                     
 
                 
-            cv.polylines(frame,  [np.array([mesh_coords[p] for p in LEFT_EYE ], dtype=np.int32)], True, vision_utils.GREEN, 1, cv.LINE_AA)
-            cv.polylines(frame,  [np.array([mesh_coords[p] for p in RIGHT_EYE ], dtype=np.int32)], True, vision_utils.GREEN, 1, cv.LINE_AA)
+            cv.polylines(frame,  [np.array([mesh_coords[p] for p in LEFT_EYE ], dtype=np.int32)], True, utils.GREEN, 1, cv.LINE_AA)
+            cv.polylines(frame,  [np.array([mesh_coords[p] for p in RIGHT_EYE ], dtype=np.int32)], True, utils.GREEN, 1, cv.LINE_AA)
         else:
-            vision_utils.colorBackgroundText(frame,  f'No Face Detected', FONTS, 2.5, (int(frame_height/2)-200, 200), 2, vision_utils.RED, pad_x=6, pad_y=6, )
+            utils.colorBackgroundText(frame,  f'No Face Detected', FONTS, 2.5, (int(frame_height/2)-200, 200), 2, utils.RED, pad_x=6, pad_y=6, )
 
 
         cv.imshow('frame', frame)

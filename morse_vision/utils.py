@@ -24,6 +24,18 @@ PINK = (147,20,255)
 points_list =[(200, 300), (150, 150), (400, 200)]
 
 
+def decode_morse_letter(letter):
+  morse_code = {
+    '.-': 'A', '-...': 'B', '-.-.': 'C', '-..': 'D', '.': 'E', '..-.': 'F', '--.': 'G',
+    '....': 'H', '..': 'I', '.---': 'J', '-.-': 'K', '.-..': 'L', '--': 'M', '-.': 'N',
+    '---': 'O', '.--.': 'P', '--.-': 'Q', '.-.': 'R', '...': 'S', '-': 'T', '..-': 'U',
+    '...-': 'V', '.--': 'W', '-..-': 'X', '-.--': 'Y', '--..': 'Z',
+  }
+  try:
+    return morse_code[letter.strip()]
+  except KeyError:
+    return 'Invalid morse letter'
+
 def drawColor(img, colors):
     x, y = 0,10
     w, h = 20, 30
