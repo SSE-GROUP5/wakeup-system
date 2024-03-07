@@ -1,5 +1,4 @@
 from flask import Flask
-from flasgger import Swagger
 
 from flask import Flask
 from constants import PORT, HOSTNAME
