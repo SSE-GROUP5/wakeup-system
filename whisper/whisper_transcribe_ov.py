@@ -1,5 +1,6 @@
 import argparse
 import os
+import sys
 import numpy as np
 import speech_recognition as sr
 import whisper
@@ -20,6 +21,13 @@ from utils import patch_whisper_for_ov_inference, OpenVINOAudioEncoder, OpenVINO
 import psutil
 import time
 
+from constants import config
+from utils_wakeup_server import confirm_to_server, check_connection, send_signal, is_exe_file, update_env_vars
+current_dir = os.path.dirname(os.path.realpath(__file__))
+custom_modules_path = "./" if is_exe_file() else current_dir + "/../"
+sys.path.append(custom_modules_path)
+from zeromq.zmqServer import ZeroMQServer
+
 
 # Function to check for repetitive sounds
 def check_repetitive_sounds(text):
@@ -28,8 +36,10 @@ def check_repetitive_sounds(text):
     
     if ah_pattern.search(text):
         print("Detected repetitive 'ah' sound")
+        send_signal(config, "ah")
     if oh_pattern.search(text):
         print("Detected repetitive 'oh' sound")
+        send_signal(config, "oh")
 
 def main():
     parser = argparse.ArgumentParser()
@@ -243,7 +253,21 @@ def main():
 
     print("Model loaded.\n")
 
+    # Check wakeup server
+    is_wakeup_server_connected = check_connection(config)
+    if is_wakeup_server_connected:
+        confirm_to_server(config)
+
+    zmqServer = ZeroMQServer("tcp://*:5556")
     while True:
+      
+        message = zmqServer.receive()
+        if message != None:
+            topic, msg = message
+            if topic == config["ID"]:
+                config = update_env_vars(config, msg)
+      
+      
         try:
             now = datetime.utcnow()
             if not data_queue.empty():
@@ -266,9 +290,9 @@ def main():
                 memory_after = psutil.virtual_memory().percent
 
                 # Printing the performance metrics
-                print(f"Inference Time: {inference_time:.2f} seconds")
-                print(f"CPU Usage Increase: {cpu_after - cpu_before:.2f}%")
-                print(f"Memory Usage Increase: {memory_after - memory_before:.2f}%")
+                # print(f"Inference Time: {inference_time:.2f} seconds")
+                # print(f"CPU Usage Increase: {cpu_after - cpu_before:.2f}%")
+                # print(f"Memory Usage Increase: {memory_after - memory_before:.2f}%")
 
                 # Check for repetitive sounds after each transcription
                 check_repetitive_sounds(text)
