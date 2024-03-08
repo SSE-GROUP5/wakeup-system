@@ -7,6 +7,7 @@ from blueprints.signals.signals import signals_blueprint
 from blueprints.target_devices.target_devices import target_devices_blueprint
 from blueprints.users.users import users_blueprint
 from blueprints.docs.docs import get_swagger_config
+from blueprints.statistics.statistics import statistics_blueprint
 from homeassistant_client import homeassistant_client
 from db import db
 from log_scheduler import LogScheduler
@@ -34,6 +35,7 @@ def create_app(url="sqlite:///wakeup.sqlite"):
     )
     app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
     
+    app.register_blueprint(statistics_blueprint)
     @app.route('/health')
     def health_check():
         is_HA_running = homeassistant_client.health_check()

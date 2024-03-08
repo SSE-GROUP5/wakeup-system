@@ -22,6 +22,17 @@ class TargetDeviceLogs(db.Model):
     self.off_time = off_time
     self.unavailable_time = unavailable_time
 
+  def json(self):
+    return {
+      "id": self.id,
+      "device_name": self.target_device,
+      "day": self.day,
+      "number_of_toggles": self.number_of_toggles,
+      "on_time": self.on_time,
+      "off_time": self.off_time,
+      "unavailable_time": self.unavailable_time
+    }
+
   @staticmethod
   def info(target_device, day, number_of_toggles, on_time, off_time, unavailable_time):
     new_log = TargetDeviceLogs(target_device, day, number_of_toggles, on_time, off_time, unavailable_time)
