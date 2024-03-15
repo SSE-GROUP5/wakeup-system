@@ -40,3 +40,5 @@ print(f"HOMEASSISTANT_OFFLINE_MODE is {HOMEASSISTANT_OFFLINE_MODE}")
 
 DATA_FOLDER_PATH = os.path.join(current_dir, "data")
 os.makedirs(DATA_FOLDER_PATH, exist_ok=True)
+
+FHIR_DB_URL = os.getenv('FHIR_DB_URL')

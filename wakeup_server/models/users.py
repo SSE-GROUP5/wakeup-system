@@ -1,5 +1,7 @@
 from models.triggers_target_map import trigger_target_association
 from models.triggers_target_map import signal_to_json
+from fhir_retrive.patient_to_fetch import name_fetch
+
 from db import db
 import uuid
 
@@ -15,11 +17,9 @@ class User(db.Model):
     return f"<User {self.first_name}>"
 
   def __init__(self, first_name, last_name, gosh_id):
-    if first_name is None or first_name == "" or " " in first_name:
-      raise Exception("Invalid user first_name, cannot be null, empty or contain spaces")
-    if last_name is None or last_name == "" or " " in last_name:
-      raise Exception("Invalid user last_name, cannot be null, empty or contain spaces")
-    
+    if first_name is None or first_name == "" or " " in first_name or last_name is None or last_name == "" or " " in last_name: 
+      first_name, last_name = name_fetch(gosh_id)
+
     self.id = str(uuid.uuid4())
     self.first_name = first_name.strip()
     self.last_name = last_name.strip() 
