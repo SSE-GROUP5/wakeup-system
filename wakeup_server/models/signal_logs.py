@@ -11,18 +11,20 @@ class SignalLogs(db.Model):
   signal_id = Column(Uuid)
   created_at = Column(DateTime, default=datetime.datetime.utcnow)
   signal_type = Column(String)
+  target_device = Column(String)
   patient_id = Column(String)
   
-  def __init__(self, signal_id, patient_id, signal_type):
+  def __init__(self, signal_id, patient_id, signal_type, target_device):
     self.id = uuid.uuid4()
     self.signal_id = signal_id
     self.created_at = datetime.datetime.utcnow()
     self.signal_type = signal_type
     self.patient_id = patient_id
+    self.target_device = target_device
    
   @staticmethod
-  def info(signal_id, patient_id, signal_type):
-    new_log = SignalLogs(signal_id, patient_id, signal_type)
+  def info(signal_id, patient_id, signal_type, target_device):
+    new_log = SignalLogs(signal_id, patient_id, signal_type, target_device)
     try:
       db.session.add(new_log)
       db.session.commit()
@@ -60,7 +62,8 @@ class SignalLogs(db.Model):
      db.session.query(
         SignalLogs.patient_id,
         db.func.date(SignalLogs.created_at).label('day'),
-        db.func.group_concat(SignalLogs.signal_type).label('patient_signals')
+        db.func.group_concat(SignalLogs.signal_type).label('patient_signals'),
+        db.func.group_concat(SignalLogs.target_device).label('patient_target_toggles')
      ).group_by(SignalLogs.patient_id, db.func.date(SignalLogs.created_at)).all()
     )
     
@@ -69,11 +72,12 @@ class SignalLogs(db.Model):
     for result in query_result:
       patient = User.find_by_id(result.patient_id)
       signal_type_list = result.patient_signals.split(',')
+      target_device_list = result.patient_target_toggles.split(',')
 
       output_row = {
         "day": result.day,
-        "patientFirstName": patient.first_name,
-        "patientLastName": patient.last_name,
+        "patient_first_name": patient.first_name,
+        "patient_last_name": patient.last_name,
         "patient_gosh_id": patient.gosh_id,
       }
 
@@ -86,6 +90,16 @@ class SignalLogs(db.Model):
         combined_signals.append(f"{signal_type}:{count}")
 
       output_row["patient_signals"] = ",".join(combined_signals)
+
+      target_device_counts = {}
+      for target_device in target_device_list:
+        target_device_counts[target_device] = target_device_counts.get(target_device,0) + 1
+
+      combined_targets = []
+      for target_device, count in target_device_counts.items():
+        combined_targets.append(f"{target_device}:{count}")
+
+      output_row["patient_target_toggles"] = ",".join(combined_targets)
       aggregated_result.append(output_row)
 
     return aggregated_result
