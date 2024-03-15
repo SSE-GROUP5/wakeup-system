@@ -35,10 +35,9 @@ def packet_sent(mac, ip, port):
 if __name__ == "__main__":  
     print('Waking up target device')
     mac = os.environ.get('mac','11:22:33:44:55:66')
-    #change to fit your mac address
-    ip = os.environ.get('ip','111.222.0.33')
-    #change to fit your private ip address
+    #change to fit target computer mac address
+    ip = os.environ.get('ip','255.255.255.255')
+    #change to fit target computer private ip address
     port = os.environ.get('port',9)
 
     packet_sent(mac,ip,port)
-

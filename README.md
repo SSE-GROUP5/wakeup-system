@@ -21,6 +21,3 @@ The system is divided into 3:
 
 ### In Collaboration with:
 <img src="https://github.com/SSE-GROUP5/wakeup-system/assets/75443246/3d45fe59-2177-4196-bb57-3a379a42c639" width="150" height="70">   <img src="https://github.com/SSE-GROUP5/wakeup-system/assets/75443246/518844b3-1d2d-444c-9d2b-7f4dda07b68b" width="150" height="100">   <img src="https://github.com/SSE-GROUP5/wakeup-system/assets/75443246/b1212966-1e4d-450b-ac4f-4fb994acf488" width="180" height="100">    <img src="https://logospng.org/download/roche/roche-4096.png" width="180" height="120">
-
-
-
