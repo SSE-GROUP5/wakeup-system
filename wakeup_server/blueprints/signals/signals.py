@@ -104,7 +104,7 @@ def receive_signal():
         
       target_device.do_action(target_action, picutre_path)
       signal = trigger.get_signal(trigger_action, trigger_num_actions, target_device_id, user_id)
-      signal_logs.info(signal_id=signal['id'], patient_id=user_id, signal_type=str(trigger_action) + '_' + str(trigger_name))
+      signal_logs.info(signal_id=signal['id'], patient_id=user_id, signal_type=str(trigger_action) + '_' + str(trigger.name), target_device=str(target_device.matter_id))
       output_message.append({
           'target_device_id': target_device_id,
           'target_action': target_action,
