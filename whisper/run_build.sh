@@ -11,7 +11,7 @@ if [[ $(python3 --version) != *"3.10"* ]]; then
   exit 1
 fi
 
-pip3 install zmq requests python-dotenv ultralytics simpleaudio
+pip3 install zmq requests python-dotenv  
 
 # check if windows 
 IS_WINDOWS=false
@@ -29,6 +29,5 @@ fi
 pyinstaller \
   --add-data "$DIRECTORY/../zeromq:zeromq" \
     $ADD_DATA \
-  --hidden-import=simpleaudio \
   --hidden-import=zmq \
   --onefile "$DIRECTORY/whisper_transcribe.py"

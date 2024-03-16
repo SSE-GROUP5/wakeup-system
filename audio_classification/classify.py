@@ -22,30 +22,14 @@ from mediapipe.tasks import python
 from mediapipe.tasks.python.audio.core import audio_record
 from mediapipe.tasks.python.components import containers
 from mediapipe.tasks.python import audio
+from constants import config
 
-from triggers_gui_config.triggers_gui_config import tkinter_configuration
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-def get_model_path():
-	# Determine if we are running in a bundled environment and set the base path
-	if getattr(sys, 'frozen', False):
-		application_path = sys._MEIPASS
-	else:
-		application_path = os.path.dirname(os.path.abspath(__file__))
-
-	# Join the base path with the model filename
-	model_path = os.path.join(application_path, 'yamnet.tflite')
-	return model_path
-
-def get_current_path():
-  if getattr(sys, 'frozen', False):
-    return os.path.dirname(sys.executable)
-  elif __file__:
-    return os.path.dirname(__file__)
-
-current_path = get_current_path()
-env_path = os.path.join(current_path, 'env_trigger.txt')
-load_dotenv(dotenv_path=env_path)
+from utils_wakeup_server import confirm_to_server, check_connection, send_signal, is_exe_file, update_env_vars
+current_dir = os.path.dirname(os.path.realpath(__file__))
+custom_modules_path = "./" if is_exe_file() else current_dir + "/../"
+sys.path.append(custom_modules_path)
+from zeromq.zmqServer import ZeroMQServer
 
 def run(model: str, max_results: int, score_threshold: float,
 		overlapping_factor: float, gui_active: bool) -> None:
@@ -101,13 +85,27 @@ def run(model: str, max_results: int, score_threshold: float,
 
 	# Initialize variables for debouncing mechanism
 	last_detection_time = 0
-	detection_interval = 0.5  # 500 milliseconds
+	detection_interval = 5  # 5 seconds
+	total_snaps = 0
+
+	# Check wakeup server
+    is_wakeup_server_connected = check_connection(config)
+    if is_wakeup_server_connected:
+        confirm_to_server(config)
+
+    zmqServer = ZeroMQServer("tcp://*:5556")
 
 	# Start the audio recording
 	record.start_recording()
 
 	# Main loop for continuous audio processing
 	while True:
+		message = zmqServer.receive()
+        if message != None:
+            topic, msg = message
+            if topic == config["ID"]:
+                config = update_env_vars(config, msg)
+		
 		now = time.time()
 		diff = now - last_inference_time
 		if diff < interval_between_inference:
@@ -127,10 +125,14 @@ def run(model: str, max_results: int, score_threshold: float,
 				for classification in result.classifications:
 					for category in classification.categories:
 						# Check for specific events and apply debouncing
-						if category.category_name in ['Finger snapping', 'Knock']:
+						if category.category_name in ['Finger snapping']:
+							total_snaps += 1
 							if (current_time - last_detection_time) > detection_interval:
+								print('Sending signal')
 								print(f"{category.category_name} detected.")
+								send_signal(total_snaps, config)
 								last_detection_time = current_time
+								total_snaps = 0
 
 					
 			# Clear the results list for next iteration
@@ -159,14 +161,15 @@ def main():
 		'--gui',
 		help='Activate the GUI for displaying results.',
 		action='store_true') 
+	parser.add_argument(
+	'--scoreThreshold',
+	help='The score threshold of classification results.',
+	required=False,
+	default=0.0)
 	args = parser.parse_args()
 
-	SCORE_THRESHOLD = os.getenv("SCORE_THRESHOLD")
-
 	# Run the main function with the parsed arguments
-	run(args.model, int(args.maxResults), float(SCORE_THRESHOLD), float(args.overlappingFactor), args.gui)
-
+ 	run(args.model, int(args.maxResults), float(args.scoreThreshold), float(args.overlappingFactor))
 if __name__ == '__main__':	
 
-  tkinter_configuration(env_path, ["SCORE_THRESHOLD"])
-  main()
+  main() 
