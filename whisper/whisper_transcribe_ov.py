@@ -39,7 +39,7 @@ def check_repetitive_sounds(text):
         send_signal(config, "ah")
     if oh_pattern.search(text):
         print("Detected repetitive 'oh' sound")
-        send_signal(config, "oh")
+        send_signal("oh", config)
 
 def main():
     parser = argparse.ArgumentParser()
