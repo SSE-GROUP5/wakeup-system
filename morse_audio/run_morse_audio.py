@@ -174,7 +174,7 @@ def start_listening(config, zmqServer):
       letter = decode_morse_letter(morse_letter)
       print(letter)
       try:
-        request = client.post(config["WAKEUP_SERVER_URL"]+"/signals", json={'name': config["ID"], 'action': 'morse', 'num_actions': letter})
+        request = client.post(config["WAKEUP_SERVER_URL"]+"/signals", json={'name': config["ID"], 'action': 'sound_morse', 'num_actions': letter})
         print(request.status_code)
       except Exception as e:
         print(e)

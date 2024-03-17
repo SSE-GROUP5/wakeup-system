@@ -25,12 +25,11 @@ import beepy
 def send_signal(num_action: str):
     data = {
         "id": config.env_vars["ID"],
-        "action": 'blink',
+        "action": 'vision_blink',
         "num_actions": num_action
     }
-    url = f"{config.env_vars['WAKEUP_SERVER_URL']}/signals"
+    url = f"{config.env_vars['WAKEUP_SERVER_URL']}"
     response = client.post(f"{url}/signals", json=data)
-    time.sleep(3)
     print(response.content)
     print(response)
 

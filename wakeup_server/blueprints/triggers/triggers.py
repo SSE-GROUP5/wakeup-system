@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify
 from models.triggers import Trigger
 from sqlalchemy.exc import IntegrityError
 from zmq_client import zmq_client
+from constants import TRIGGERS_TYPES
 import uuid
 
 triggers_blueprint = Blueprint('triggers', __name__)
@@ -25,6 +26,9 @@ def create_trigger():
   name_already_exists = Trigger.find_by_name(device_name)
   if name_already_exists is not None:
     return {"message": f"Device name already used by {name_already_exists.id}"}, 402 
+  
+  if device_type not in TRIGGERS_TYPES:
+    return {"message": f"Device type not supported. Supported types are {TRIGGERS_TYPES}"}, 400
   
   try: 
       device_id = str(uuid.uuid4())

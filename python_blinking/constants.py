@@ -7,8 +7,8 @@ class Constants:
         self.file_name = envFilename
         self.env_vars = {
             "CLOSED_EYES_FRAME": 10,
-            "BLINKING_RATIO": 4.5,
-            "TIMEOUT_SEC": 5,
+            "BLINKING_RATIO": 7,
+            "TIMEOUT_SEC": 3,
             "WAKEUP_SERVER_URL": None,
             "ID": None,
             "ZMQ_SERVER": None
