@@ -40,3 +40,13 @@ print(f"HOMEASSISTANT_OFFLINE_MODE is {HOMEASSISTANT_OFFLINE_MODE}")
 
 DATA_FOLDER_PATH = os.path.join(current_dir, "data")
 os.makedirs(DATA_FOLDER_PATH, exist_ok=True)
+
+TRIGGERS_TYPES = [
+    "sound_classification",
+    "sound_whisper",
+    "sound_morse",
+    "vision_blink",
+    "vision_morse",
+    "vision_upper_body_fall",
+    "vision_fall"
+]
