@@ -30,8 +30,7 @@ def create_device():
   except ConnectionError:
       return "Connection error with Home Assistant", 400
   except Exception as e:
-      print(e)
-      return "Unknown error", 400
+      return str(e), 400
 
   
 @target_devices_blueprint.route('/target_devices', methods=['GET'])
