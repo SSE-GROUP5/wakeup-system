@@ -41,6 +41,7 @@ class TargetDevice(db.Model):
       print("HOMEASSISTANT_OFFLINE_MODE IS ENABLED")
       return FAKE_MATTER_DEVICE.get("possible_actions")
     
+
     return homeassistant_client.get_possible_actions(self.matter_id)
     
   def create(self):

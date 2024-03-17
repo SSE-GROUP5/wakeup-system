@@ -58,6 +58,9 @@ class HomeAssistantClient:
         
         
     def get_possible_actions(self, entity_id):
+        if len(entity_id.split('.')) != 2:
+            raise ValueError("Invalid entity id, should be in the format domain.id")
+          
         id_type, _ = entity_id.split('.')
         services = self._make_request("services", method='get')
         actions = []
