@@ -4,7 +4,7 @@ from ultralytics import YOLO
 import requests
 from configuration import MODEL_VERBOSE, LEFT_SHOULDER, RIGHT_SHOULDER, LEFT_EAR, RIGHT_EAR, LEFT_EYE, RIGHT_EYE, CONNECTION_CHECK_INTERVAL
 from configuration import config
-from utils import send_signal, get_angle_between_points, check_connection, update_env_vars, confirm_to_server
+from utils import send_signal, get_falling_side, get_angle_between_points, check_connection, update_env_vars, confirm_to_server
 import os 
 import sys
 
@@ -33,6 +33,10 @@ client = requests.session()
 is_connected = False
 last_connection_time = 0
 confirm_to_server(client, config)
+has_alerted = False
+reset_start_time = None
+body_detected = False
+
 while cap.isOpened():
     # Read a frame from the video
     success, frame = cap.read()
@@ -63,7 +67,14 @@ while cap.isOpened():
         for keypoint in keypoints[:number_of_persons_to_detect]:                               
             points = keypoint.xy[0].astype(int)    
             if len(points) < 7:
-                continue                
+                body_detected = False
+                if not has_alerted:
+                  send_signal(client, config, frame)
+                  has_alerted = True
+                  reset_start_time = time.time()
+                  
+                continue   
+            body_detected = True             
             left_should = points[LEFT_SHOULDER]
             right_shoulder = points[RIGHT_SHOULDER]
             left_ear = points[LEFT_EAR]
@@ -73,6 +84,7 @@ while cap.isOpened():
             angle_between_eyes = get_angle_between_points(left_eye, right_eye)
             angles_between_ears = get_angle_between_points(left_ear, right_ear)
             angles_between_shoulders = get_angle_between_points(left_should, right_shoulder)
+            falling_side = get_falling_side(left_should, right_shoulder)
             
             # add angle text to frame
             cv2.putText(annotated_frame, str(angle_between_eyes), left_eye, cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA)
@@ -84,9 +96,20 @@ while cap.isOpened():
             is_falling_shoulders = int(config["MAX_ANGLE_BETWEEN_SHOULDERS"]) < angles_between_shoulders
             falling_counter = is_falling_eyes + is_falling_ears + is_falling_shoulders
             
-            if falling_counter >= 2:
-                print('fall detected')
+            
+            if has_alerted and reset_start_time + config["RESET_TIME"] < time.time():
+                has_alerted = False
+                reset_start_time = None
+                falling_counter = 0
+                print('Ready to detect fall again')
+            
+            
+            
+            if falling_counter >= 2 and not has_alerted:
+                print(f'Falling detected on the {falling_side} side')
                 send_signal(client, config, frame)
+                has_alerted = True
+                reset_start_time = time.time()
                 
         # Display the annotated frame
         cv2.imshow("Upper body fall Detection Trigger", annotated_frame)

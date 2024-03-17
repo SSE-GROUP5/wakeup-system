@@ -7,7 +7,7 @@ from models.signal_logs import SignalLogs as signal_logs
 from sqlalchemy.exc import IntegrityError, NoResultFound
 from scheduler.alert_scheduler import alert_scheduler
 import uuid
-from constants import DATA_FOLDER_PATH
+from constants import DATA_FOLDER_PATH, TRIGGERS_TYPES
 import base64
 
 signals_blueprint = Blueprint('signals', __name__)
@@ -137,6 +137,9 @@ def set_signal():
       return "No trigger action provided", 400
   if trigger_num_actions is None:
       return "No trigger num actions provided", 400
+    
+  if trigger_action not in TRIGGERS_TYPES:
+      return {"message": f"Trigger action not supported. Supported types are {TRIGGERS_TYPES}"}, 400
   
   trigger = Trigger.find_by_id(trigger_id) if trigger_id is not None else Trigger.find_by_name(trigger_name)
 

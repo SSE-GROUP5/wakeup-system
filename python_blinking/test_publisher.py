@@ -4,15 +4,18 @@ import time
 
 context = zmq.Context()
 socket = context.socket(zmq.PUB)
-socket.bind("tcp://*:5556")
+
+# Example data
 data = {
         "CLOSED_EYES_FRAME": 3,
-        "BLINKING_RATIO": 4.5,
+        "BLINKING_RATIO": 7,
         "TIMEOUT_SEC": 1,
         "WAKEUP_SERVER_URL": "http://localhost:5001",
-        "ID": "sound_device_1"
+        "ID": "XXXXXXXXXXXX",
+        "ZMQ_SERVER": "tcp://localhost:5556",
     }
 
+socket.bind(data["ZMQ_SERVER"])
 topic = "Camera"
 json_data = json.dumps(data)
 time.sleep(1)

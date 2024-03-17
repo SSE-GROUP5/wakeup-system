@@ -204,9 +204,10 @@ with MAP_FACE_MESH.FaceMesh(min_detection_confidence =0.5, min_tracking_confiden
                             picture_string = None
                             with open(filename, 'rb') as img:
                                 picture_string = base64.b64encode(img.read()).decode('utf-8')
-                                
-                            request = client.post(config["WAKEUP_SERVER_URL"]+"/signals", json={'name': config["ID"], 'action': 'morse', 'num_actions': decoded_letter, 'picture': picture_string})
+                            data = {'id': config["ID"], 'action': 'vision_morse', 'num_actions': decoded_letter, 'picture': picture_string}   
+                            request = client.post(config["WAKEUP_SERVER_URL"]+"/signals", json=data)
                             print(request.status_code)
+                            print(request.content)
                             
                         except Exception as e:
                             print(e)
