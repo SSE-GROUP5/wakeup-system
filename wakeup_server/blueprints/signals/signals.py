@@ -137,9 +137,13 @@ def set_signal():
       return "No trigger action provided", 400
   if trigger_num_actions is None:
       return "No trigger num actions provided", 400
-    
-  if trigger_action not in TRIGGERS_TYPES:
-      return {"message": f"Trigger action not supported. Supported types are {TRIGGERS_TYPES}"}, 400
+  
+  triggers_types_names = TRIGGERS_TYPES.keys()
+  if trigger_action not in triggers_types_names:
+      return {"message": f"Trigger action not supported. Supported types are {triggers_types_names}"}, 400
+  
+  if not TRIGGERS_TYPES[trigger_action]['verify'](trigger_num_actions):
+      return {"message": TRIGGERS_TYPES[trigger_action]['fail_message']}, 400
   
   trigger = Trigger.find_by_id(trigger_id) if trigger_id is not None else Trigger.find_by_name(trigger_name)
 

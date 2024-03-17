@@ -41,12 +41,29 @@ print(f"HOMEASSISTANT_OFFLINE_MODE is {HOMEASSISTANT_OFFLINE_MODE}")
 DATA_FOLDER_PATH = os.path.join(current_dir, "data")
 os.makedirs(DATA_FOLDER_PATH, exist_ok=True)
 
-TRIGGERS_TYPES = [
-    "sound_classification",
-    "sound_whisper",
-    "sound_morse",
-    "vision_blink",
-    "vision_morse",
-    "vision_upper_body_fall",
-    "vision_fall"
-]
+TRIGGERS_TYPES = {
+  "sound_classification": {
+    "verify" : lambda trigger_num_actions: isinstance(trigger_num_actions, int) and trigger_num_actions > 1,
+    "fail_message" : "Trigger action sound_classification must have a value greater than 1"
+  },
+  "sound_whisper": {
+    "verify" : lambda trigger_num_actions: trigger_num_actions in ["ah", "oh"],
+    "fail_message" : "Trigger action sound_whisper must have a value of 'ah' or 'oh'"
+  },
+  "sound_morse": {
+    "verify" : lambda trigger_num_actions: trigger_num_actions.isalpha() and len(trigger_num_actions) == 1,
+    "fail_message" : "Trigger action sound_morse must have a single letter"
+  },
+  "vision_morse": {
+    "verify" : lambda trigger_num_actions: trigger_num_actions.isalpha() and len(trigger_num_actions) == 1,
+    "fail_message" : "Trigger action vision_morse must have a single letter"
+  },
+  "vision_blink": {
+    "verify" : lambda trigger_num_actions: isinstance(trigger_num_actions, int) and trigger_num_actions > 1,
+    "fail_message" : "Trigger action vision_blink must have a value greater than 1"
+  },
+  "vision_upper_body_fall": {
+    "verify" : lambda trigger_num_actions: trigger_num_actions in ["left", "right", "alert"],
+    "fail_message" : "Trigger action vision_upper_body_fall must have a value of 'left', 'right' or 'alert'"
+  },
+}

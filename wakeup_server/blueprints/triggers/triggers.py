@@ -27,8 +27,9 @@ def create_trigger():
   if name_already_exists is not None:
     return {"message": f"Device name already used by {name_already_exists.id}"}, 402 
   
-  if device_type not in TRIGGERS_TYPES:
-    return {"message": f"Device type not supported. Supported types are {TRIGGERS_TYPES}"}, 400
+  triggers_types_names = TRIGGERS_TYPES.keys()
+  if device_type not in triggers_types_names:
+    return {"message": f"Device type not supported. Supported types are {triggers_types_names}"}, 400
   
   try: 
       device_id = str(uuid.uuid4())
