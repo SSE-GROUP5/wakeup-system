@@ -28,26 +28,28 @@ def test_get_user(client):
 
 
 def test_empty_first_name(client):
-    response = client.post("/users", json = {"first_name": "", "last_name": "user", "gosh_id": "001"})
-    assert b"Unknown error" in response.data
+    response = client.post("/users", json = {"first_name": None, "last_name": "user", "gosh_id": "001"})
+    assert b"No user first_name provided" in response.data
 
 
 def test_empty_last_name(client):
-    response = client.post("/users", json = {"first_name": "test", "last_name": "", "gosh_id": "001"})
-    assert b"Unknown error" in response.data
+    response = client.post("/users", json = {"first_name": "test", "last_name": None, "gosh_id": "001"})
+    assert b"No user last_name provided" in response.data
 
 
-@pytest.mark.skip(reason="Not implemented")
+def test_first_name_with_space(client):
+    response = client.post("/users", json = {"first_name": "t e s t", "last_name": "user", "gosh_id": "001"})
+    assert b"error" in response.data
+
+
+def test_last_name_with_space(client):
+    response = client.post("/users", json = {"first_name": "test", "last_name": "u s e r", "gosh_id": "001"})
+    assert b"error" in response.data
+
+
 def test_empty_gosh_id(client):
-    response = client.post("/users", json = {"first_name": "test", "last_name": "user", "gosh_id": ""})
-    assert b"Unknown error" in response.data
-
-
-@pytest.mark.skip(reason="Not implemented")
-def test_duplicate_name(client):
-    response = client.post("/users", json = {"first_name": "test", "last_name": "user", "gosh_id": "001"})
-    response2 = client.post("/users", json = {"first_name": "test", "last_name": "user", "gosh_id": "002"})
-    assert b"User already exists" in response2.data
+    response = client.post("/users", json = {"first_name": "test", "last_name": "user", "gosh_id": None})
+    assert b"No GOSH ID provided" in response.data
 
 
 def test_duplicate_gosh_id(client):
