@@ -15,6 +15,8 @@ def create_device():
   device_type = data.get('type')
 
   # Perform any necessary validation on the data
+  if matter_id is None:
+    return "No matter id provided", 400
   if device_name is None:
     return "No device name provided", 400
   if device_type is None:
