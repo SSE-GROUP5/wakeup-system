@@ -7,7 +7,7 @@ from models.signal_logs import SignalLogs as signal_logs
 from sqlalchemy.exc import IntegrityError, NoResultFound
 from scheduler.alert_scheduler import alert_scheduler
 import uuid
-from constants import DATA_FOLDER_PATH
+from constants import DATA_FOLDER_PATH, TRIGGERS_TYPES
 import base64
 
 signals_blueprint = Blueprint('signals', __name__)
@@ -104,7 +104,7 @@ def receive_signal():
         
       target_device.do_action(target_action, picutre_path)
       signal = trigger.get_signal(trigger_action, trigger_num_actions, target_device_id, user_id)
-      signal_logs.info(signal_id=signal['id'], patient_id=user_id, signal_type=str(trigger_action) + '_' + str(trigger_name))
+      signal_logs.info(signal_id=signal['id'], patient_id=user_id, signal_type=str(trigger_action) + '_' + str(trigger.name), target_device=str(target_device.matter_id))
       output_message.append({
           'target_device_id': target_device_id,
           'target_action': target_action,
@@ -137,6 +137,13 @@ def set_signal():
       return "No trigger action provided", 400
   if trigger_num_actions is None:
       return "No trigger num actions provided", 400
+  
+  triggers_types_names = TRIGGERS_TYPES.keys()
+  if trigger_action not in triggers_types_names:
+      return {"message": f"Trigger action not supported. Supported types are {triggers_types_names}"}, 400
+  
+  if not TRIGGERS_TYPES[trigger_action]['verify'](trigger_num_actions):
+      return {"message": TRIGGERS_TYPES[trigger_action]['fail_message']}, 400
   
   trigger = Trigger.find_by_id(trigger_id) if trigger_id is not None else Trigger.find_by_name(trigger_name)
 

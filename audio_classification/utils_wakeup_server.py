@@ -27,7 +27,7 @@ def send_signal(num_action, config):
     print(config)
     data = {
         "id": str(config["ID"]),
-        "action": 'sound_whisper',
+        "action": 'sound_classification',
         "num_actions": num_action
     }
     url = f"{config['WAKEUP_SERVER_URL']}/signals"

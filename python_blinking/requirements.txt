@@ -1,0 +1,6 @@
+
+mediapipe==0.10.9
+requests
+simpleaudio
+zmq
+python-dotenv
