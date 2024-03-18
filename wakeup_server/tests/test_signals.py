@@ -14,6 +14,9 @@ def test_set_signal(client):
     user = client.post("/users", json = {"first_name": "test", "last_name": "user", "gosh_id": "001"})
     user_id = user.get_json()["id"]
 
+    user = client.post("/users", json = {"first_name": "test", "last_name": "user", "gosh_id": "001"})
+    user_id = user.get_json()["id"]
+
     
     response = client.post("/signals/set", json = {
         "trigger_id": trigger_id,
