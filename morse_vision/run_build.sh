@@ -2,15 +2,6 @@
 set -e
 DIRECTORY=$(dirname $0)
 
-# Check if it is python3.10 
-if [[ $(python3 --version) != *"3.10"* ]]; then
-  echo "Please create a virtual environment first with python3.10"
-  echo "Eg. python3.10 -m venv venv"
-  echo "Then activate the virtual environment"
-  exit 1
-fi
-
-
 # check if windows 
 IS_WINDOWS=false
 if [[ "$OSTYPE" == "msys" ]]; then
@@ -23,6 +14,8 @@ if [ "$IS_WINDOWS" = true ]; then
 else
   ADD_DATA="--add-data $DIRECTORY/venv/lib/python3.10/site-packages/mediapipe:mediapipe"
 fi
+
+pip3 install zmq requests python-dotenv ultralytics simpleaudio
 
 
 pyinstaller \

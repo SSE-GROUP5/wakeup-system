@@ -13,7 +13,7 @@ custom_modules_path = "./" if is_exe_file() else current_dir + "/../"
 sys.path.append(custom_modules_path)
 
 python_executable_dir = os.path.dirname(sys.executable)
-config_path = os.path.join(python_executable_dir, '../whisper/') if is_exe_file() else current_dir
+config_path = os.path.join(python_executable_dir, '../audio_classification/') if is_exe_file() else current_dir
 config_path = os.path.normpath(config_path)
 config_path = os.path.join(config_path, 'env_trigger.txt')
 
