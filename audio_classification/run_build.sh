@@ -31,4 +31,4 @@ pyinstaller \
   --add-data "$DIRECTORY/../zeromq:zeromq" \
     $ADD_DATA \
   --hidden-import=zmq \
-  --onefile "$DIRECTORY/classify.py"   
+  --onefile "$DIRECTORY/audio_classification.py"   
