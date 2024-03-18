@@ -26,6 +26,7 @@ custom_modules_path = "./" if is_exe_file() else current_dir + "/../"
 sys.path.append(custom_modules_path)
 from zeromq.zmqServer import ZeroMQServer
 
+
 # Function to check for repetitive sounds
 def check_repetitive_sounds(text, config):
     ah_pattern = re.compile(r'(ah[\s,\.]*){3,}', re.IGNORECASE)  # Pattern to match "ah" repeated at least 3 times
@@ -189,7 +190,7 @@ def main():
                 # print(f"Memory Usage Increase: {memory_after - memory_before:.2f}%")
 
                 # Check for repetitive sounds after each transcription
-                check_repetitive_sounds(text, config)
+                check_repetitive_sounds(text)
 
                 if text:  # If there's any transcription result
                     if phrase_complete:

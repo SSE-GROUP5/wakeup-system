@@ -21,9 +21,9 @@ fi
 
 ADD_DATA=""
 if [ "$IS_WINDOWS" = true ]; then
-  ADD_DATA="--add-data $DIRECTORY/../sound_venv/Lib/site-packages/mediapipe:mediapipe"
+  ADD_DATA="--add-data $DIRECTORY/../venv/Lib/site-packages/mediapipe:mediapipe"
 else
-  ADD_DATA="--add-data $DIRECTORY/../sound_venv/lib/python3.10/site-packages/mediapipe:mediapipe"
+  ADD_DATA="--add-data $DIRECTORY/../venv/lib/python3.10/site-packages/mediapipe:mediapipe"
 fi
 
 pyinstaller \
