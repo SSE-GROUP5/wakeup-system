@@ -28,7 +28,7 @@ pip install -r requirements.txt
 ## Usage
 To run the script, use the following command in the terminal:
 ```
-python classify.py [options]
+python audio_classification.py [options]
 ```
 
 Available options include:
