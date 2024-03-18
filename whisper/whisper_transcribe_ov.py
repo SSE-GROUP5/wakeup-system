@@ -21,28 +21,39 @@ from utils import patch_whisper_for_ov_inference, OpenVINOAudioEncoder, OpenVINO
 import psutil
 import time
 
-from constants import config
 from utils_wakeup_server import confirm_to_server, check_connection, send_signal, is_exe_file, update_env_vars
 current_dir = os.path.dirname(os.path.realpath(__file__))
 custom_modules_path = "./" if is_exe_file() else current_dir + "/../"
 sys.path.append(custom_modules_path)
 from zeromq.zmqServer import ZeroMQServer
 
+def get_model_path(filename):
+	# Determine if we are running in a bundled environment and set the base path
+	if getattr(sys, 'frozen', False):
+		application_path = sys._MEIPASS
+	else:
+		application_path = os.path.dirname(os.path.abspath(__file__))
+
+	# Join the base path with the model filename
+	model_path = os.path.join(application_path, filename)
+	return model_path
 
 # Function to check for repetitive sounds
-def check_repetitive_sounds(text):
+def check_repetitive_sounds(text, config):
     ah_pattern = re.compile(r'(ah[\s,\.]*){3,}', re.IGNORECASE)  # Pattern to match "ah" repeated at least 3 times
     oh_pattern = re.compile(r'(oh[\s,\.]*){3,}', re.IGNORECASE)  # Pattern to match "oh" repeated at least 3 times
     
     if ah_pattern.search(text):
         print("Detected repetitive 'ah' sound")
-        send_signal(config, "ah")
+        send_signal("ah", config)
     if oh_pattern.search(text):
         print("Detected repetitive 'oh' sound")
         send_signal("oh", config)
 
 def main():
     parser = argparse.ArgumentParser()
+    from constants import config
+
     parser.add_argument("--model", default="base", help="Model to use",
                         choices=["tiny", "base", "small", "medium", "large"])
     parser.add_argument("--non_english", action='store_true',
@@ -295,7 +306,7 @@ def main():
                 # print(f"Memory Usage Increase: {memory_after - memory_before:.2f}%")
 
                 # Check for repetitive sounds after each transcription
-                check_repetitive_sounds(text)
+                check_repetitive_sounds(text, config)
 
                 if text:  # If there's any transcription result
                     if phrase_complete:

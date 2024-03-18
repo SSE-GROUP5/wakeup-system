@@ -73,3 +73,5 @@ audio.mov
 *.png
 env_trigger.txt
 *.mp4
+*.bin
+whisper/*.xml

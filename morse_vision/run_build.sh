@@ -24,6 +24,8 @@ else
   ADD_DATA="--add-data $DIRECTORY/../venv/lib/python3.10/site-packages/mediapipe:mediapipe"
 fi
 
+pip3 install zmq requests python-dotenv ultralytics simpleaudio
+
 
 pyinstaller \
   --add-data "$DIRECTORY/env_trigger.txt:env_trigger.txt" \
