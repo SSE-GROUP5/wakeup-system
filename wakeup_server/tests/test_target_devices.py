@@ -28,8 +28,6 @@ def test_get_device(client):
 def test_empty_id(client):
     response = client.post("/target_devices", json={"matter_id": "", "name": "Fake Matter Device", "type": "switch"})
     assert b"No device id provided" in response.data
-    response = client.post("/target_devices", json={"matter_id": "", "name": "Fake Matter Device", "type": "switch"})
-    assert b"No device id provided" in response.data
 
 
 
