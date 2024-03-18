@@ -30,8 +30,19 @@ custom_modules_path = "./" if is_exe_file() else current_dir + "/../"
 sys.path.append(custom_modules_path)
 from zeromq.zmqServer import ZeroMQServer
 
+def get_model_path():
+	# Determine if we are running in a bundled environment and set the base path
+	if getattr(sys, 'frozen', False):
+		application_path = sys._MEIPASS
+	else:
+		application_path = os.path.dirname(os.path.abspath(__file__))
+
+	# Join the base path with the model filename
+	model_path = os.path.join(application_path, 'yamnet.tflite')
+	return model_path
+
 def run(model: str, max_results: int, score_threshold: float,
-        overlapping_factor: float, gui_active: bool) -> None:
+        overlapping_factor: float) -> None:
     """Continuously run inference on audio data acquired from the device.
 
     Args:
@@ -42,6 +53,8 @@ def run(model: str, max_results: int, score_threshold: float,
     """    
 
     # Validate overlapping factor and score threshold values
+    from constants import config
+
     if (overlapping_factor <= 0) or (overlapping_factor >= 1.0):
         raise ValueError('Overlapping factor must be between 0 and 1.')
 
@@ -152,19 +165,15 @@ def main():
         required=False,
         default=5)
     parser.add_argument(
-        '--overlappingFactor',
-        help='Target overlapping between adjacent inferences. Value must be in (0, 1)',
-        required=False,
-        default=0.5)
-    parser.add_argument(
-        '--gui',
-        help='Activate the GUI for displaying results.',
-        action='store_true') 
-    parser.add_argument(
         '--scoreThreshold',
         help='The score threshold of classification results.',
         required=False,
         default=0.0)
+    parser.add_argument(
+        '--overlappingFactor',
+        help='Target overlapping between adjacent inferences. Value must be in (0, 1)',
+        required=False,
+        default=0.5)
     args = parser.parse_args()
 
     # Run the main function with the parsed arguments
