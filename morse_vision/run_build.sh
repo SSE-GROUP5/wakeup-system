@@ -27,9 +27,7 @@ fi
 
 pyinstaller \
   --add-data "$DIRECTORY/env_trigger.txt:env_trigger.txt" \
-  --hidden-import=simpleaudio \
   --hidden-import=zmq \
   --add-data "$DIRECTORY/../zeromq:zeromq" \
-  --add-data "$DIRECTORY/../beepy:beepy" \
   $ADD_DATA \
   --onefile "$DIRECTORY/morse_vision.py"        

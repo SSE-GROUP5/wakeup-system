@@ -19,7 +19,7 @@ from zeromq.zmqServer import ZeroMQServer
 
 zmqServer = ZeroMQServer(config["ZMQ_SERVER"])
 # Load the YOLOv8 model
-model = YOLO('yolov8m-pose.pt', verbose=MODEL_VERBOSE)
+model = YOLO('yolov8n-pose.pt', verbose=MODEL_VERBOSE)
 
 
 # Open the video file

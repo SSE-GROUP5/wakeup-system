@@ -21,7 +21,6 @@ def is_exe_file():
 custom_modules_path = "./" if is_exe_file() else current_dir + "/../"  
 sys.path.append(custom_modules_path)
 from zeromq.zmqServer import ZeroMQServer
-import beepy
 
 python_executable_dir = os.path.dirname(sys.executable)
 config_path = os.path.join(python_executable_dir, '../upper_body_fall_detection/') if is_exe_file() else current_dir

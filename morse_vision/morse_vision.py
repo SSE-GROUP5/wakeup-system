@@ -18,7 +18,6 @@ def is_exe_file():
 custom_modules_path = "./" if is_exe_file() else current_dir + "/../"  
 sys.path.append(custom_modules_path)
 from zeromq.zmqServer import ZeroMQServer
-import beepy
 
 
 
@@ -147,7 +146,6 @@ with MAP_FACE_MESH.FaceMesh(min_detection_confidence =0.5, min_tracking_confiden
       
                 if not has_bell_rung and not has_started_close_eyes and cef_counter > 30:
                   has_bell_rung = True
-                  beepy.beep(sound=5)
                 
                 # Auto Cancel Morse Code Reader
                 if len(letter) > 0 and time.time() - last_blinking_time > config["TIMEOUT_MORSE_READER"] * 1.4:
@@ -155,7 +153,6 @@ with MAP_FACE_MESH.FaceMesh(min_detection_confidence =0.5, min_tracking_confiden
                   letter = ''
                   can_start_morse = False
                   decoded_letter = None
-                  beepy.beep(sound=3)
 
 
                 if not can_start_morse and has_bell_rung:
@@ -199,11 +196,11 @@ with MAP_FACE_MESH.FaceMesh(min_detection_confidence =0.5, min_tracking_confiden
                     can_start_morse = False
                     if decoded_letter and is_connected:
                         filename = f'{__ID}.png'
-                        save_picture(frame, filename)
+                        # save_picture(frame, filename)
                         try:
                             picture_string = None
-                            with open(filename, 'rb') as img:
-                                picture_string = base64.b64encode(img.read()).decode('utf-8')
+                            # with open(filename, 'rb') as img:
+                            #     picture_string = base64.b64encode(img.read()).decode('utf-8')
                             data = {'id': config["ID"], 'action': 'vision_morse', 'num_actions': decoded_letter, 'picture': picture_string}   
                             request = client.post(config["WAKEUP_SERVER_URL"]+"/signals", json=data)
                             print(request.status_code)

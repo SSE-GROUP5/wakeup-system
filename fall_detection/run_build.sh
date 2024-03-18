@@ -11,7 +11,7 @@ if [[ $(python3 --version) != *"3.10"* ]]; then
   exit 1
 fi
 
-pip3 install zmq requests python-dotenv ultralytics simpleaudio
+pip3 install zmq requests python-dotenv ultralytics
 
 # check if windows 
 IS_WINDOWS=false
