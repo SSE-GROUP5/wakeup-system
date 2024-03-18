@@ -63,3 +63,6 @@ def test_empty_type(client):
     response = client.post("/triggers", json={"name": "test_empty_type", "type": ""})
     assert b"No type provided" in response.data
    
+    response = client.post("/triggers", json={"name": "test_empty_type", "type": ""})
+    assert b"No type provided" in response.data
+   
