@@ -26,18 +26,8 @@ def test_get_device(client):
     assert response.status_code == 200 and obj1['id'] in id_list and obj2['id'] in id_list
 
 
-@pytest.mark.skip(reason="need ZMQ server")
-def test_update_trigger(client):
-    response1 = client.post("/triggers", json={"name": "test_update_trigger", "type": "vision_morse"})
-    obj1 = response1.get_json()
-    response2 = client.put("/triggers/"+obj1['id'], json={"name": "modified", "type": "vision_morse"})
-    obj2 = response2.get_json()
-    assert obj2['name'] == "modified"
-
-
-@pytest.mark.skip(reason="Not implemented")
 def test_empty_name(client):
-    response = client.post("/triggers", json={"name": "", "type": "vision_morse"})
+    response = client.post("/triggers", json={"name": None, "type": "vision_morse"})
     assert b"No name provided" in response.data
 
 
@@ -52,14 +42,11 @@ def test_duplicate_name(client):
     assert b"Device name already used" in response2.data
 
 
-@pytest.mark.skip(reason="Not implemented")
 def test_illegal_type(client):
     response = client.post("/triggers", json={"name": "test_illegal_type", "type": "cheems"})
-    assert b"Unknown error" in response.data
+    assert b"Device type not supported" in response.data
 
 
-@pytest.mark.skip(reason="Not implemented")
 def test_empty_type(client):
-    response = client.post("/triggers", json={"name": "test_empty_type", "type": ""})
+    response = client.post("/triggers", json={"name": "test_empty_type", "type": None})
     assert b"No type provided" in response.data
-   
