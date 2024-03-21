@@ -10,6 +10,7 @@ PORT = os.getenv("PORT")
 ZERO_MQ_SERVER_URL = os.getenv("ZERO_MQ_SERVER_URL")
 DEV_MODE = os.getenv("DEV_MODE").lower() == "true" if os.getenv("DEV_MODE") != None else False
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
+WAKE_ON_LAN_PORT = 9
 
 if not HOSTNAME:
     raise ValueError("No HOSTNAME set for Flask applicaton")
@@ -67,3 +68,7 @@ TRIGGERS_TYPES = {
     "fail_message" : "Trigger action vision_upper_body_fall must have a value of 'left', 'right' or 'alert'"
   },
 }
+
+
+
+TARGETS_TYPES = ["telegram", "wake_on_lan", "homeassistant"]
