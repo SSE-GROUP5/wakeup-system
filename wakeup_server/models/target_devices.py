@@ -1,12 +1,13 @@
 from homeassistant_client import homeassistant_client
 from scheduler.alert_scheduler import alert_scheduler
 from homeassistant.fake_matter_device import FAKE_MATTER_DEVICE
-from constants import HOMEASSISTANT_OFFLINE_MODE
+from constants import HOMEASSISTANT_OFFLINE_MODE, WAKE_ON_LAN_PORT
 from sqlalchemy import Column, String, JSON
 from models.triggers_target_map import trigger_target_association
 from db import db
 from models.target_device_logs import TargetDeviceLogs
 from sqlalchemy.exc import IntegrityError
+from wake_on_lan.wake_on_lan_cllient import wake_on_lan_packet_send
 
 class TargetDevice(db.Model):
   __tablename__ = 'target_devices'
@@ -16,19 +17,26 @@ class TargetDevice(db.Model):
   type = Column(String)
   possible_actions = Column(JSON, nullable=True)
   triggers = db.relationship("Trigger", secondary=trigger_target_association, back_populates="target_devices")
+  mac_address = Column(String, nullable=True)
+  ip_address = Column(String, nullable=True)
   
-  def __init__(self, matter_id, name, type):
+  def __init__(self, matter_id, name, type, mac_address=None, ip_address=None):
     self.matter_id = matter_id
     self.name = name
     self.type = type
+    self.mac_address = mac_address
+    self.ip_address = ip_address
     self.possible_actions = self.get_possible_actions()
     
   
   def json(self):
     return {
-      "matter_id": self.matter_id,
+      "id": self.matter_id,
+      "matter_id": self.matter_id, # This is a duplicate of "id", but it's kept for compatibility with the frontend
       "name": self.name,
       "type": self.type,
+      "mac_address": self.mac_address,
+      "ip_address": self.ip_address,
       "possible_actions": self.possible_actions
     }
     
@@ -36,6 +44,8 @@ class TargetDevice(db.Model):
     if self.type.lower() == "telegram":
       return [{"action": "send_alert", "description": "Send an alert to the medical staff"}]
     
+    if self.type.lower() == "wake_on_lan":
+      return [{"action": "wake", "description": "Wake the device"}]
     
     if HOMEASSISTANT_OFFLINE_MODE:
       print("HOMEASSISTANT_OFFLINE_MODE IS ENABLED")
@@ -45,7 +55,7 @@ class TargetDevice(db.Model):
     return homeassistant_client.get_possible_actions(self.matter_id)
     
   def create(self):
-    device = TargetDevice(matter_id=self.matter_id, name=self.name, type=self.type)
+    device = TargetDevice(matter_id=self.matter_id, name=self.name, type=self.type, mac_address=self.mac_address, ip_address=self.ip_address)
     try:
       db.session.add(device)
       db.session.commit()
@@ -62,13 +72,16 @@ class TargetDevice(db.Model):
       raise e
     
   def do_action(self, action, picture_path=None):
-    
     target_type = self.type.lower()
     if target_type == "telegram":
       channel_id = self.matter_id.split(".")[1]
       message = "Alert ! Patient needs help ! \n To stop the alert, type /stop"
       alert_scheduler.start_alert(channel_id, message, picture_path)
       print("Action: " + action)
+      return True
+    
+    if target_type == "wake_on_lan":
+      wake_on_lan_packet_send(self.mac_address, self.ip_address, WAKE_ON_LAN_PORT)
       return True
     
  

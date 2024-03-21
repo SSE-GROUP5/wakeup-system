@@ -5,7 +5,7 @@ def test_set_signal(client):
     trigger = client.post("/triggers", json={"name": "andy_vision", "type": "vision_blink"})
     trigger_id = trigger.get_json()["id"]
     trigger_name = trigger.get_json()["name"]
-    target = client.post("/target_devices", json={"matter_id": "switch.smart_plug_mini2", "name": "Fake Matter Device", "type": "switch"})
+    target = client.post("/target_devices", json={"matter_id": "switch.smart_plug_mini2", "name": "Fake Matter Device", "type": "homeassistant"})
     target_id = target.get_json()["matter_id"]
     user = client.post("/users", json = {"first_name": "test", "last_name": "user", "gosh_id": "001"})
     user_id = user.get_json()["id"]
@@ -34,7 +34,7 @@ def test_get_signal(client):
     trigger = client.post("/triggers", json={"name": "andy_vision", "type": "vision_blink"})
     trigger_id = trigger.get_json()["id"]
     trigger_name = trigger.get_json()["name"]
-    target = client.post("/target_devices", json={"matter_id": "switch.smart_plug_mini2", "name": "Fake Matter Device", "type": "switch"})
+    target = client.post("/target_devices", json={"matter_id": "switch.smart_plug_mini2", "name": "Fake Matter Device", "type": "homeassistant"})
     target_id = target.get_json()["matter_id"]
     user = client.post("/users", json = {"first_name": "test", "last_name": "user", "gosh_id": "001"})
     user_id = user.get_json()["id"]
@@ -58,7 +58,7 @@ def test_get_signal_for_user(client):
     trigger = client.post("/triggers", json={"name": "andy_vision", "type": "vision_blink"})
     trigger_id = trigger.get_json()["id"]
     trigger_name = trigger.get_json()["name"]
-    target = client.post("/target_devices", json={"matter_id": "switch.smart_plug_mini2", "name": "Fake Matter Device", "type": "switch"})
+    target = client.post("/target_devices", json={"matter_id": "switch.smart_plug_mini2", "name": "Fake Matter Device", "type": "homeassistant"})
     target_id = target.get_json()["matter_id"]
     user = client.post("/users", json = {"first_name": "test", "last_name": "user", "gosh_id": "001"})
     user_id = user.get_json()["id"]
