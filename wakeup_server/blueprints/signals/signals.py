@@ -160,7 +160,7 @@ def set_signal():
     
   actions_ids = [action['action'] for action in actions]
   if target_action not in actions_ids:
-      return "Target device does not have this action", 400
+      return "Target device does not have this action, possible actions are: " + str(actions_ids), 400
   try:
       new_signal = trigger.add_target(trigger_action, trigger_num_actions, target_device_id, target_action, user_id)
       return jsonify({

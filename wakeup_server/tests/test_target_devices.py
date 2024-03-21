@@ -2,21 +2,21 @@ import pytest
 
 
 def test_create_device(client):
-    response = client.post("/target_devices", json={"matter_id": "switch.fake-matter-device", "name": "Fake Matter Device", "type": "switch"})
+    response = client.post("/target_devices", json={"matter_id": "switch.fake-matter-device", "name": "Fake Matter Device", "type": "homeassistant"})
     obj = response.get_json()
-    assert response.status_code == 201 and obj['matter_id'] == "switch.fake-matter-device" and obj['name'] == "Fake Matter Device" and obj['type'] == "switch"
+    assert response.status_code == 201 and obj['matter_id'] == "switch.fake-matter-device" and obj['name'] == "Fake Matter Device" and obj['type'] == "homeassistant"
   
 
 def test_get_device_by_id(client):
-    obj = client.post("/target_devices", json={"matter_id": "switch.fake-matter-device", "name": "Fake Matter Device", "type": "switch"}).get_json()
+    obj = client.post("/target_devices", json={"matter_id": "switch.fake-matter-device", "name": "Fake Matter Device", "type": "homeassistant"}).get_json()
     response = client.get("/target_devices/"+obj['matter_id'])
     device = response.get_json()
     assert response.status_code == 200 and obj['matter_id'] == device['matter_id'] and obj['name'] == device['name'] and obj['type'] == device['type']
 
 
 def test_get_device(client):
-    obj1 = client.post("/target_devices", json={"matter_id": "switch.fake-matter-device", "name": "Fake Matter Device", "type": "switch"}).get_json()
-    obj2 = client.post("/target_devices", json={"matter_id": "switch.fake-matter-device 2", "name": "Fake Matter Device 2", "type": "switch"}).get_json()
+    obj1 = client.post("/target_devices", json={"matter_id": "switch.fake-matter-device", "name": "Fake Matter Device", "type": "homeassistant"}).get_json()
+    obj2 = client.post("/target_devices", json={"matter_id": "switch.fake-matter-device 2", "name": "Fake Matter Device 2", "type": "homeassistant"}).get_json()
 
     response = client.get("/target_devices")
     device_list = response.get_json()
@@ -25,12 +25,12 @@ def test_get_device(client):
 
 
 def test_empty_id(client):
-    response = client.post("/target_devices", json={"matter_id": None, "name": "Fake Matter Device", "type": "switch"})
-    assert b"No matter id provided" in response.data
+    response = client.post("/target_devices", json={"matter_id": None, "name": "Fake Matter Device", "type": "homeassistant"})
+    assert b"No id provided" in response.data
 
 
 def test_empty_name(client):
-    response = client.post("/target_devices", json={"matter_id": "switch.fake-matter-device", "name": None, "type": "switch"})
+    response = client.post("/target_devices", json={"matter_id": "switch.fake-matter-device", "name": None, "type": "homeassistant"})
     assert b"No device name provided" in response.data
 
 
@@ -40,6 +40,6 @@ def test_empty_type(client):
 
 
 def test_duplicate_id(client):
-    response1 = client.post("/target_devices", json={"matter_id": "switch.fake-matter-device", "name": "Fake Matter Device", "type": "switch"})
-    response2 = client.post("/target_devices", json={"matter_id": "switch.fake-matter-device", "name": "Fake Matter Device 2", "type": "switch"})
+    response1 = client.post("/target_devices", json={"matter_id": "switch.fake-matter-device", "name": "Fake Matter Device", "type": "homeassistant"})
+    response2 = client.post("/target_devices", json={"matter_id": "switch.fake-matter-device", "name": "Fake Matter Device 2", "type": "homeassistant"})
     assert b"Device already exists" in response2.data
