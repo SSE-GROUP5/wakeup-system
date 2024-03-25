@@ -244,6 +244,7 @@ def resample(audio, src_sample_rate, dst_sample_rate):
     if src_sample_rate == dst_sample_rate:
         return audio
     duration = audio.shape[0] / src_sample_rate
+
     resampled_data = np.zeros(shape=(int(duration * dst_sample_rate)), dtype=np.float32)
     x_old = np.linspace(0, duration, audio.shape[0], dtype=np.float32)
     x_new = np.linspace(0, duration, resampled_data.shape[0], dtype=np.float32)
@@ -285,6 +286,15 @@ def get_audio(video_file):
     resampled_audio = resample(audio, sample_rate, 16000)
     return resampled_audio, duration
 
+def preprocess_audio(input_audio_file):
+    sample_rate, audio = wavfile.read(io.BytesIO(open(input_audio_file, 'rb').read()))
+    audio = audio_to_float(audio)
+    if audio.ndim == 2:
+        audio = audio.mean(axis=1)
+    # The model expects mono-channel audio with a 16000 Hz sample rate, represented in floating point range. When the
+    # audio from the input video does not meet these requirements, we will need to apply preprocessing.
+    resampled_audio = resample(audio, sample_rate, 16000)
+    return resampled_audio
 
 def format_timestamp(seconds: float):
     """
