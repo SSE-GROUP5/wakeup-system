@@ -42,7 +42,7 @@ def audio_to_float(audio):
     """
     convert audio signal to floating point format
     """
-    return audio.astype(np.float32) / np.iinfo(audio.dtype).max
+    return np.frombuffer(audio, dtype=np.int16).astype(np.float32) / 32768.0
 
 def main():
     parser = argparse.ArgumentParser()
