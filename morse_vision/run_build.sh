@@ -2,13 +2,13 @@
 set -e
 DIRECTORY=$(dirname $0)
 
-# Check if it is python3.10 
-if [[ $(python3 --version) != *"3.10"* ]]; then
-  echo "Please create a virtual environment first with python3.10"
-  echo "Eg. python3.10 -m venv ../venv"
-  echo "Then activate the virtual environment"
-  exit 1
-fi
+# # Check if it is python3.10 
+# if [[ $(python3 --version) != *"3.10"* ]]; then
+#   echo "Please create a virtual environment first with python3.10"
+#   echo "Eg. python3.10 -m venv ../venv"
+#   echo "Then activate the virtual environment"
+#   exit 1
+# fi
 
 
 # check if windows 
@@ -24,6 +24,8 @@ else
   ADD_DATA="--add-data $DIRECTORY/../venv/lib/python3.10/site-packages/mediapipe:mediapipe"
 fi
 
+pip3 install zmq requests python-dotenv ultralytics simpleaudio
+
 
 pyinstaller \
   --add-data "$DIRECTORY/env_trigger.txt:env_trigger.txt" \
@@ -32,4 +34,4 @@ pyinstaller \
   --add-data "$DIRECTORY/../zeromq:zeromq" \
   --add-data "$DIRECTORY/../beepy:beepy" \
   $ADD_DATA \
-  --onefile "$DIRECTORY/morse_vision.py"        
+  --onefile "$DIRECTORY/vision_morse.py"        

@@ -27,7 +27,7 @@ def check_repetitive_sounds(text, config):
     uh_pattern = re.compile(r'(uh[\s,\.]*){3,}', re.IGNORECASE)  # Pattern to match "uh" repeated at least 3 times
     if ah_pattern.search(text) or uh_pattern.search(text):
         print("Detected repetitive 'ah' sound")
-        send_signal(config, "ah")
+        send_signal("ah", config)
     if oh_pattern.search(text):
         print("Detected repetitive 'oh' sound")
         send_signal("oh", config)
