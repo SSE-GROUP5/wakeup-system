@@ -53,7 +53,7 @@ def main():
                         help="Don't use the English model.")
     parser.add_argument("--energy_threshold", default=1000,
                         help="Energy level for mic to detect.", type=int)
-    parser.add_argument("--record_timeout", default=2,
+    parser.add_argument("--record_timeout", default=3,
                         help="How real time the recording is in seconds.", type=float)
     parser.add_argument("--phrase_timeout", default=2,
                         help="How much empty space between recordings before we "
@@ -87,7 +87,7 @@ def main():
                 print(f"Microphone {mic_name} not found.")
                 return
     else:
-        source = sr.Microphone(sample_rate=16000)
+        source = sr.Microphone(sample_rate=16000, device_index=5)
 
     model_id = "openai/whisper-base"
     model_path = Path(model_id.replace('/', '_'))
@@ -126,6 +126,7 @@ def main():
     )
 
     transcription = ['']
+    total_inference_time = 0.0
 
     with source:
         recorder.adjust_for_ambient_noise(source)
@@ -150,7 +151,7 @@ def main():
 
     zmqServer = ZeroMQServer("tcp://*:5556")
       
-     
+    print("Starting the transcriber...")
     while True:
       
         message = zmqServer.receive()
@@ -180,10 +181,10 @@ def main():
 
                 # Performance metrics
                 inference_time = time.time() - start_time
+                total_inference_time += inference_time 
                 # cpu_after = psutil.cpu_percent(interval=None)
                 # memory_after = psutil.virtual_memory().percent
 
-                print(f"Inference Time: {inference_time:.2f} seconds")
                 # print(f"CPU Usage Increase: {cpu_after - cpu_before:.2f}%")
                 # print(f"Memory Usage Increase: {memory_after - memory_before:.2f}%")
 
@@ -201,7 +202,9 @@ def main():
                     print("No transcription detected for the latest audio segment.")
 
                 sleep(0.25)
+                print(f"\nTotal Inference Time: {total_inference_time:.2f} seconds")
         except KeyboardInterrupt:
+            print(f"\nTotal Inference Time: {total_inference_time:.2f} seconds")
             break
 
 
