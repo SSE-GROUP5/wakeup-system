@@ -969,6 +969,5 @@
         {
             "name": "Interactive Target Association API Documentation"
         }
-    ],
-    "API_URL": "/static/combined_api.json"
+    ]
 }
