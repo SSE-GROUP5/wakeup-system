@@ -1,0 +1,537 @@
+{
+	"info": {
+		"_postman_id": "a513af7a-3362-4dfe-9082-41f15507348f",
+		"name": "WakeUpServer",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "12277345"
+	},
+	"item": [
+		{
+			"name": "HelloWorld",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{wakeup_server}}",
+					"host": [
+						"{{wakeup_server}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Health Check",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{wakeup_server}}/health",
+					"host": [
+						"{{wakeup_server}}"
+					],
+					"path": [
+						"health"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add Trigger",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"type\": \"vision\",\n    \"name\": \"david_vision\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{wakeup_server}}/triggers",
+					"host": [
+						"{{wakeup_server}}"
+					],
+					"path": [
+						"triggers"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Triggers",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\": \"sound_image\",\n    \"type\": \"Sound\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{wakeup_server}}/triggers",
+					"host": [
+						"{{wakeup_server}}"
+					],
+					"path": [
+						"triggers"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Trigger",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "  { \n    \"WAKEUP_SERVER_URL\": \"http://localhost:5001\",\n    \"CHANNEL\":0,\n    \"CLOSED_EYES_FRAME\":3.0,\n    \"BLINKING_RATIO\":4.5,\n    \"MIN_BLINKING_TIME\":0.1,\n    \"MAX_SHORT_BLINKING_TIME\":0.6,\n    \"TIMEOUT_MORSE_READER\":1.5\n  }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{wakeup_server}}/triggers/:id",
+					"host": [
+						"{{wakeup_server}}"
+					],
+					"path": [
+						"triggers",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "a47f6849-8857-4d9c-930b-efe69ccc6b2f"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Targets",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\": \"sound_image\",\n    \"type\": \"Sound\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{wakeup_server}}/target_devices",
+					"host": [
+						"{{wakeup_server}}"
+					],
+					"path": [
+						"target_devices"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Targets ID",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\": \"sound_image\",\n    \"type\": \"Sound\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{wakeup_server}}/target_devices",
+					"host": [
+						"{{wakeup_server}}"
+					],
+					"path": [
+						"target_devices"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add Target",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"matter_id\": \"switcfake-matter-device\",\n    \"name\": \"Fake Matter Device\",\n    \"type\": \"wake_on_lan\",\n    \"mac\": \"123123123\",\n    \"ip\": \"192.168.01.01\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{wakeup_server}}/target_devices",
+					"host": [
+						"{{wakeup_server}}"
+					],
+					"path": [
+						"target_devices"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Target",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"matter_id\": \"switch.smart_plug_mini2\",\n    \"name\": \"SmartPlug1\",\n    \"type\": \"switch\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{wakeup_server}}/target_devices/:id",
+					"host": [
+						"{{wakeup_server}}"
+					],
+					"path": [
+						"target_devices",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "telegram.25045022"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Set Signal",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"target_action\": \"toggle\",\n    \"target_device_id\": \"switch.smart_plug_mini_2\",\n    \"trigger_action\": \"vision_upper_body_fall\",\n    \"trigger_id\": \"b460a4f1-dfd7-40d0-aa04-cdbd8d5a9593\",\n    \"trigger_num_actions\": \"alert\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{wakeup_server}}/signals/set",
+					"host": [
+						"{{wakeup_server}}"
+					],
+					"path": [
+						"signals",
+						"set"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Set Signal",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"interactive_device_id\": \"andy_vision\",\n    \"interactive_device_action\": \"taps\",\n    \"interactive_device_num_actions\": 2,\n    \"target_device_id\": \"switch.smart_plug_mini2\",\n    \"target_action\": \"turn_on\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{wakeup_server}}/signals/set",
+							"host": [
+								"{{wakeup_server}}"
+							],
+							"path": [
+								"signals",
+								"set"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Server",
+							"value": "Werkzeug/3.0.1 Python/3.9.6"
+						},
+						{
+							"key": "Date",
+							"value": "Sat, 03 Feb 2024 14:33:13 GMT"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Content-Length",
+							"value": "307"
+						},
+						{
+							"key": "Connection",
+							"value": "close"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Signal set\",\n    \"signal\": {\n        \"id\": \"974c4068-7b17-4c90-aefc-f8f78eddac26\",\n        \"interactive_action\": \"taps\",\n        \"interactive_device_num_actions\": 2,\n        \"interactive_id\": \"andy_vision\",\n        \"target_action\": \"turn_on\",\n        \"target_id\": \"switch.smart_plug_mini2\",\n        \"user_id\": null\n    }\n}"
+				}
+			]
+		},
+		{
+			"name": "Send Signal",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"id\": \"db529170-7b0c-44a8-adc6-f0cf951b4949\", \"action\": \"vision_morse\", \"num_actions\": \"j\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{wakeup_server}}/signals",
+					"host": [
+						"{{wakeup_server}}"
+					],
+					"path": [
+						"signals"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Signals",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\": \"sound_image\",\n    \"action\": \"10_taps\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{wakeup_server}}/signals",
+					"host": [
+						"{{wakeup_server}}"
+					],
+					"path": [
+						"signals"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Signals For User",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\": \"sound_image\",\n    \"action\": \"10_taps\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{wakeup_server}}/signals/users/:user_id",
+					"host": [
+						"{{wakeup_server}}"
+					],
+					"path": [
+						"signals",
+						"users",
+						":user_id"
+					],
+					"variable": [
+						{
+							"key": "user_id",
+							"value": "8cb8d55a-bb5d-4a22-ad3a-9d0ca3005b20"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create User",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"first_name\": \"David\",\n    \"last_name\": \"aaa\",\n    \"gosh_id\": \"123455\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{wakeup_server}}/users",
+					"host": [
+						"{{wakeup_server}}"
+					],
+					"path": [
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get users",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"first_name\": \"David\",\n    \"last_name\": \"aaa\",\n    \"gosh_id\": \"12345\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{wakeup_server}}/users",
+					"host": [
+						"{{wakeup_server}}"
+					],
+					"path": [
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get user by ID",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"first_name\": \"David\",\n    \"last_name\": \"aaa\",\n    \"gosh_id\": \"12345\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{wakeup_server}}/users/:user_id",
+					"host": [
+						"{{wakeup_server}}"
+					],
+					"path": [
+						"users",
+						":user_id"
+					],
+					"variable": [
+						{
+							"key": "user_id",
+							"value": "ed024d48-684c-44bb-9d84-98a9b7f1d2c2"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete user by ID",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"first_name\": \"David\",\n    \"last_name\": \"aaa\",\n    \"gosh_id\": \"12345\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{wakeup_server}}/users/4a99d88c-2230-49cf-887c-55a3e1e15f0a",
+					"host": [
+						"{{wakeup_server}}"
+					],
+					"path": [
+						"users",
+						"4a99d88c-2230-49cf-887c-55a3e1e15f0a"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

@@ -49,6 +49,7 @@ echo "Setting up local environment variables... in .env file"
 
 echo "HOSTNAME=$HOSTNAME" > $DIRECTORY/../wakeup_server/.env
 echo "PORT=$WAKEUP_SERVER_PORT" >> $DIRECTORY/../wakeup_server/.env
+echo "WAKEUP_SERVER_URL=$WAKEUP_SERVER_URL" >> $DIRECTORY/../wakeup_server/.env
 echo "HOMEASSISTANT_TOKEN=$HOMEASSISTANT_TOKEN" >> $DIRECTORY/../wakeup_server/.env
 echo "HOMEASSISTANT_URL=$HOMEASSISTANT_URL" >> $DIRECTORY/../wakeup_server/.env
 echo "HOMEASSISTANT_OFFLINE_MODE=$HOMEASSISTANT_OFFLINE_MODE" >> $DIRECTORY/../wakeup_server/.env
@@ -59,17 +60,13 @@ echo "TELEGRAM_BOT_TOKEN=$TELEGRAM_BOT_TOKEN" >> $DIRECTORY/../wakeup_server/.en
 # For Docker .env.compose
 echo "HOSTNAME=0.0.0.0" > $DIRECTORY/../wakeup_server/.env.compose
 echo "PORT=$WAKEUP_SERVER_PORT" >> $DIRECTORY/../wakeup_server/.env.compose
+echo "WAKEUP_SERVER_URL=$WAKEUP_SERVER_URL" >> $DIRECTORY/../wakeup_server/.env.compose
 echo "HOMEASSISTANT_TOKEN=$HOMEASSISTANT_TOKEN" >> $DIRECTORY/../wakeup_server/.env.compose
 echo "HOMEASSISTANT_URL=$HOMEASSISTANT_URL" >> $DIRECTORY/../wakeup_server/.env.compose
 echo "HOMEASSISTANT_OFFLINE_MODE=$HOMEASSISTANT_OFFLINE_MODE" >> $DIRECTORY/../wakeup_server/.env.compose
 echo "ZERO_MQ_SERVER_URL=$ZERO_MQ_SERVER_URL" >> $DIRECTORY/../wakeup_server/.env.compose
 echo "DEV_MODE=$DEV_MODE" >> $DIRECTORY/../wakeup_server/.env.compose
 echo "TELEGRAM_BOT_TOKEN=$TELEGRAM_BOT_TOKEN" >> $DIRECTORY/../wakeup_server/.env.compose
-
-
-# For telegram bot
-echo "WAKEUP_SERVER_URL=$WAKEUP_SERVER_URL" > $DIRECTORY/../telegram_bot/.env
-echo "TELEGRAM_BOT_TOKEN=$TELEGRAM_BOT_TOKEN" >> $DIRECTORY/../telegram_bot/.env
 
 
 # For morse vision

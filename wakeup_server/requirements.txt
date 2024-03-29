@@ -18,3 +18,4 @@ wakeonlan==3.1.0
 zmq==0.0.0
 pytest
 flask_swagger_ui
+python-telegram-bot

@@ -5,8 +5,9 @@ import requests
 from telegram import Update
 from telegram.ext import Application, CommandHandler, ContextTypes
 from dotenv import load_dotenv
-load_dotenv()
 import os
+current_dir = os.path.dirname(os.path.abspath(__file__))
+load_dotenv(dotenv_path=os.path.join(current_dir, "../.env"))
 
 class TelegramBot:
   def __init__(self, token, wakeup_server_url):
