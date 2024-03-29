@@ -79,3 +79,7 @@ whisper/openai_whisper-base
 # fall upper detection
 fall_detection/vision_upper_body_fall/
 *.pt.*
+
+
+# morse vision
+morse_vision/vision_morse
