@@ -4,7 +4,7 @@ services:
   wakeup:
     build: 
       context: ./
-      dockerfile: wakeup_server/Dockerfile
+      dockerfile: wakeup_server/Dockerfile.local
     container_name: wakeup_server
     ports:
       - 5001:5001
