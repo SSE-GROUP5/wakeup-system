@@ -33,3 +33,7 @@ pyinstaller \
   --add-data "$DIRECTORY/../beepy:beepy" \
   $ADD_DATA \
   --onefile "$DIRECTORY/morse_vision.py"        
+
+
+mkdir -p vision_morse
+cp dist/morse_vision vision_morse

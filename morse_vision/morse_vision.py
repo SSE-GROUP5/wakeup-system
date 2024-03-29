@@ -23,7 +23,7 @@ import beepy
 
 
 python_executable_dir = os.path.dirname(sys.executable)
-config_path = os.path.join(python_executable_dir, '../morse_vision/') if is_exe_file() else current_dir
+config_path = os.path.join(python_executable_dir, '../vision_morse/') if is_exe_file() else current_dir
 config_path = os.path.normpath(config_path)
 config_path = os.path.join(config_path, 'env_trigger.txt')
 
@@ -101,7 +101,12 @@ def save_picture(frame, file_name):
 def confirm_to_server():
     try:
         request = client.post(config["WAKEUP_SERVER_URL"]+"/triggers/confirm", json={'id': config["ID"]})
-        print(request.status_code)
+        if request.status_code == 200:
+            print('SUCCESS: Confirmed to wakeup server')
+        elif request.status_code == 404:
+            print('Device id not registered in wakeup server')
+        elif request.status_code != 200:
+            print('Error confirming to wakeup server')
     except Exception as e:
         print(e)
 
