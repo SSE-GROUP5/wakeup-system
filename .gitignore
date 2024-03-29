@@ -75,3 +75,7 @@ env_trigger.txt
 *.mp4
 *.wav
 whisper/openai_whisper-base
+
+# fall upper detection
+fall_detection/vision_upper_body_fall/
+*.pt.*

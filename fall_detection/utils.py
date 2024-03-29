@@ -29,7 +29,7 @@ def confirm_to_server(client, config):
     try:
         request = client.post(config["WAKEUP_SERVER_URL"]+"/triggers/confirm", json={'id': config["ID"]})
         if request.status_code == 200:
-            print('Confirmed to wakeup server')
+            print('SUCCESS: Confirmed to wakeup server')
         elif request.status_code == 404:
             print('Device id not registered in wakeup server')
         elif request.status_code != 200:
