@@ -29,12 +29,22 @@ You can view the API documentation by going to `http://<hostname>:5001/docs`.
 
 ## Run the setup environement script to install all environment variables
 
-```bash Unix
+```bash
   cd .. &&
   ./scripts/setup_local_env.sh \
     -h <ip_address_of_flask_server> \
     --homeassistant-token <homeassistant_token> \
     --telegram-bot-token <telegram_bot_token> 
+```
+
+If you wish just to run the wakeup server without the Home Assistant, Telegram and in dev mode, you can run the following command:
+
+```bash 
+  cd .. &&
+  ./scripts/setup_local_env.sh \
+    -h localhost \
+    --dev-mode \
+    --homeassistant-offline-mode
 ```
 
 Note: Other options are available, run `./scripts/setup_local_env.sh -h`. Look at line 19 in the script for more information.
@@ -44,7 +54,7 @@ Note: Other options are available, run `./scripts/setup_local_env.sh -h`. Look a
 
 ### Create a python 3.9 virtual environment and install the requirements
 
-```bash Unix
+```bash
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
@@ -52,7 +62,7 @@ pip install -r requirements.txt
 
 ### Run the server
 
-```bash Unix
+```bash
 python3 run.py
 ```
 
@@ -197,11 +207,11 @@ Now that you have a trigger and a target, you can create a signal that will link
 
 ```json
 {
-    "trigger_id": "f990fa0a-9cd5-43f7-ad36-ccc04e4ca269",
+    "trigger_id": "<trigger_id_received_from_the_previous_request>",
     "trigger_action": "vision_blink",
-    "trigger_num_actions": 2,
-    "target_device_id": "switch.smart_plug_mini_2",
-    "target_action": "toggle"
+    "trigger_num_actions": "<number_of_actions_to_perform>",
+    "target_device_id": "<target_device_id_as_explained_in_the_previous_section>",
+    "target_action": "<action_to_perform_on_the_target_device>"
 }
 ```
 

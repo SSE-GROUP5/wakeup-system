@@ -70,7 +70,7 @@ echo "TELEGRAM_BOT_TOKEN=$TELEGRAM_BOT_TOKEN" >> $DIRECTORY/../wakeup_server/.en
 
 
 # For morse vision
-echo "ID=andy_vision" >> $DIRECTORY/../morse_vision/env_trigger.txt
+echo "ID=tmp_id_1" >> $DIRECTORY/../morse_vision/env_trigger.txt
 echo "ZMQ_SERVER=tcp://*:5556" >> $DIRECTORY/../morse_vision/env_trigger.txt
 echo "WAKEUP_SERVER_URL=$WAKEUP_SERVER_URL" > $DIRECTORY/../morse_vision/env_trigger.txt
 echo "CHANNEL=0"  >> $DIRECTORY/../morse_vision/env_trigger.txt
@@ -80,10 +80,32 @@ echo "MIN_BLINKING_TIME=0.1" >> $DIRECTORY/../morse_vision/env_trigger.txt
 echo "MAX_SHORT_BLINKING_TIME=0.6" >> $DIRECTORY/../morse_vision/env_trigger.txt
 echo "TIMEOUT_MORSE_READER=1.5" >> $DIRECTORY/../morse_vision/env_trigger.txt
 
+
+# For morse audio
+echo "WAKEUP_SERVER_URL=$WAKEUP_SERVER_URL" > $DIRECTORY/../morse_audio/env_trigger.txt
+echo "ID=tmp_id" >> $DIRECTORY/../morse_audio/env_trigger.txt
+echo "ZMQ_SERVER=tcp://*:5556" >> $DIRECTORY/../morse_audio/env_trigger.txt
+echo "RECORD_SECONDS=10" >> $DIRECTORY/../morse_audio/env_trigger.txt
+echo "THRESHOLD=1400" >> $DIRECTORY/../morse_audio/env_trigger.txt
+echo "END_WORD_TIME=1" >> $DIRECTORY/../morse_audio/env_trigger.txt
+echo "START_LISTEN_TIME=50" >> $DIRECTORY/../morse_audio/env_trigger.txt
+echo "MAX_DASHES_FOR_DOT=20" >> $DIRECTORY/../morse_audio/env_trigger.txt
+echo "MIN_DASHES_FOR_DASH=5" >> $DIRECTORY/../morse_audio/env_trigger.txt
+
+
+# For fall detection (upper body)
+echo "WAKEUP_SERVER_URL=$WAKEUP_SERVER_URL" > $DIRECTORY/../fall_detection/env_trigger.txt
+echo "ID=tmp_id" >> $DIRECTORY/../fall_detection/env_trigger.txt
+echo "ZMQ_SERVER=tcp://*:5556" >> $DIRECTORY/../fall_detection/env_trigger.txt
+echo "MAX_ANGLE_BETWEEN_EYES=50" >> $DIRECTORY/../fall_detection/env_trigger.txt
+echo "MAX_ANGLE_BETWEEN_EARS=50" >> $DIRECTORY/../fall_detection/env_trigger.txt
+echo "MAX_ANGLE_BETWEEN_SHOULDERS=50" >> $DIRECTORY/../fall_detection/env_trigger.txt
+
+
 echo "Finished setting up local environment variables."
-echo "    PORT=$WAKEUP_SERVER_PORT"
-echo "    HOMEASSISTANT_URL=$HOMEASSISTANT_URL"
-echo "    HOMEASSISTANT_OFFLINE_MODE=$HOMEASSISTANT_OFFLINE_MODE"
-echo "    ZERO_MQ_SERVER_URL=$ZERO_MQ_SERVER_URL"
-echo "    DEV_MODE=$DEV_MODE"
+echo "----> PORT=$WAKEUP_SERVER_PORT"
+echo "----> HOMEASSISTANT_URL=$HOMEASSISTANT_URL"
+echo "----> HOMEASSISTANT_OFFLINE_MODE=$HOMEASSISTANT_OFFLINE_MODE"
+echo "----> ZERO_MQ_SERVER_URL=$ZERO_MQ_SERVER_URL"
+echo "----> DEV_MODE=$DEV_MODE"
 
