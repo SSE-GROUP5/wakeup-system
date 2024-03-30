@@ -11,6 +11,10 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      repository-projects: write
 
     steps:
       - name: Checkout code
@@ -22,8 +26,11 @@ jobs:
           python-version: '3.10'
           cache: 'pip'  # Caching pip dependencies
 
+      - name: Install linux dependencies
+        run: sudo apt-get install libasound2-dev libasound2 portaudio19-dev python3-pyaudio -y
+
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: pip install pyinstaller
 
       - name: Run build script
         run: ./scripts/run_build_all.sh
@@ -38,7 +45,7 @@ jobs:
       - name: Create release tag
         uses: actions/create-release@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
         if: success()
         with:
           tag_name: ${{ github.event.inputs.tag }}
