@@ -1,0 +1,4 @@
+pyaudio
+python-dotenv
+requests
+zmq

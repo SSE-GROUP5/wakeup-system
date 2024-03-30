@@ -83,3 +83,6 @@ fall_detection/vision_upper_body_fall/
 
 # morse vision
 morse_vision/vision_morse
+
+# morse audio
+morse_audio/sound_morse
