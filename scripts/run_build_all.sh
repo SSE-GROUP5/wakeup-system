@@ -16,6 +16,7 @@ mkdir -p dist
 cd fall_detection && \
 python3.10 -m venv venv && \
 source venv/bin/activate && \
+pip install --upgrade pip && \
 pip install -r requirements.txt && \
 ./run_build.sh && \
 deactivate 
@@ -29,6 +30,7 @@ cp fall_detection/dist/fall_upper_detection dist/
 cd morse_vision && \
 python3.10 -m venv venv && \
 source venv/bin/activate && \
+pip install --upgrade pip && \
 pip install -r requirements.txt && \
 ./run_build.sh && \
 deactivate
@@ -42,6 +44,7 @@ cp morse_vision/dist/morse_vision dist/morse_vision
 cd morse_audio && \
 python3.10 -m venv venv && \
 source venv/bin/activate && \
+pip install --upgrade pip && \
 pip install -r requirements.txt && \
 ./run_build.sh && \
 deactivate
