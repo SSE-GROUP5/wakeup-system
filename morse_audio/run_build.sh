@@ -25,3 +25,6 @@ pyinstaller \
   --hidden-import=simpleaudio \
   --hidden-import=zmq \
   --onefile "$DIRECTORY/run_morse_audio.py"
+
+mkdir -p sound_morse
+cp dist/run_morse_audio sound_morse

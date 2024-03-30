@@ -39,13 +39,18 @@ def update_env_vars(config, msg):
 def confirm_to_server(config):
     try:
         request = client.post(config["WAKEUP_SERVER_URL"]+"/triggers/confirm", json={'id': config["ID"]})
-        print(request.status_code)
+        if request.status_code == 200:
+            print('SUCCESS: Confirmed to wakeup server')
+        elif request.status_code == 404:
+            print('Device id not registered in wakeup server')
+        elif request.status_code != 200:
+            print('Error confirming to wakeup server')
     except Exception as e:
         print(e)
         
 
 python_executable_dir = os.path.dirname(sys.executable)
-config_path = os.path.join(python_executable_dir, '../morse_audio/') if is_exe_file() else current_dir
+config_path = os.path.join(python_executable_dir, '../sound_morse/') if is_exe_file() else current_dir
 config_path = os.path.normpath(config_path)
 config_path = os.path.join(config_path, 'env_trigger.txt')
 
@@ -109,10 +114,10 @@ def start_listening(config, zmqServer):
             config = update_env_vars(config, msg)
   
 
-    RECORD_SECONDS = config["RECORD_SECONDS"]
-    THRESHOLD = config["THRESHOLD"]
-    END_WORD_TIME = config["END_WORD_TIME"]
-    START_LISTEN_TIME = config["START_LISTEN_TIME"]
+    RECORD_SECONDS = int(config["RECORD_SECONDS"])
+    THRESHOLD = int(config["THRESHOLD"])
+    END_WORD_TIME = int(config["END_WORD_TIME"])
+    START_LISTEN_TIME = int(config["START_LISTEN_TIME"])
     
     
     if time.time() - last_health_check > 5:
@@ -175,7 +180,8 @@ def start_listening(config, zmqServer):
       print(letter)
       try:
         request = client.post(config["WAKEUP_SERVER_URL"]+"/signals", json={'name': config["ID"], 'action': 'sound_morse', 'num_actions': letter})
-        print(request.status_code)
+        if request.status_code == 200:
+            print('SUCCESS: Sent signal to wakeup server')
       except Exception as e:
         print(e)
       total_letter = ''
@@ -188,8 +194,8 @@ def start_listening(config, zmqServer):
 
 
 def dashes_to_morse(morse_code, config):
-  MAX_DASHES_FOR_DOT = config["MAX_DASHES_FOR_DOT"]
-  MIN_DASHES_FOR_DASH = config["MIN_DASHES_FOR_DASH"]
+  MAX_DASHES_FOR_DOT = int(config["MAX_DASHES_FOR_DOT"])
+  MIN_DASHES_FOR_DASH = int(config["MIN_DASHES_FOR_DASH"])
   decode_word = ''
   dashes = morse_code.split(' ')
   for dash in dashes:
