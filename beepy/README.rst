@@ -1,5 +1,5 @@
 =========================
-beepy Package
+beepy Package forked from https://github.com/prabeshdhakal/beepy-v1
 =========================
 
 beepy is a Python language module that allows users to easily play notification sounds on Linux, OSX and Windows. It only works under Python 3.
@@ -55,6 +55,7 @@ Author
 
 
 * **Prabesh Dhakal** - *Initial Work*
+* **David Frischer** - *Forked and updated without the wait time*
 
 Licence
 -------
