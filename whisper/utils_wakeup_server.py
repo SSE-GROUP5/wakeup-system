@@ -32,7 +32,7 @@ def send_signal(num_action, config):
     }
     url = f"{config['WAKEUP_SERVER_URL']}/signals"
     try:
-        response = client.post(f"{url}/signals", json=data)
+        response = client.post(f"{url}", json=data)
         print(response.content)
         print(response)
     except Exception as e:
