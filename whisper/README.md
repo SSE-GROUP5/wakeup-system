@@ -1,47 +1,99 @@
 # Speech Recognition and Transcription 
 
-This project is designed to perform real-time speech recognition and transcription using the Whisper and OpenVINO models for efficient audio processing. It also includes functionality to detect repetitive sounds in the transcribed text. The project also allows to use Whisper OpenVINO for audio file transcription.
+This project is designed to perform real-time speech recognition and transcription using the Whisper and OpenVINO models for efficient audio processing. It also includes functionality to detect repetitive sounds in the transcribed text.
+## Benchmarking
+In order to evalate the efficiency of the OpenVINO the benchmark was constructed for 2 use cases:
+1. Whisper with/without OpenVINO for audio file transcription.
+2. Whisper with/without OpenVINO for live audio transcription.
 
-## Getting Started
+The `benchmark` folder is only created for benchmarking purposes, it has the following files:
+- `whisper_no_ov.py` - a base Whisper for audio file transcription.
+- `whisper_openvino.py` - Whisper with OpenVINO for audio file transcription.
+- `whisper_transcribe.py` - a base Whisper for audio file transcription.
+- `whisper_transcribe_ov.py` - Whisper with OpenVINO for live audio transcription.
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
+## Setup the trigger
 
-### Prerequisites
+### Create the environment variables files if they don't exist
 
-Before running the script, ensure you have Python 3.10 installed on your system.
-
-### Set up
-
-1. Navigate into the project directory
-
+```bash
+echo "WAKEUP_SERVER_URL=http://localhost:5001
+ID=tmp_id
+ZMQ_SERVER=tcp://*:5556 > env_trigger.txt
 ```
-cd whisper
-```
 
-2. Install the required Python packages:
 
-```
+### Create the pyton 3.10 virtual environment
+
+```bash
+python3.10 -m venv venv
+source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-## Usage
-To run the script, use the following command in the terminal:
+## Build the executable file
+
+```bash
+pip3 install pyinstaller
+./run_build.sh
+cp env_trigger.txt sound_whisper
 ```
-python whipser_transcribe_ov.py [options]
+
+## Run the trigger
+
+### Locally
+
+```bash
+source venv/bin/activate (MacOS)
+source venv/Scripts/activate (Windows)
+python whisper_transcribe.py
 ```
 
-Available options include:
+### From the executable file
+*Note*: Executable file for live audio transcription can only be created for base Whisper without OpenVINO, because OpenVINO does not support pyinstaller. This will be resolved in future work.
 
-- *model*: Choose the model size (default is "base"). Options are "tiny", "base", "small", "medium", "large".
-- *non_english*: Use this flag if you do not want to use the English model.
-- *energy_threshold*: Set the energy level for the microphone to detect sound (default is 1000).
-- *record_timeout*: Set how real-time the recording is, in seconds (default is 2).
-- *phrase_timeout*: Set how much empty space between recordings before considering it a new line in the transcription (default is 2).
-- *default_microphone*: (Linux only) Set the default microphone name for SpeechRecognition.
+- Make sure the `env_trigger.txt` file is in the same directory as the executable file.
 
-## Generating .exe file
-If you plan to use the project as an executable on Windows, run the following command to set up the environment and create the .exe file. Ensure you have the necessary permissions to execute the script:
+the folder `sound_whisper` should contain the following files:
 
 ```
-./run_script.sh
+├── env_trigger.txt
+└── whisper_transcribe
+```
+
+Run the executable file:
+```bash
+cd sound_whisper
+./whisper_transcribe
+```
+
+
+## Add it to the wake up server
+
+1. Make sure the wake up server is running
+```bash
+curl http://localhost:5001/health
+```
+
+2. Add the trigger to the wake up server with postman or curl
+```bash
+curl -X POST http://localhost:5001/triggers -H "Content-Type: application/json" -d '{"type": "sound_whisper", "name": "my_device_4"}'
+```
+
+Copy the `id` from the response and replace the `ID` in the `env_trigger.txt` file.
+
+
+3. Run the trigger
+```bash
+python whisper_transcribe.py
+```
+or 
+```bash
+cd sound_whisper
+./whisper_transcribe
+```
+
+You should see the following message:
+```
+SUCCESS: Confirmed to wakeup server
 ```
