@@ -130,8 +130,8 @@ def main():
 				text = result['text'].strip()
 
 				# Performance metrics
-				inference_time = time.time() - start_time
-				total_inference_time += inference_time 
+				# inference_time = time.time() - start_time
+				# total_inference_time += inference_time 
 				# cpu_after = psutil.cpu_percent(interval=None)
 				# memory_after = psutil.virtual_memory().percent
 
