@@ -1,6 +1,6 @@
 pyaudio
 SpeechRecognition
---extra-index-url https://download.pytorch.org/whl/cu116
+--extra-index-url https://download.pytorch.org/whl/cpu
 torch
 numpy
 git+https://github.com/openai/whisper.git
@@ -11,3 +11,7 @@ transformers
 scipy
 ipywidgets
 psutil
+transformers>=4.35
+git+https://github.com/huggingface/optimum-intel.git
+peft==0.6.2
+onnx 

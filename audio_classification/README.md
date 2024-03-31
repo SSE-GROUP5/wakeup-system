@@ -3,44 +3,87 @@
 This project uses the MediaPipe framework to continuously classify audio data acquired from a device's microphone in real-time. Currently it is used to identify *Finger Snapping*, but can be adjusted for other sounds (see [yamnet model](https://storage.googleapis.com/mediapipe-tasks/audio_classifier/yamnet_label_list.txt) list.)
 
 
-## Getting Started
+# Setup the trigger
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
+## Create the environment variables files if they don't exist
 
-### Prerequisites
-
-Before running the script, ensure you have Python 3.10 installed on your system.
-
-### Set up
-
-1. Navigate into the project directory
-
-```
-cd audio_classification
+```bash
+echo "WAKEUP_SERVER_URL=http://localhost:5001
+ID=tmp_id
+ZMQ_SERVER=tcp://*:5556 > env_trigger.txt
 ```
 
-2. Install the required Python packages:
 
-```
+## Create the pyton 3.10 virtual environment
+
+```bash
+python3.10 -m venv venv
+source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-## Usage
-To run the script, use the following command in the terminal:
+# Build the executable file
+
+```bash
+pip3 install pyinstaller
+./run_build.sh
+cp env_trigger.txt sound_classification
 ```
-python audio_classification.py [options]
+
+# Run the trigger
+
+## Locally
+
+```bash
+source venv/bin/activate (MacOS)
+source venv/Scripts/activate (Windows)
+python audio_classification.py
 ```
 
-Available options include:
+## From the executable file
 
-- *model*: Name of the TensorFlow Lite audio classification model (default amd reccomended: yamnet.tflite).
-- *maxResults*: Maximum number of classification results to display (default: 5).
-- *overlappingFactor*: Overlapping factor between adjacent inferences, value must be between 0 and 1 (default: 0.5).
-- *scoreThreshold*: The score threshold of classification results (default: 0.0).
+- Make sure the `env_trigger.txt` file is in the same directory as the executable file.
 
-## Generating .exe file
-If you plan to use the project as an executable on Windows, run the following command to set up the environment and create the .exe file. Ensure you have the necessary permissions to execute the script:
+the folder `sound_classification` should contain the following files:
 
 ```
-./run_script.sh
+├── env_trigger.txt
+└── audio_classification
+```
+
+Run the executable file:
+```bash
+cd sound_classification
+./audio_classification
+```
+
+
+# Add it to the wake up server
+
+1. Make sure the wake up server is running
+```bash
+curl http://localhost:5001/health
+```
+
+2. Add the trigger to the wake up server with postman or curl
+```bash
+curl -X POST http://localhost:5001/triggers -H "Content-Type: application/json" -d '{"type": "sound_classification", "name": "my_device_5"}'
+```
+
+Copy the `id` from the response and replace the `ID` in the `env_trigger.txt` file.
+
+
+3. Run the trigger
+```bash
+python audio_classification.py
+```
+or 
+```bash
+cd sound_classification
+./audio_classification
+```
+
+You should see the following message:
+```
+SUCCESS: Confirmed to wakeup server
 ```

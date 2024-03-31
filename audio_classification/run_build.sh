@@ -19,16 +19,12 @@ if [[ "$OSTYPE" == "msys" ]]; then
   IS_WINDOWS=true
 fi
 
-ADD_DATA=""
-if [ "$IS_WINDOWS" = true ]; then
-  ADD_DATA="--add-data $DIRECTORY/../venv/Lib/site-packages/mediapipe:mediapipe"
-else
-  ADD_DATA="--add-data $DIRECTORY/../venv/lib/python3.10/site-packages/mediapipe:mediapipe"
-fi
 
 pyinstaller \
   --add-data "$DIRECTORY/yamnet.tflite:." \
   --add-data "$DIRECTORY/../zeromq:zeromq" \
-    $ADD_DATA \
   --hidden-import=zmq \
   --onefile "$DIRECTORY/audio_classification.py"   
+
+mkdir -p sound_classification
+cp dist/audio_classification sound_classification

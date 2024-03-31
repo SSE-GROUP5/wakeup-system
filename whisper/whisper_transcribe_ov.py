@@ -34,7 +34,6 @@ def check_repetitive_sounds(text, config):
     uh_pattern = re.compile(r'(uh[\s,\.]*){3,}', re.IGNORECASE)  # Pattern to match "uh" repeated at least 3 times
     if ah_pattern.search(text) or uh_pattern.search(text):
         send_signal("ah", config)
-        send_signal(config, "ah")
     if oh_pattern.search(text):
         print("Detected repetitive 'oh' sound")
         send_signal("oh", config)
@@ -181,8 +180,8 @@ def main():
                 text = result['text'].strip()
 
                 # Performance metrics
-                inference_time = time.time() - start_time
-                total_inference_time += inference_time 
+                # inference_time = time.time() - start_time
+                # total_inference_time += inference_time 
                 # cpu_after = psutil.cpu_percent(interval=None)
                 # memory_after = psutil.virtual_memory().percent
 
@@ -203,9 +202,9 @@ def main():
                     print("No transcription detected for the latest audio segment.")
 
                 sleep(0.25)
-                print(f"\nTotal Inference Time: {total_inference_time:.2f} seconds")
+                # print(f"\nTotal Inference Time: {total_inference_time:.2f} seconds")
         except KeyboardInterrupt:
-            print(f"\nTotal Inference Time: {total_inference_time:.2f} seconds")
+            # print(f"\nTotal Inference Time: {total_inference_time:.2f} seconds")
             break
 
 
