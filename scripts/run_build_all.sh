@@ -9,6 +9,7 @@ rm -rf morse_vision/dist
 rm -rf morse_audio/dist
 rm -rf audio_classification/dist
 rm -rf whisper/dist
+rm -rf python_blinking/dist
 
 
 # Build all the images
@@ -99,6 +100,22 @@ deactivate
 
 cd ..
 cp whisper/dist/whisper_transcribe dist/whisper_transcribe
+
+
+## Build blinking detection
+
+cd python_blinking && \
+python3.10 -m venv venv && \
+source venv/bin/activate && \
+pip install --upgrade pip && \
+pip install -r requirements.txt && \
+./run_build.sh && \
+deactivate
+
+cd ..
+cp python_blinking/dist/blink_detect dist/blink_detect
+
+
 
 
 
