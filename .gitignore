@@ -86,3 +86,4 @@ morse_vision/vision_morse
 
 # morse audio
 morse_audio/sound_morse
+wakeup_server/wakeup_server

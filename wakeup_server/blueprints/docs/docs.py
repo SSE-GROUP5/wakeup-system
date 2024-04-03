@@ -1,7 +1,12 @@
 import os
 import json
+import sys
 base_dir = os.path.dirname(os.path.realpath(__file__))
-docs_dir = os.path.join(base_dir, '..', '..', 'static')
+def is_exe_file():
+	# Determine if we are running in a bundled environment and set the base path
+	return getattr(sys, 'frozen', False)
+
+docs_dir = "static" if is_exe_file() else  os.path.join(base_dir, '..', '..', 'static')
 
 # Base Swagger configuration
 swagger_config = {
