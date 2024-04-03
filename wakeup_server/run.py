@@ -37,7 +37,7 @@ def create_app(url="sqlite:///wakeup.sqlite"):
     @app.route('/health')
     def health_check():
         is_HA_running = homeassistant_client.health_check()
-        # return json response
+
         return { 
           'message': 'Hello, World!', 
           'HA_status': 'ALIVE' if is_HA_running else 'HA_OFFLINE_MODE' if HOMEASSISTANT_OFFLINE_MODE else 'DEAD', 

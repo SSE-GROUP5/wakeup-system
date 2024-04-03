@@ -1,9 +1,26 @@
 from dotenv import load_dotenv
 import os
-
-load_dotenv()
+import sys
 
 current_dir = os.path.dirname(os.path.realpath(__file__))
+def is_exe_file():
+	# Determine if we are running in a bundled environment and set the base path
+	return getattr(sys, 'frozen', False)
+
+
+python_executable_dir = os.path.dirname(sys.executable)
+config_path = os.path.join(python_executable_dir, '../wakeup_server/') if is_exe_file() else current_dir
+config_path = os.path.normpath(config_path)
+config_path = os.path.join(config_path, '.env')
+
+if not os.path.exists(config_path):
+    print(f'Please create .env file in {config_path} with the following content:')
+    print("In the file, please set HOSTNAME, PORT, ZERO_MQ_SERVER_URL, HOMEASSISTANT_URL, HOMEASSISTANT_TOKEN")
+    print("You should use the env.example file as a template or the setup_local_env.sh script to create the .env file") 
+    exit(1)
+    
+load_dotenv(config_path)
+
 
 HOSTNAME = os.getenv("HOSTNAME")
 PORT = os.getenv("PORT")
