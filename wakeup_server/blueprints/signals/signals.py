@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from models.triggers import Trigger
 from models.target_devices import TargetDevice
-from models.triggers_target_map import delete_signal_from_map
+from models.triggers_target_map import delete_signal_from_map, get_signal_by_id, update_signal_by_id
 from models.users import User
 from models.signal_logs import SignalLogs as signal_logs
 from sqlalchemy.exc import IntegrityError, NoResultFound
@@ -152,7 +152,7 @@ def set_signal():
 
   target_device = TargetDevice.find_by_id(target_device_id)
   if target_device is None:
-      return "Target Matter device not found", 400
+      return "Target device not found", 400
   
   actions = target_device.possible_actions
   if actions is None:
@@ -189,6 +189,61 @@ def delete_signal(signal_id):
      return "Signal Not Found", 400
 
 
-
-
+@signals_blueprint.route('/signals/<string:signal_id>', methods=['PUT'])
+def update_signal(signal_id):
+  if signal_id is None:
+      return "No signal ID provided", 400
+  
+  signal = get_signal_by_id(signal_id)
+  if signal is None:
+      return "Signal not found", 400
+    
+  data = request.get_json()
+  trigger_id = data.get('trigger_id')
+  trigger_action = data.get('trigger_action')
+  trigger_num_actions = data.get('trigger_num_actions')
+  target_device_id = data.get('target_device_id')
+  target_action = data.get('target_action')
+  user_id = data.get('user_id')
+  
+  if trigger_action is None:
+      return "No trigger action provided", 400
+  if trigger_num_actions is None:
+      return "No trigger num actions provided", 400
+  if target_device_id is None:
+      return "No target device ID provided", 400
+  if target_action is None:
+      return "No target action provided", 400
+      
+  trigger = Trigger.find_by_id(trigger_id)
+  
+  if trigger is None:
+      return "trigger not found", 400
+  
+  triggers_types_names = TRIGGERS_TYPES.keys()
+  if trigger_action not in triggers_types_names:
+      return {"message": f"Trigger action not supported. Supported types are {triggers_types_names}"}, 400
+  
+  if not TRIGGERS_TYPES[trigger_action]['verify'](trigger_num_actions):
+      return {"message": TRIGGERS_TYPES[trigger_action]['fail_message']}, 400
+  
+  target_device = TargetDevice.find_by_id(target_device_id)
+  if target_device is None:
+      return "Target device not found", 400
+  
+  actions = target_device.possible_actions
+  if actions is None:
+      return "Target device has no actions", 400
+    
+  actions_ids = [action['action'] for action in actions]
+  if target_action not in actions_ids:
+      return "Target device does not have this action, possible actions are: " + str(actions_ids), 400
+  
+  try:
+      signal_data = { 'trigger_id': trigger.id, 'trigger_action': trigger_action, 'trigger_num_actions': trigger_num_actions, 'target_device_id': target_device_id, 'target_action': target_action, 'user_id': user_id }
+      update_signal_by_id(signal_id, signal_data)
+      return "Signal updated", 200
+  except Exception as e:
+      print(e)
+      return "Internal server error in updating signal", 500
 
