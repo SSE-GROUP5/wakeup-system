@@ -24,7 +24,7 @@ swagger_config = {
 
 # Define the titles for each JSON file here
 titles = {
-    f'{docs_dir}/base_api.json': 'Base API Documentation',
+    f'{docs_dir}/postman_api.json': 'Postman API Documentation',
     f'{docs_dir}/media_player_api.json': 'Media Player API Documentation',
     f'{docs_dir}/signals_api.json': 'Signals API Documentation',
     f'{docs_dir}/target_devices_api.json': 'Target Devices API Documentation',

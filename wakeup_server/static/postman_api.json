@@ -1,0 +1,320 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "version": "1.0.0",
+        "title": "WakeUpServer API",
+        "description": "API endpoints for WakeUpServer"
+    },
+    "basePath": "/api/v1",
+    "schemes": [
+        "http"
+    ],
+    "consumes": [
+        "application/json"
+    ],
+    "produces": [
+        "application/json"
+    ],
+    "paths": {
+        "/": {
+            "get": {
+                "summary": "HelloWorld",
+                "responses": {
+                    "200": {
+                        "description": "Hello World response"
+                    }
+                }
+            }
+        },
+        "/health": {
+            "get": {
+                "summary": "Health Check",
+                "responses": {
+                    "200": {
+                        "description": "Health check response"
+                    }
+                }
+            }
+        },
+        "/triggers": {
+            "get": {
+                "summary": "Get Triggers",
+                "responses": {
+                    "200": {
+                        "description": "List of triggers"
+                    }
+                }
+            },
+            "post": {
+                "summary": "Add Trigger",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "type": {
+                                    "type": "string"
+                                },
+                                "name": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Trigger added"
+                    }
+                }
+            }
+        },
+        "/triggers/{id}": {
+            "put": {
+                "summary": "Update Trigger",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Trigger updated"
+                    }
+                }
+            }
+        },
+        "/target_devices": {
+            "get": {
+                "summary": "Get Targets",
+                "responses": {
+                    "200": {
+                        "description": "List of target devices"
+                    }
+                }
+            },
+            "post": {
+                "summary": "Add Target",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "name": {
+                                    "type": "string"
+                                },
+                                "id": {
+                                    "type": "string"
+                                },
+                                "type": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Target added"
+                    }
+                }
+            }
+        },
+        "/target_devices/{id}": {
+            "get": {
+                "summary": "Get Target by ID",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Target details"
+                    }
+                }
+            },
+            "delete": {
+                "summary": "Delete Target",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Target deleted"
+                    }
+                }
+            }
+        },
+        "/signals": {
+            "get": {
+                "summary": "Get Signals",
+                "responses": {
+                    "200": {
+                        "description": "List of signals"
+                    }
+                }
+            },
+            "post": {
+                "summary": "Send Signal",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Signal sent"
+                    }
+                }
+            }
+        },
+        "/signals/{signal_id}": {
+            "put": {
+                "summary": "Set Signal",
+                "parameters": [
+                    {
+                        "name": "signal_id",
+                        "in": "path",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Signal set"
+                    }
+                }
+            }
+        },
+        "/signals/users/{user_id}": {
+            "get": {
+                "summary": "Get Signals for User",
+                "parameters": [
+                    {
+                        "name": "user_id",
+                        "in": "path",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Signals for specified user"
+                    }
+                }
+            }
+        },
+        "/users": {
+            "get": {
+                "summary": "Get users",
+                "responses": {
+                    "200": {
+                        "description": "List of users"
+                    }
+                }
+            },
+            "post": {
+                "summary": "Create User",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "first_name": {
+                                    "type": "string"
+                                },
+                                "last_name": {
+                                    "type": "string"
+                                },
+                                "gosh_id": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "User created"
+                    }
+                }
+            }
+        },
+        "/users/{user_id}": {
+            "get": {
+                "summary": "Get user by ID",
+                "parameters": [
+                    {
+                        "name": "user_id",
+                        "in": "path",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "User details"
+                    }
+                }
+            },
+            "delete": {
+                "summary": "Delete user by ID",
+                "parameters": [
+                    {
+                        "name": "user_id",
+                        "in": "path",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "User deleted"
+                    }
+                }
+            }
+        }
+    }
+}
