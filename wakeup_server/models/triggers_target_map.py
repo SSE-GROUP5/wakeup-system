@@ -38,17 +38,13 @@ def get_signal_by_id(signal_id: str):
 def update_signal_by_id(signal_id, signal_data):
   uuid_signal_id = UUID(signal_id)
   signal = db.session.query(trigger_target_association).filter_by(id=uuid_signal_id).first()
-  if signal is None:
-    return False
   try:
-    signal.trigger_id = signal_data.get('trigger_id')
-    signal.trigger_action = signal_data.get('trigger_action')
-    signal.trigger_num_actions = signal_data.get('trigger_num_actions')
-    signal.target_device_id = signal_data.get('target_device_id')
-    signal.target_action = signal_data.get('target_action')
-    signal.user_id = signal_data.get('user_id')
-    db.session.commit()
-    return True
+    if signal:
+      db.session.query(trigger_target_association).filter_by(id=uuid_signal_id).update(signal_data)
+      db.session.commit()
+      return True
+    else:
+      return False
   except Exception as e:
     db.session.rollback()
     print(e)
