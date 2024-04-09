@@ -200,12 +200,15 @@ def update_signal(signal_id):
     
   data = request.get_json()
   trigger_id = data.get('trigger_id')
+  trigger_name = data.get('trigger_name')
   trigger_action = data.get('trigger_action')
   trigger_num_actions = data.get('trigger_num_actions')
   target_device_id = data.get('target_device_id')
   target_action = data.get('target_action')
   user_id = data.get('user_id')
   
+  if trigger_id is None and trigger_name is None:
+      return "No trigger ID or name provided", 400
   if trigger_action is None:
       return "No trigger action provided", 400
   if trigger_num_actions is None:
@@ -215,7 +218,7 @@ def update_signal(signal_id):
   if target_action is None:
       return "No target action provided", 400
       
-  trigger = Trigger.find_by_id(trigger_id)
+  trigger = Trigger.find_by_id(trigger_id) if trigger_id is not None else Trigger.find_by_name(trigger_name)
   
   if trigger is None:
       return "trigger not found", 400
@@ -240,9 +243,19 @@ def update_signal(signal_id):
       return "Target device does not have this action, possible actions are: " + str(actions_ids), 400
   
   try:
-      signal_data = { 'trigger_id': trigger.id, 'trigger_action': trigger_action, 'trigger_num_actions': trigger_num_actions, 'target_device_id': target_device_id, 'target_action': target_action, 'user_id': user_id }
-      update_signal_by_id(signal_id, signal_data)
-      return "Signal updated", 200
+      signal_data = { 
+          'trigger_id': trigger.id,
+          'trigger_action': trigger_action,
+          'trigger_num_actions': trigger_num_actions,
+          'target_device_id': target_device_id,
+          'target_action': target_action, 
+          'user_id': user_id 
+      }
+      succeed = update_signal_by_id(signal_id, signal_data)
+      if not succeed:
+          raise Exception("Failed to update signal")
+      updated_signal = get_signal_by_id(signal_id)
+      return updated_signal, 200
   except Exception as e:
       print(e)
       return "Internal server error in updating signal", 500
