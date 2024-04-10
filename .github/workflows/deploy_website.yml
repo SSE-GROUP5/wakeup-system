@@ -1,0 +1,34 @@
+name: Deploy Website
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - website
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Clone website repository
+        run: git clone https://github.com/SSE-GROUP5/sse-group5.github.io.git ../repo-website
+
+      - name: Install dependencies
+        run: cd website && npm ci
+
+      - name: Build website
+        run: cd website && npm run build
+
+      - name: Commit and push changes
+        run: |
+          cp -r website/dist/* ../repo-website
+          cd ../repo-website
+          git config user.name "GitHub Actions"
+          git config user.email "<>"
+          git add .
+          git commit -m "Update website"
+          git push https://${{ secrets.TOKEN }}@github.com/SSE-GROUP5/sse-group5.github.io.git HEAD:main
