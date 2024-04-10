@@ -1,99 +1,43 @@
 doctype html
 html(lang='en')
 
-    head
+  head
 
-        meta(charset='utf-8')
-        meta(name='viewport', content='width=device-width, initial-scale=1, shrink-to-fit=no')
-        meta(name='description', content='')
-        meta(name='author', content='')
+    meta(charset='utf-8')
+    meta(name='viewport', content='width=device-width, initial-scale=1, shrink-to-fit=no')
+    meta(name='description', content='')
+    meta(name='author', content='')
 
-        title Clean Blog - Start Bootstrap Theme
+    title WakeUp System Signal
 
-        link(rel='icon', type='image/x-icon', href='assets/favicon.ico')
+    link(rel='icon', type='image/x-icon', href='assets/favicon.ico')
 
-        include includes/css.pug
+    include includes/css.pug
 
-    body
+  body
 
-        include includes/navbar.pug
+    include includes/navbar.pug
 
-        // Page Header
-        header.masthead(style="background-image: url('assets/img/home-bg.jpg')")
-            .container.position-relative.px-4.px-lg-5
-                .row.gx-4.gx-lg-5.justify-content-center
-                    .col-md-10.col-lg-8.col-xl-7
-                        .site-heading
-                            h1 Clean Blog
-                            span.subheading A Blog Theme by Start Bootstrap
+    // Page Header
+    header.masthead(style="background-image: url('assets/img/home-bg.jpg')")
+      .container.position-relative.px-4.px-lg-5
+        .row.gx-4.gx-lg-5.justify-content-center
+          .col-md-10.col-lg-8.col-xl-7
+            .site-heading
+              h1 WakeUp System
+              span.subheading Wards of the Future
 
-        // Main Content
-        .container.px-4.px-lg-5
-            .row.gx-4.gx-lg-5.justify-content-center
-                .col-md-10.col-lg-8.col-xl-7
+    // Main Content
+    section
+      .container.px-4.px-lg-5
+        .row.gx-4.gx-lg-5.justify-content-center
+          .col-lg-8
+            h2.section-heading.text-center
+              span The Future of Healthcare
+            p.text-center.lead.mb-5
+              | Developed in partnership with University College London (UCL), Great Ormond Street Hospital (GOSH) and Intel, the WakeUp System provides reassurance and support to patients with disabilities in long-term care or the elderly. One of the system's main objectives is to enable them to autonomously control their environment, and it is designed for use in both hospital and home settings. A key part of the project is the integration of Matter, a new application layer connectivity protocol for smart home devices. Moreover, the project encompasses a research study in Intel's new OpenVINO project.
+                  
 
-                    // Post preview
-                    .post-preview
-                        a(href='post.html')
-                            h2.post-title
-                                | Man must explore, and this is exploration at its greatest
-                            h3.post-subtitle
-                                | Problems look mighty small from 150 miles up
-                        p.post-meta
-                            | Posted by
-                            a(href='#!') Start Bootstrap
-                            | on September 24, 2023
-                    
-                    // Divider
-                    hr.my-4
+    include includes/footer.pug
 
-                    // Post preview
-                    .post-preview
-                        a(href='post.html')
-                            h2.post-title
-                                | I believe every human has a finite number of heartbeats. I don't intend to waste any of mine.
-                        p.post-meta
-                            | Posted by
-                            a(href='#!') Start Bootstrap
-                            | on September 18, 2023
-                    
-                    // Divider
-                    hr.my-4
-
-                    // Post preview
-                    .post-preview
-                        a(href='post.html')
-                            h2.post-title
-                                | Science has not yet mastered prophecy
-                            h3.post-subtitle
-                                | We predict too much for the next year and yet far too little for the next ten.
-                        p.post-meta
-                            | Posted by
-                            a(href='#!') Start Bootstrap
-                            | on August 24, 2023
-
-                    // Divider
-                    hr.my-4
-
-                    // Post preview
-                    .post-preview
-                        a(href='post.html')
-                            h2.post-title
-                                | Failure is not an option
-                            h3.post-subtitle
-                                | Many say exploration is part of our destiny, but it’s actually our duty to future generations.
-                        p.post-meta
-                            | Posted by
-                            a(href='#!') Start Bootstrap
-                            | on July 8, 2023
-                    
-                    // Divider
-                    hr.my-4
-
-                    // Pager
-                    .d-flex.justify-content-end.mb-4
-                        a.btn.btn-primary.text-uppercase(href='#!') Older Posts →
-        
-        include includes/footer.pug
-
-        include includes/scripts.pug
+    include includes/scripts.pug
