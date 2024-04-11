@@ -33,11 +33,35 @@ html(lang='en')
                 .row.gx-4.gx-lg-5.justify-content-center
                     .col-md-10.col-lg-8.col-xl-7
                         p
-                            | Lorem ipsum dolor sit amet, consectetur adipisicing elit. Saepe nostrum ullam eveniet pariatur voluptates odit, fuga atque ea nobis sit soluta odio, adipisci quas excepturi maxime quae totam ducimus consectetur?
-                        p
-                            | Lorem ipsum dolor sit amet, consectetur adipisicing elit. Eius praesentium recusandae illo eaque architecto error, repellendus iusto reprehenderit, doloribus, minus sunt. Numquam at quae voluptatum in officia voluptas voluptatibus, minus!
-                        p
-                            | Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aut consequuntur magnam, excepturi aliquid ex itaque esse est vero natus quae optio aperiam soluta voluptatibus corporis atque iste neque sit tempora!
+                            | Once a trigger sends a singal, the WakeUp system will map the correct target device to that trigger. The target devices utilised include the Home Assistant API to connect Matter devices, WakeOnLAN to wake up displays, and the Telegram API sends alerts on a registered mobile device.
+
+                    .col-md-6.mb-4
+                        .card
+                            .card-header Home Assistant API
+                            .card-body.text-center
+                                img.mb-3(src='assets/Home_Assistant_logo.jpg', alt='Home Assistant API', width='50%')
+                                br
+                                | This API allows us to control Matter devices within the local network.
+                                br
+                                | To interact with Matter devices, the Home Assistant integration utilises its "Matter controller". Operating separately, Matter server add-ons enable the functioning of the controller software, creating a link between the Matter network and Home Assistant. Communication between Home Assistant Matter integration and the server occurs through a WebSocket.
+                                br
+                                | The Matter devices our team uses include smart devices such as lights and smart plugs. Based on the trigger that the patient has requested, the WakeUp System will map the relevant target device to it. Additionally, media players are another target device.
+
+                    .col-md-6.mb-4
+                        .card
+                            .card-header WakeOnLAN
+                            .card-body.text-center
+                                img.mb-3(src='assets/wakeonlan.jpg', alt='WakeOnLAN', width='50%')
+                                br
+                                | This has been developed to allow patients to power on TVs or other computer stations on the network using a Python package. The target device must be be in a low-power state (sleeping). The target device will be waiting for a specific “Magic Packet” to be sent. This packet is then transmitted to the broadcast address of the local network. Upon receiving the packet, the target device will validate it and wake up if the packet contains all the accurate information, including the MAC address and IPv4 address.
+
+                    .col-md-6.mb-4
+                        .card
+                            .card-header Telegram API Bot
+                            .card-body.text-center
+                                img.mb-3(src='assets/telegram.jpg', alt='Telegram API Bot', width='80%')
+                                br
+                                | This is a custom bot used to communicate on alerts. Once activated, the bot will send alerts every 5 seconds to the user, and it will continue to run until the user stops it from the message channel.
 
         include includes/footer.pug
 
