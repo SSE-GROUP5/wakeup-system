@@ -1,0 +1,622 @@
+openapi: 3.0.3
+info:
+  title: WakeUpServer
+  description: The WakeUpServer API
+  version: 1.0.0
+  contact: {}
+
+servers:
+  - url: http://localhost:5001
+    description: Local server
+paths:
+  /:
+    get:
+      summary: HelloWorld
+      description: HelloWorld
+      operationId: helloworld
+      responses:
+        '200':
+          description: ''
+  /health:
+    get:
+      summary: Health Check
+      description: Health Check
+      operationId: healthCheck
+      responses:
+        '200':
+          description: ''
+  /triggers:
+    get:
+      summary: Get Triggers
+      tags: 
+        - Triggers
+      description: Get Triggers
+      operationId: getTriggers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                  example: sound_image
+                type:
+                  type: string
+                  example: Sound
+            examples:
+              Get Triggers:
+                value:
+                  id: sound_image
+                  type: Sound
+      responses:
+        '200':
+          description: ''
+    post:
+      summary: Add Trigger
+      description: Add Trigger
+      tags: 
+        - Triggers
+      operationId: addTrigger
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: my_device
+                type:
+                  type: string
+                  example: vision_blink
+            examples:
+              Add Trigger:
+                value:
+                  name: my_device
+                  type: vision_blink
+      responses:
+        '200':
+          description: ''
+  /triggers/{id}:
+    put:
+      summary: Update Trigger
+      tags: 
+        - Triggers
+      description: Update Trigger
+      operationId: updateTrigger
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                BLINKING_RATIO:
+                  type: number
+                  example: 4.5
+                CHANNEL:
+                  type: number
+                  example: 0
+                CLOSED_EYES_FRAME:
+                  type: number
+                  example: 3
+                MAX_SHORT_BLINKING_TIME:
+                  type: number
+                  example: 0.6
+                MIN_BLINKING_TIME:
+                  type: number
+                  example: 0.1
+                TIMEOUT_MORSE_READER:
+                  type: number
+                  example: 1.5
+                WAKEUP_SERVER_URL:
+                  type: string
+                  example: http://localhost:5001
+            examples:
+              Update Trigger:
+                value:
+                  BLINKING_RATIO: 4.5
+                  CHANNEL: 0
+                  CLOSED_EYES_FRAME: 3
+                  MAX_SHORT_BLINKING_TIME: 0.6
+                  MIN_BLINKING_TIME: 0.1
+                  TIMEOUT_MORSE_READER: 1.5
+                  WAKEUP_SERVER_URL: http://localhost:5001
+      responses:
+        '200':
+          description: ''
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          example: a47f6849-8857-4d9c-930b-efe69ccc6b2f
+  /target_devices:
+    get:
+      summary: Get Targets
+      tags:
+        - Targets
+      description: Get Targets
+      operationId: getTargets
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                  example: sound_image
+                type:
+                  type: string
+                  example: Sound
+            examples:
+              Get Targets:
+                value:
+                  id: sound_image
+                  type: Sound
+      responses:
+        '200':
+          description: ''
+    post:
+      summary: Add Target
+      description: Add Target
+      tags:
+        - Targets
+      operationId: addTarget
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                  example: switch.smart_plug_mini_2
+                name:
+                  type: string
+                  example: switch.smart_plug_mini_2
+                type:
+                  type: string
+                  example: homeassistant
+            examples:
+              Add Target:
+                value:
+                  id: switch.smart_plug_mini_2
+                  name: switch.smart_plug_mini_2
+                  type: homeassistant
+      responses:
+        '200':
+          description: ''
+  /target_devices/{id}:
+    get:
+      summary: Get Targets ID
+      tags:
+        - Targets
+      description: Get Targets ID
+      operationId: getTargetsId
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                  example: sound_image
+                type:
+                  type: string
+                  example: Sound
+            examples:
+              Get Targets ID:
+                value:
+                  id: sound_image
+                  type: Sound
+      responses:
+        '200':
+          description: ''
+    delete:
+      summary: Delete Target
+      description: Delete Target
+      tags:
+        - Targets
+      operationId: deleteTarget
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                matter_id:
+                  type: string
+                  example: switch.smart_plug_mini2
+                name:
+                  type: string
+                  example: SmartPlug1
+                type:
+                  type: string
+                  example: switch
+            examples:
+              Delete Target:
+                value:
+                  matter_id: switch.smart_plug_mini2
+                  name: SmartPlug1
+                  type: switch
+      responses:
+        '200':
+          description: ''
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          example: telegram.123123123
+  /signals:
+    get:
+      summary: Get Signals
+      tags:
+        - Signals
+      description: Get Signals
+      operationId: getSignals
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                action:
+                  type: string
+                  example: 10_taps
+                id:
+                  type: string
+                  example: sound_image
+            examples:
+              Get Signals:
+                value:
+                  action: 10_taps
+                  id: sound_image
+      responses:
+        '200':
+          description: ''
+    post:
+      summary: Send Signal
+      description: Send Signal
+      tags:
+        - Signals
+      operationId: sendSignal
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                action:
+                  type: string
+                  example: vision_blink
+                id:
+                  type: string
+                  example: f990fa0a-9cd5-43f7-ad36-ccc04e4ca269
+                num_actions:
+                  type: number
+                  example: 2
+            examples:
+              Send Signal:
+                value:
+                  action: vision_blink
+                  id: f990fa0a-9cd5-43f7-ad36-ccc04e4ca269
+                  num_actions: 2
+      responses:
+        '200':
+          description: ''
+  /signals/users/{user_id}:
+    get:
+      summary: Get Signals For User
+      tags:
+        - Signals
+      description: Get Signals For User
+      operationId: getSignalsForUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                action:
+                  type: string
+                  example: 10_taps
+                id:
+                  type: string
+                  example: sound_image
+            examples:
+              Get Signals For User:
+                value:
+                  action: 10_taps
+                  id: sound_image
+      responses:
+        '200':
+          description: ''
+    parameters:
+      - name: user_id
+        in: path
+        required: true
+        schema:
+          type: string
+          example: 8cb8d55a-bb5d-4a22-ad3a-9d0ca3005b20
+  /users:
+    get:
+      summary: Get users
+      tags:
+        - Users
+      description: Get users
+      operationId: getUsers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                first_name:
+                  type: string
+                  example: David
+                gosh_id:
+                  type: string
+                  example: '12345'
+                last_name:
+                  type: string
+                  example: aaa
+            examples:
+              Get users:
+                value:
+                  first_name: David
+                  gosh_id: '12345'
+                  last_name: aaa
+      responses:
+        '200':
+          description: ''
+    post:
+      summary: Create User
+      description: Create User
+      tags:
+        - Users
+      operationId: createUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                first_name:
+                  type: string
+                  example: David
+                gosh_id:
+                  type: string
+                  example: '123455'
+                last_name:
+                  type: string
+                  example: aaa
+            examples:
+              Create User:
+                value:
+                  first_name: David
+                  gosh_id: '123455'
+                  last_name: aaa
+      responses:
+        '200':
+          description: ''
+  /users/{user_id}:
+    get:
+      summary: Get user by ID
+      tags:
+        - Users
+      description: Get user by ID
+      operationId: getUserById
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                first_name:
+                  type: string
+                  example: David
+                gosh_id:
+                  type: string
+                  example: '12345'
+                last_name:
+                  type: string
+                  example: aaa
+            examples:
+              Get user by ID:
+                value:
+                  first_name: David
+                  gosh_id: '12345'
+                  last_name: aaa
+      responses:
+        '200':
+          description: ''
+    delete:
+      summary: Delete user by ID
+      description: Delete user by ID
+      tags:
+        - Users
+      operationId: deleteUserById
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                first_name:
+                  type: string
+                  example: David
+                gosh_id:
+                  type: string
+                  example: '12345'
+                last_name:
+                  type: string
+                  example: aaa
+            examples:
+              Delete user by ID:
+                value:
+                  first_name: David
+                  gosh_id: '12345'
+                  last_name: aaa
+      responses:
+        '200':
+          description: ''
+    parameters:
+      - name: user_id
+        in: path
+        required: true
+        schema:
+          type: string
+          example: ''
+  /signals/set:
+    post:
+      summary: Add/Set Signal
+      tags:
+        - Signals
+      description: Add/Set Signal
+      operationId: addSetSignal
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                target_action:
+                  type: string
+                  example: toggle
+                target_device_id:
+                  type: string
+                  example: switch.smart_plug_mini
+                trigger_action:
+                  type: string
+                  example: blink
+                trigger_id:
+                  type: string
+                  example: f990fa0a-9cd5-43f7-ad36-ccc04e4ca269
+                trigger_num_actions:
+                  type: number
+                  example: 2
+            examples:
+              Add/Set Signal:
+                value:
+                  target_action: toggle
+                  target_device_id: switch.smart_plug_mini
+                  trigger_action: blink
+                  trigger_id: f990fa0a-9cd5-43f7-ad36-ccc04e4ca269
+                  trigger_num_actions: 2
+      responses:
+        '200':
+          description: Set Signal
+          headers:
+            Connection:
+              schema:
+                type: string
+                example: close
+            Content-Length:
+              schema:
+                type: string
+                example: '307'
+            Date:
+              schema:
+                type: string
+                example: Sat, 03 Feb 2024 14:33:13 GMT
+            Server:
+              schema:
+                type: string
+                example: Werkzeug/3.0.1 Python/3.9.6
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Signal set
+                  signal:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        example: 974c4068-7b17-4c90-aefc-f8f78eddac26
+                      interactive_action:
+                        type: string
+                        example: taps
+                      interactive_device_num_actions:
+                        type: number
+                        example: 2
+                      interactive_id:
+                        type: string
+                        example: andy_vision
+                      target_action:
+                        type: string
+                        example: turn_on
+                      target_id:
+                        type: string
+                        example: switch.smart_plug_mini2
+                      user_id:
+                        nullable: true
+                        example: null
+              examples:
+                Set Signal:
+                  value:
+                    message: Signal set
+                    signal:
+                      id: 974c4068-7b17-4c90-aefc-f8f78eddac26
+                      interactive_action: taps
+                      interactive_device_num_actions: 2
+                      interactive_id: andy_vision
+                      target_action: turn_on
+                      target_id: switch.smart_plug_mini2
+                      user_id: null
+  /signals/{signal_id}:
+    put:
+      summary: Set Signal
+      tags:
+        - Signals
+      description: Set Signal
+      operationId: setSignal
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                target_action:
+                  type: string
+                  example: toggle
+                target_device_id:
+                  type: string
+                  example: switch.smart_plug_mini_2
+                trigger_action:
+                  type: string
+                  example: vision_upper_body_fall
+                trigger_id:
+                  type: string
+                  example: cbba1df3-8278-44df-aeca-f52df8ab15e7
+                trigger_num_actions:
+                  type: string
+                  example: alert
+            examples:
+              Set Signal:
+                value:
+                  target_action: toggle
+                  target_device_id: switch.smart_plug_mini_2
+                  trigger_action: vision_upper_body_fall
+                  trigger_id: cbba1df3-8278-44df-aeca-f52df8ab15e7
+                  trigger_num_actions: alert
+      responses:
+        '200':
+          description: ''
+    parameters:
+      - name: signal_id
+        in: path
+        required: true
+        schema:
+          type: string
+          example: 921e37eb-073e-45e9-8663-cb6846f0cfa2
+tags: []
