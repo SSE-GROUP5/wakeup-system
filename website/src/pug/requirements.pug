@@ -31,13 +31,28 @@ html(lang='en')
         main.mb-4
             .container.px-4.px-lg-5
                 .row.gx-4.gx-lg-5.justify-content-center
-                    .col-md-10.col-lg-8.col-xl-7
+                    .col-md-10
                         p
-                            | Lorem ipsum dolor sit amet, consectetur adipisicing elit. Saepe nostrum ullam eveniet pariatur voluptates odit, fuga atque ea nobis sit soluta odio, adipisci quas excepturi maxime quae totam ducimus consectetur?
+                            | This page outlines the essential functional and non-functional requirements crucial for the development, implementation, evaluation, and long-term sustainability of the Wakeup System.
                         p
-                            | Lorem ipsum dolor sit amet, consectetur adipisicing elit. Eius praesentium recusandae illo eaque architecto error, repellendus iusto reprehenderit, doloribus, minus sunt. Numquam at quae voluptatum in officia voluptas voluptatibus, minus!
+                
+                            | Functional Requirements 
+
+                        ul 
+                            li Patient Monitoring and Intraction via Triggers - The system should be able to monitor patients through a computer vision algorithm to interpret the patient's body/face movements and a sound/voice detection algorithm to recognise patterns created by the patient through various forms (e.g.: mouth noises, eye blinking, etc.). This requirement will allow patients with disabilities to interact with smart devices in the easiest way possible.
+                            li Ease of System Interaction - It is important that the patients can initiate an interaction with the system easily and be reminded consistently that the system exists for interacting with smart home devices around them.
+                            li Graphical User Interface for Medical Staff - The GUI should allow the medical staff or patients to easily configure custom commands for the triggers, as well as mapping the triggers to target devices, enabling them to use the system in the simplest way possible.
+                            li Usage Tracking and Engagement Insights - The system should be able track its usage over time. The Medical staff will have the ability to assess the patient’s interaction with the system. This information will help determine the frequency and preference for its use, providing valuable insights into the patient’s engagement with the system.
+                    
                         p
-                            | Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aut consequuntur magnam, excepturi aliquid ex itaque esse est vero natus quae optio aperiam soluta voluptatibus corporis atque iste neque sit tempora!
+                            | Non-Functional Requirements
+                        ul
+                            li Response time - The system should provide immediate feedback to patient interactions, with a maximum response time of 2 seconds for trigger detection and initiating actions on target devices. Quick response times are critical in healthcare settings, especially in emergency situations or for patients with disabilities, to reduce discomfort and potential harm.
+                            li Scalability - The system should be easily scalable to support an increasing number of triggers and targets without significant performance decrease. Importantly, adding new triggers and targets should be managed easily without the need for complex configurations. Since this project aims to lay the foundation of a project continued by other teams in the future, it is important that the system is modular, easy to maintain and extendable.
+                            li Security - We plan to ensure that the security of the system is designed to protect patient confidentiality rigorously, limiting the use of patient data to only name and patient ID in compliance with healthcare regulations. This approach minimises the risk of data breaches while ensuring the system adheres to privacy standards.
+                            li Ease of installation - The installation process should be streamlined for efficiency, with each trigger being managed through executable files. This design choice simplifies the setup process, enabling medical staff to easily integrate new components into the system without complex configurations, facilitating rapid deployment in a healthcare environment.
+                            li Integration with existing healthcare systems and standards - The system should be designed to integrate seamlessly with existing healthcare systems and standards, such as FHIR (Fast Healthcare Interoperability Resources) for data exchange (e.g., statistical usage data of the system).
+                            li Open Source Project - The software should be an open source project to ensure continued accessibility for future students or developers who may need access to the source code for future projects.
 
         include includes/footer.pug
 
