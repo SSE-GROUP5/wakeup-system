@@ -27,17 +27,30 @@ html(lang='en')
                             h1 Evaluation
                             span.subheading The WakeUp System's Evaluation.
 
-        // Main Content
-        main.mb-4
+        section
             .container.px-4.px-lg-5
                 .row.gx-4.gx-lg-5.justify-content-center
-                    .col-md-10.col-lg-8.col-xl-7
+                    h2.margin-bottom-10 Evaluation of the WakeUp System
+                    .row.gx-4.gx-lg-5.justify-content-center.margin-top-10
+                        .col
+                            h3 FHIR Hackathon 
+                            img(src="assets/FHIR_Hackaton.jpeg", alt="FHIR Hackathon", style="width: 55vh;")
+                            h4 13 February 2024
+                        .col
+                            h3 Labs Day
+                            img(src="assets/Labs_day.jpeg", alt="Labs Day", style="width: 60vh;")
+                            h4 19 March 2024
+                    .col-lg-8
                         p
-                            | Lorem ipsum dolor sit amet, consectetur adipisicing elit. Saepe nostrum ullam eveniet pariatur voluptates odit, fuga atque ea nobis sit soluta odio, adipisci quas excepturi maxime quae totam ducimus consectetur?
+                            | The WakeUp system has been evaluated through live, real-time demonstrations in front of two different audiences. The first demonstration took place during the FHIR Hackathon on 13 February, where we presented two signals. The first signal used blinking eyes as triggers to toggle a light bulb, while the second signal triggered an alert via Telegram when the user being monitored fell off a chair. These demonstrations were given to representatives from companies such as Roche, Microsoft, and GOSH Drive.
                         p
-                            | Lorem ipsum dolor sit amet, consectetur adipisicing elit. Eius praesentium recusandae illo eaque architecto error, repellendus iusto reprehenderit, doloribus, minus sunt. Numquam at quae voluptatum in officia voluptas voluptatibus, minus!
+                            | The second demonstration took place during Labs Day on 19 March, where we demonstrated Morse Vision and Morse Sound to teams from Intel and to the CTO of NTT DATA.
                         p
-                            | Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aut consequuntur magnam, excepturi aliquid ex itaque esse est vero natus quae optio aperiam soluta voluptatibus corporis atque iste neque sit tempora!
+                            | All the live demonstrations went smoothly and there were no embarrassing glitches. All participants who tested the system were impressed and showed great interest in the product. They suggested various ideas on how this concept could be applied to other industries such as nuclear power plants, farms, or theaters.
+                        p
+                            | From the WakeUp team's perspective, we would like the setup process to be simpler. For example, to add a trigger, you first have to register it with the WakeUp system and then share the credentials with the trigger. This could be streamlined if the trigger could automatically register itself, although this could compromise the security of our system.
+                        p
+                            | The team is also pleased that what started as an 'exploratory' project has quickly developed into an idea that has been presented to a real audience.
 
         include includes/footer.pug
 
