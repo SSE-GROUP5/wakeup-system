@@ -26,52 +26,20 @@ html(lang='en')
             .container.px-4.px-lg-5
                 .row.gx-4.gx-lg-5.justify-content-center
                     .col-lg-10
-                        p To demonstrate the capabilities of the Matter WakeUp system, we
+                        p To demonstrate the capabilities of the WakeUp system, we
                           | developed seven triggers in total. Each one detects movements or
                           | sounds made by patients and sends signals to the WakeUp system.
-                          | To comply with one of our requirements, we converted most of
-                          | our triggers into an executable file. Accompanying each executable,
-                          | there’s a text file for setting the trigger’s parameters, such as the
-                          | degree of angle identified as falling. This combination of executable
-                          | and configuration files improves the triggers’ usability and robustness,
-                          | enabling them to perform well on different computers without
-                          | the need for developer tools.
+                          | Accompanying each trigger, there’s a text file for setting the trigger’s 
+                          | parameters, such as the degree of angle identified as falling. 
 
                     // Cards for each trigger
-                    .col-md-6.mb-4
-                        .card
-                            .card-header Eyes Blinking
-                            .card-body.text-center
-                                img.mb-3(src='assets/blinking.gif', alt='Eyes Blinking Trigger', width='100%')
-                                | This trigger detects eye blinking using the MediaPipe face mesh prediction model to monitor the patient’s eye movements through a webcam. It counts the number of eye blinks over a certain period, with the count serving as a signal in the Wakeup System. For example, this trigger can be used for turning on lights or opening curtains.
 
                     .col-md-6.mb-4
-                        .card
-                            .card-header Audio Classification
-                            .card-body.text-center
-                                img.mb-3(src='assets/classification.gif', alt='Audio Classification Trigger', width='50%', height='50%')
-                                br
-                                | This trigger uses Yamnet Audio Classification to identify sounds such as clapping hands or coughing. It works by detecting these sounds repeatedly within a specified timeframe and then sending a signal to the WakeUp system. For example, the trigger can be configured to activate when it detects three consecutive claps, triggering activation of the light.
-
-                    .col-md-6.mb-4
-                        .card
-                            .card-header Fall Detection (Upper Body)
-                            .card-body.text-center
-                                img.mb-3(src='assets/falling.gif', alt='Upper Body Fall Detection Trigger', width='100%')
-                                | This trigger detects if a patient is falling from a seated position by tracking upper body keypoints with the YOLOv8n-pose model, optimised with OpenVINO. A signal is generated if the patient’s body angle becomes too large, which can then prompt actions such as sending a message and photo to a nurse.
-
-                    .col-md-6.mb-4
-                        .card
-                            .card-header Fall Detection (Full Body)
-                            .card-body.text-center
-                                | Similar to the upper body fall detection, this trigger focuses on detecting falls by tracking full body keypoints with the YOLO7 model originally created from Y-B-Class and adjusted for our need.
-
-                    .col-md-6.mb-4
-                        .card
-                            .card-header Morse Vision
-                            .card-body.text-center
-                                img.mb-3(src='assets/morse_vision.gif', alt='Morse Vision Trigger', width='100%')
-                                | Based on the eye blinking detection trigger, this version distinguishes between long and short blinks, allowing for Morse code communication. While a bit more complex for patients to use, it enables the transmission of letter signals compared to simple blinking detection, which allows the user to use at least 27 different actions for a single trigger. For example, a nurse can set up for the letter T to turn on the TV.
+                      .card
+                          .card-header Morse Vision
+                          .card-body.text-center
+                              img.mb-3(src='assets/morse_vision.gif', alt='Morse Vision Trigger', width='100%')
+                              | Based on the eye blinking detection trigger, this version distinguishes between long and short blinks, allowing for Morse code communication. While a bit more complex for patients to use, it enables the transmission of letter signals compared to simple blinking detection, which allows the user to use at least 27 different actions for a single trigger. For example, a nurse can set up for the letter T to turn on the TV.
 
                     .col-md-6.mb-4
                         .card
@@ -79,12 +47,39 @@ html(lang='en')
                             .card-body.text-center
                                 | Functionally similar to Morse Vision, this trigger uses sound for Morse code communication. It detects long and short sounds made by the patient’s voice amplitude and converts them into a letter using Morse code, which are then sent as signals to the WakeUp System.
 
+
                     .col-md-6.mb-4
                         .card
-                            .card-header Whisper
+                            .card-header Eyes Blinking
+                            .card-body.text-center
+                                img.mb-3(src='assets/blinking.gif', alt='Eyes Blinking Trigger', width='100%')
+                                | This trigger detects eye blinking to monitor the patient’s eye movements through a webcam. It counts the number of eye blinks over a certain period, with the count serving as a signal in the Wakeup System. For example, this trigger can be used for turning on lights or opening curtains.
+
+
+                    .col-md-6.mb-4
+                        .card
+                            .card-header Audio Classification
+                            .card-body.text-center
+                                img.mb-3(src='assets/classification.gif', alt='Audio Classification Trigger', width='50%', height='50%')
+                                br
+                                | This trigger identifies sounds such as clapping hands or coughing. It works by detecting these sounds repeatedly within a specified timeframe and then sending a signal to the WakeUp system. For example, the trigger can be configured to activate when it detects three consecutive claps, triggering activation of the plug.
+
+                    .col-md-6.mb-4
+                        .card
+                            .card-header Fall Detection (Upper Body)
+                            .card-body.text-center
+                                img.mb-3(src='assets/falling.gif', alt='Upper Body Fall Detection Trigger', width='100%')
+                                | This trigger detects if a patient is falling from a seated position by tracking upper body optimised with OpenVINO. A signal is generated if the patient’s body angle becomes too large, which can then prompt actions such as sending a message and photo to a nurse.
+
+             
+          
+                    .col-md-6.mb-4
+                        .card
+                            .card-header Custom Wordless as Triggers
                             .card-body.text-center
                                 img.mb-3(src='assets/whisper.gif', alt='Whisper Trigger', width='100%')
-                                | This trigger focuses on live speech recognition using OpenAI’s Whisper model optimised with OpenVINO, converting a patient’s speech into text for signal generation. Using simple repetitive sounds like “ah, ah, ah” or “oh, oh, oh” could send a signal to the WakeUp system.
+                                | This trigger focuses on live speech recognition, converting a patient’s owns speech into text for signal generation. Using simple repetitive sounds like “ah, ah, ah” or “oh, oh, oh” could send a signal to the WakeUp system.
+
 
         include includes/footer.pug
         include includes/scripts.pug
